@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  marc:
+    image: marcpartensky/dotfiles
+    build:
+      context: /root/git/dotfiles
+    ports:
+      - "7020:7020" # just in case
+    # networks:
+    #   - box
+    stdin_open: true
+    tty: true
+  samy:
+    image: marcpartensky/box
+    build:
+      context: .
+    ports:
+      - "22:7021"
+    stdin_open: true
+    tty: true
+  etienne:
+    image: marcpartensky/box
+    build:
+      context: .
+    ports:
+      - "22:7022"
+    stdin_open: true
+    tty: true
+  valentin:
+    image: marcpartensky/box
+    build:
+      context: .
+    ports:
+      - "22:7023"
+    stdin_open: true
+    tty: true
+  alexandre:
+    image: marcpartensky/box
+    build:
+      context: .
+    ports:
+      - "22:7024"
+    stdin_open: true
+    tty: true
+# networks:
+#   box:
+#     external: true
