@@ -1,0 +1,243 @@
+version: "3.9"
+services:
+
+  traefik:
+    image: traefik:v2.0
+    restart: always
+    container_name: traefik
+    ports:
+      - "80:80" # <== http
+      - "8080:8080" # <== :8080 is where the dashboard runs on
+      - "443:443" # <== https
+    command:
+      #### These are the CLI commands that will configure Traefik and tell it how to work! ####
+      ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
+      - --api.insecure=true # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
+      - --api.dashboard=true # <== Enabling the dashboard to view services, middlewares, routers, etc...
+      - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
+      ## Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
+      - --log.level=DEBUG # <== Setting the level of the logs from traefik
+      ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
+      - --providers.docker=true # <== Enabling docker as the provider for traefik
+      - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
+      - --providers.file.filename=/dynamic.yaml # <== Referring to a dynamic configuration file
+      - --providers.docker.network=web # <== Operate on the docker network named web
+      ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
+      - --entrypoints.web.address=:80 # <== Defining an entrypoint for port :80 named web
+      - --entrypoints.web-secured.address=:443 # <== Defining an entrypoint for https on port :443 named web-secured
+      ## Certificate Settings (Let's Encrypt) -  https://docs.traefik.io/https/acme/#configuration-examples ##
+      - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
+      - --certificatesresolvers.mytlschallenge.acme.email=theafkdeveloper@gmail.com # <== Setting email for certs
+      - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json # <== Defining acme file to store cert information
+    volumes:
+      - ./letsencrypt:/letsencrypt # <== Volume for certs (TLS)
+      - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
+      - ./dynamic.yaml:/dynamic.yaml # <== Volume for dynamic conf file, **ref: line 27
+    networks:
+      - traefik # <== Placing traefik on the network named web, to access containers on this network
+    labels:
+      #### Labels define the behavior and rules of the traefik proxy for this container ####
+      - "traefik.enable=true" # <== Enable traefik on itself to view dashboard and assign subdomain to view it
+      - "traefik.http.routers.api.rule=Host(`monitor.example.com`)" # <== Setting the domain for the dashboard
+      - "traefik.http.routers.api.service=api@internal" # <== Enabling the api to be a service to access
+
+  website:
+    build:
+      context: /root/git/website
+      dockerfile: /root/git/website/Dockerfile
+      args:
+        env_file: /root/git/website/.env
+    image: marcpartensky/website:latest
+    restart: unless-stopped
+    ports:
+      - "7000:7000"
+      # - 21:10021
+    env_file:
+      - /root/git/website/.env
+    environment:
+      - DEBUG=false
+      - KEY=/app/privkey.pem
+      - CERT=/app/fullchain.pem
+      # - KEY=/root/docker/data/certbot/conf/keys/0000_key-certbot.pem
+      # - CERT=/root/docker/data/certbot/conf/csr/0000_csr-certbot.pem
+    # command: "/app/run.sh;"
+    # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
+    # entrypoint: "daphne -e ssl:7000:privateKey=/app/data/certbot/conf/keys/0000_key-certbot.pem:certKey=/app/data/certbot/conf/csr/0000_csr-certbot.pem django_project.asgi:application"
+    # entrypoint: "daphne django_project.asgi:application -b 0.0.0.0 -p 7000"
+    # entrypoint: "daphne /app/django_project.asgi:application -p 7000"
+    # entrypoint: "/app/manage.py runserver 0.0.0.0:7000"
+    #
+    entrypoint: "daphne -e ssl:7000:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application"
+    links:
+      - redis
+    volumes:
+      - ./data:/app/data
+    networks:
+      - website
+      - nginx
+    depends_on:
+      - redis
+    # tty: true
+    # stdin: true
+  # migration:
+    # image: marcpartensky/website:latest
+    # command: python manage.py migrate --noinput
+    # volumes:
+      # - .:/app
+
+  postgresql:
+    image: postgresql
+    networks:
+      - website
+
+  redis:
+    image: redis:alpine
+    networks:
+      - website
+
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - nginx
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  certbot_nginx:
+      # restart: unless-stopped
+      image: staticfloat/nginx-certbot
+      ports:
+          - "80:80/tcp"
+          - "443:443/tcp"
+      environment:
+          CERTBOT_EMAIL: marc.partensky@gmail.com
+          # variable names are space-separated
+          ENVSUBST_VARS: FQDN
+          FQDN: marcpartensky.com
+      volumes:
+        - ./conf.d:/etc/nginx/user.conf.d:ro
+        - letsencrypt:/etc/letsencrypt
+
+  esclave:
+    build: /root/git/discord-bot
+    image: marcpartensky/discord-bot
+    restart: unless-stopped
+    env_file:
+      - /root/git/discord-bot/.env
+
+  servant:
+    build: /root/git/servitor
+    image: marcpartensky/servitor
+    restart: unless-stopped
+
+  pandoc:
+    build: /root/git/pandoc-api
+    image: marcpartensky/pandoc-api
+    restart: unless-stopped
+    networks:
+      - nginx
+    ports:
+      - "5000:7001"
+
+  # https://github.com/itzg/docker-minecraft-server/blob/master/README.md
+  minecraft_aventure:
+    image: itzg/minecraft-server
+    restart: always
+    environment:
+      - TZ=Europe/Paris
+      - EULA=TRUE
+      - ENABLE_COMMAND_BLOCK=TRUE
+      - MEMORY=2G
+      - VERSION=1.13.2
+      - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
+      - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
+      # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
+      - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
+    tty: true
+    stdin_open: true
+    volumes:
+      - /srv/minecraft/data:/data
+    ports:
+      - "25565:25565"
+
+  minecraft:
+    image: itzg/minecraft-server
+    restart: always
+    environment:
+      - TZ=Europe/Paris
+      - EULA=TRUE
+      - ENABLE_COMMAND_BLOCK=TRUE
+      - MEMORY=2G
+      - VERSION=1.13.2
+      - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
+      - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
+      # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
+      - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
+    tty: true
+    stdin_open: true
+    volumes:
+      - /srv/minecraft/data:/data
+    ports:
+      - "25565:25565"
+
+  jupyter_notebook:
+    image: jupyter/minimal-notebook
+    environment:
+      - GEN_CERT=yes
+      - JUPYTER_ENABLE_LAB=yes
+    entrypoint: start-notebook.sh \
+        --NotebookApp.keyfile=key/0000_key-certbot.pem
+        --NotebookApp.certfile=cert/0000_csr-certbot.pem
+    ports:
+      - "8888:8888"
+    volumes:
+      - /etc/letsencrypt/keys:/home/jovyan/work/key
+      - /etc/letsencrypt/csr:/home/jovyan/work/cert
+      - /etc/letsencrypt:/etc/letsencrypt
+
+  env:
+    image: marcpartensky/env
+    build:
+      context: /root/git/dotfiles
+      dockerfile: /root/git/dotfiles/Dockerfile
+      args:
+        env_file: /root/git/dotfiles/.env
+    ports:
+      - "22:7020"
+      - "8022:7021"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    environment:
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /srv/elasticsearch/data:/srv/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+volumes:
+  letsencrypt:
+
+networks:
+  website:
+    external: false
+  nginx:
+  traefik:
