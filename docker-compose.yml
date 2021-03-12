@@ -71,7 +71,7 @@ services:
     links:
       - redis
     volumes:
-      - ./data:/app/data
+      - /srv/website:/app
     networks:
       - website
       - nginx
@@ -147,6 +147,8 @@ services:
     build: /root/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
+    volumes:
+      - /srv/pandoc:/app
     networks:
       - nginx
     ports:
@@ -158,7 +160,9 @@ services:
     restart: always
     environment:
       - TZ=Europe/Paris
+      - OPS=MazexRedstone
       - EULA=TRUE
+      - ENABLE_AUTOPAUSE=TRUE
       - ENABLE_COMMAND_BLOCK=TRUE
       - MEMORY=2G
       - VERSION=1.13.2
@@ -179,17 +183,21 @@ services:
     environment:
       - TZ=Europe/Paris
       - EULA=TRUE
+      - OPS=MazexRedstone
       - ENABLE_COMMAND_BLOCK=TRUE
       - MEMORY=2G
-      - VERSION=1.13.2
-      - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
+      - VERSION=1.16.5
+      - ICON=https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
       - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
-      # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
-      - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
+      # - WORLD=/srv/minecraft/zip/Server.zip
+      - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
+      # - ONLINE_MODE=FALSE # no need for an account
+      # - SNOOPER_ENABLED=false
+      - LEVEL=Server
     tty: true
     stdin_open: true
     volumes:
-      - /srv/minecraft/data:/data
+      - /srv/minecraft/data/:/data
     ports:
       - "25565:25565"
 
@@ -232,6 +240,20 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+
+  ialab:
+    image: marcpartensky/ialab
+    build:
+      context: /root/git/ialab
+      dockerfile: /root/git/ialab/Dockerfile
+    ports:
+      - "80:80"
+    command: "flask run"
+    # command: "flask run"
+    volumes:
+      - /srv/ialab:/app
+    networks:
+      - nginx
 
 volumes:
   letsencrypt:
