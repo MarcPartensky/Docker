@@ -55,42 +55,39 @@ services:
       - /root/git/website/.env
     environment:
       - DEBUG=false
-      - KEY=/app/privkey.pem
-      - CERT=/app/fullchain.pem
+      # - KEY=/app/privkey.pem
+      # - CERT=/app/fullchain.pem
       # - KEY=/root/docker/data/certbot/conf/keys/0000_key-certbot.pem
       # - CERT=/root/docker/data/certbot/conf/csr/0000_csr-certbot.pem
     # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
-    # entrypoint: "daphne -e ssl:7000:privateKey=/app/data/certbot/conf/keys/0000_key-certbot.pem:certKey=/app/data/certbot/conf/csr/0000_csr-certbot.pem django_project.asgi:application"
-    # entrypoint: "/app/manage.py runserver 0.0.0.0:8000"
     working_dir: /app
     tty: true
-    # entrypoint: tail -f /dev/null
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
     entrypoint: daphne django_project.asgi:application --port 80 --bind website -v2
     links:
       - redis
-    # volumes:
-    #   - /srv/website:/app
+    volumes:
+      - /srv/website/media:/app/media
     networks:
       - website
       - nginx
     depends_on:
       - redis
+      - posgres
     # tty: true
     # stdin: true
-  # migration:
-    # image: marcpartensky/website:latest
-    # command: python manage.py migrate --noinput
-    # volumes:
-      # - .:/app
 
-  postgresql:
-    image: postgresql
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    env_file:
+      - data/secrets/postgres.env
     networks:
       - website
 
   redis:
     image: redis:alpine
+    restart: unless-stopped
     networks:
       - website
 
@@ -273,6 +270,19 @@ services:
     networks:
       - nginx
     entrypoint: python app.py
+
+  discord_voice_recorder:
+    image: drv
+    volumes:
+      - /srv/discord-voice-recorder/recordings:/usr/src/bot/recordings
+
+  wordpress:
+    image: wordpress
+    restart: unless-stopped
+    networks:
+      - nginx
+    env_file:
+      - data/secrets/wordpress.env
 
 volumes:
   letsencrypt:

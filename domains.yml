@@ -3,6 +3,7 @@ domains:
   - www.marcpartensky.com
   - pandoc.marcpartensky.com
   - ialab.marcpartensky.com
+  - notebook.marcpartensky.com
   # - business.marcpartensky.com
   # - glou.marcpartensky.com
   # - wordpress.marcpartensky.com
