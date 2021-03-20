@@ -133,7 +133,14 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     env_file:
-      - /root/git/discord-bot/.env
+      - /root/data/secrets/esclave.env
+
+  ia:
+    build: /root/git/discord-bot
+    image: marcpartensky/discord-bot
+    restart: unless-stopped
+    env_file:
+      - /root/data/secrets/ia.env
 
   servant:
     build: /root/git/servitor
@@ -281,8 +288,17 @@ services:
     restart: unless-stopped
     networks:
       - nginx
+      - wordpress
     env_file:
       - data/secrets/wordpress.env
+
+  wordpress_mysql:
+    image: mysql
+    restart: always
+    env_file:
+      - data/secrets/wordpress_mysql.env
+    networks:
+      - wordpress
 
 volumes:
   letsencrypt:
