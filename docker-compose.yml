@@ -1,45 +1,45 @@
 version: "3.9"
 services:
 
-  traefik:
-    image: traefik:v2.0
-    restart: always
-    container_name: traefik
-    ports:
-      - "80:80" # <== http
-      - "8080:8080" # <== :8080 is where the dashboard runs on
-      - "443:443" # <== https
-    command:
-      #### These are the CLI commands that will configure Traefik and tell it how to work! ####
-      ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
-      - --api.insecure=true # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
-      - --api.dashboard=true # <== Enabling the dashboard to view services, middlewares, routers, etc...
-      - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
-      ## Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
-      - --log.level=DEBUG # <== Setting the level of the logs from traefik
-      ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
-      - --providers.docker=true # <== Enabling docker as the provider for traefik
-      - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
-      - --providers.file.filename=/dynamic.yaml # <== Referring to a dynamic configuration file
-      - --providers.docker.network=web # <== Operate on the docker network named web
-      ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
-      - --entrypoints.web.address=:80 # <== Defining an entrypoint for port :80 named web
-      - --entrypoints.web-secured.address=:443 # <== Defining an entrypoint for https on port :443 named web-secured
-      ## Certificate Settings (Let's Encrypt) -  https://docs.traefik.io/https/acme/#configuration-examples ##
-      - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
-      - --certificatesresolvers.mytlschallenge.acme.email=theafkdeveloper@gmail.com # <== Setting email for certs
-      - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json # <== Defining acme file to store cert information
-    volumes:
-      - ./letsencrypt:/letsencrypt # <== Volume for certs (TLS)
-      - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
-      - ./dynamic.yaml:/dynamic.yaml # <== Volume for dynamic conf file, **ref: line 27
-    networks:
-      - traefik # <== Placing traefik on the network named web, to access containers on this network
-    labels:
-      #### Labels define the behavior and rules of the traefik proxy for this container ####
-      - "traefik.enable=true" # <== Enable traefik on itself to view dashboard and assign subdomain to view it
-      - "traefik.http.routers.api.rule=Host(`monitor.example.com`)" # <== Setting the domain for the dashboard
-      - "traefik.http.routers.api.service=api@internal" # <== Enabling the api to be a service to access
+  # traefik:
+  #   image: traefik:v2.0
+  #   restart: always
+  #   container_name: traefik
+  #   ports:
+  #     - "80:80" # <== http
+  #     - "8080:8080" # <== :8080 is where the dashboard runs on
+  #     - "443:443" # <== https
+  #   command:
+  #     #### These are the CLI commands that will configure Traefik and tell it how to work! ####
+  #     ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
+  #     - --api.insecure=true # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
+  #     - --api.dashboard=true # <== Enabling the dashboard to view services, middlewares, routers, etc...
+  #     - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
+  #     ## Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
+  #     - --log.level=DEBUG # <== Setting the level of the logs from traefik
+  #     ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
+  #     - --providers.docker=true # <== Enabling docker as the provider for traefik
+  #     - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
+  #     - --providers.file.filename=/dynamic.yaml # <== Referring to a dynamic configuration file
+  #     - --providers.docker.network=web # <== Operate on the docker network named web
+  #     ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
+  #     - --entrypoints.web.address=:80 # <== Defining an entrypoint for port :80 named web
+  #     - --entrypoints.web-secured.address=:443 # <== Defining an entrypoint for https on port :443 named web-secured
+  #     ## Certificate Settings (Let's Encrypt) -  https://docs.traefik.io/https/acme/#configuration-examples ##
+  #     - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
+  #     - --certificatesresolvers.mytlschallenge.acme.email=theafkdeveloper@gmail.com # <== Setting email for certs
+  #     - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json # <== Defining acme file to store cert information
+  #   volumes:
+  #     - ./letsencrypt:/letsencrypt # <== Volume for certs (TLS)
+  #     - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
+  #     - ./dynamic.yaml:/dynamic.yaml # <== Volume for dynamic conf file, **ref: line 27
+  #   networks:
+  #     - traefik # <== Placing traefik on the network named web, to access containers on this network
+  #   labels:
+  #     #### Labels define the behavior and rules of the traefik proxy for this container ####
+  #     - "traefik.enable=true" # <== Enable traefik on itself to view dashboard and assign subdomain to view it
+  #     - "traefik.http.routers.api.rule=Host(`monitor.example.com`)" # <== Setting the domain for the dashboard
+  #     - "traefik.http.routers.api.service=api@internal" # <== Enabling the api to be a service to access
 
   website:
     build:
@@ -52,7 +52,7 @@ services:
     # ports:
     #   - "443:443"
     env_file:
-      - /root/git/website/.env
+      - ./data/secrets/website.env
     environment:
       - DEBUG=false
       # - KEY=/app/privkey.pem
@@ -73,7 +73,7 @@ services:
       - nginx
     depends_on:
       - redis
-      - posgres
+      - postgres
     # tty: true
     # stdin: true
 
@@ -113,34 +113,34 @@ services:
       - ./data/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-  certbot_nginx:
-      restart: unless-stopped
-      image: staticfloat/nginx-certbot
-      ports:
-          - "80:80/tcp"
-          - "443:443/tcp"
-      environment:
-          CERTBOT_EMAIL: marc.partensky@gmail.com
-          # variable names are space-separated
-          ENVSUBST_VARS: FQDN
-          FQDN: marcpartensky.com
-      volumes:
-        - ./conf.d:/etc/nginx/user.conf.d:ro
-        - letsencrypt:/etc/letsencrypt
+  # certbot_nginx:
+  #     restart: unless-stopped
+  #     image: staticfloat/nginx-certbot
+  #     ports:
+  #         - "80:80/tcp"
+  #         - "443:443/tcp"
+  #     environment:
+  #         CERTBOT_EMAIL: marc.partensky@gmail.com
+  #         # variable names are space-separated
+  #         ENVSUBST_VARS: FQDN
+  #         FQDN: marcpartensky.com
+  #     volumes:
+  #       - ./conf.d:/etc/nginx/user.conf.d:ro
+  #       - letsencrypt:/etc/letsencrypt
 
   esclave:
     build: /root/git/discord-bot
     image: marcpartensky/discord-bot
     restart: unless-stopped
     env_file:
-      - /root/data/secrets/esclave.env
+      - ./data/secrets/esclave.env
 
   ia:
     build: /root/git/discord-bot
     image: marcpartensky/discord-bot
     restart: unless-stopped
     env_file:
-      - /root/data/secrets/ia.env
+      - ./data/secrets/ia.env
 
   servant:
     build: /root/git/servitor
@@ -151,6 +151,10 @@ services:
     build: /root/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
+    # working_dir: /app
+    env_file:
+      - ./data/secrets/pandoc.env
+    entrypoint: "flask run --host pandoc --port 80"
     volumes:
       - /srv/pandoc:/app
       - /var/log/nginx:/var/log/nginx
@@ -158,31 +162,31 @@ services:
       - nginx
 
   # https://github.com/itzg/docker-minecraft-server/blob/master/README.md
-  minecraft_aventure:
-    image: itzg/minecraft-server
-    restart: always
-    environment:
-      - TZ=Europe/Paris
-      - OPS=MazexRedstone
-      - EULA=TRUE
-      - ENABLE_AUTOPAUSE=TRUE
-      - ENABLE_COMMAND_BLOCK=TRUE
-      - MEMORY=2G
-      - VERSION=1.13.2
-      - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
-      - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
-      - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
-      # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
-    tty: true
-    stdin_open: true
-    volumes:
-      - /srv/minecraft/data:/data
-    ports:
-      - "25565:25565"
+  # minecraft_aventure:
+  #   image: itzg/minecraft-server
+  #   restart: always
+  #   environment:
+  #     - TZ=Europe/Paris
+  #     - OPS=MazexRedstone
+  #     - EULA=TRUE
+  #     - ENABLE_AUTOPAUSE=TRUE
+  #     - ENABLE_COMMAND_BLOCK=TRUE
+  #     - MEMORY=2G
+  #     - VERSION=1.13.2
+  #     - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
+  #     - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
+  #     - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
+  #     # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
+  #   tty: true
+  #   stdin_open: true
+  #   volumes:
+  #     - /srv/minecraft/data:/data
+  #   ports:
+  #     - "25565:25565"
 
   minecraft:
     image: itzg/minecraft-server
-    restart: always
+    restart: unless-stopped
     environment:
       - TZ=Europe/Paris
       - EULA=TRUE
@@ -194,7 +198,7 @@ services:
       - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
       - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
       - LEVEL=Server
-      # - ONLINE_MODE=FALSE # no need for an account
+      - ONLINE_MODE=FALSE # no need for an account
       # - WORLD=/srv/minecraft/zip/Server.zip
       # - SNOOPER_ENABLED=false
     tty: true
@@ -204,8 +208,15 @@ services:
     ports:
       - "25565:25565"
 
+  pterodactyl:
+    build: /root/fork/panel
+    # restart: unless-stopped
+    networks:
+      - nginx
+
   notebook:
     image: jupyter/base-notebook
+    restart: unless-stopped
     ports:
       - "8888:8888"
     environment:
@@ -221,30 +232,30 @@ services:
     #   - /etc/letsencrypt/csr:/home/jovyan/work/cert
     #   - /etc/letsencrypt:/etc/letsencrypt
 
-  env:
-    image: marcpartensky/env
-    build:
-      context: /root/git/dotfiles
-      dockerfile: /root/git/dotfiles/Dockerfile
-      args:
-        env_file: /root/git/dotfiles/.env
-    ports:
-      - "22:7020"
-      - "8022:7021"
+# env:
+  #   image: marcpartensky/env
+  #   build:
+  #     context: /root/git/dotfiles
+  #     dockerfile: /root/git/dotfiles/Dockerfile
+  #     args:
+  #       env_file: /root/git/dotfiles/.env
+  #   ports:
+  #     - "22:7020"
+  #     - "8022:7021"
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
-    environment:
-      - discovery.type=single-node
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - /srv/elasticsearch/data:/srv/elasticsearch/data
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+  #   environment:
+  #     - discovery.type=single-node
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     - /srv/elasticsearch/data:/srv/elasticsearch/data
+  #   ports:
+  #     - "9200:9200"
+  #     - "9300:9300"
 
   ialab:
     image: marcpartensky/ialab
@@ -278,10 +289,10 @@ services:
       - nginx
     entrypoint: python app.py
 
-  discord_voice_recorder:
-    image: drv
-    volumes:
-      - /srv/discord-voice-recorder/recordings:/usr/src/bot/recordings
+  # discord_voice_recorder:
+  #   image: drv
+  #   volumes:
+  #     - /srv/discord-voice-recorder/recordings:/usr/src/bot/recordings
 
   wordpress:
     image: wordpress
@@ -294,7 +305,7 @@ services:
 
   wordpress_mysql:
     image: mysql
-    restart: always
+    restart: unless-stopped
     env_file:
       - data/secrets/wordpress_mysql.env
     networks:
@@ -307,4 +318,5 @@ networks:
   website:
     external: false
   nginx:
-  traefik:
+  wordpress:
+  # traefik:
