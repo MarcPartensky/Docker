@@ -9,6 +9,7 @@
 - https://searx.marcpartensky.com
 - https://cloud.marcpartensky.com
 - https://wordpress.marcpartensky.com
+- https://git.marcpartensky.com
 <!-- # - business.marcpartensky.com -->
 <!-- # - glou.marcpartensky.com -->
 <!-- # - minecraft.marcpartensky.com -->
