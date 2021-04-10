@@ -4,8 +4,10 @@ domains:
   - pandoc.marcpartensky.com
   - ialab.marcpartensky.com
   - notebook.marcpartensky.com
+  - searx.marcpartensky.com
+  - cloud.marcpartensky.com
+  - wordpress.marcpartensky.com
   # - business.marcpartensky.com
   # - glou.marcpartensky.com
-  # - wordpress.marcpartensky.com
   # - minecraft.marcpartensky.com
 
