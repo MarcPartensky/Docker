@@ -6,26 +6,40 @@ services:
       context: /root/git/dotfiles
     networks:
       - box
-    # stdin_open: true
-    # tty: true
+    stdin_open: true
+    tty: true
 
   samy:
-    image: marcpartensky/box
+    # image: marcpartensky/box
+    build:
+      context: .
+      dockerfile: Dockerfile
     networks:
       - box
 
   etienne:
-    image: marcpartensky/box
+    # image: marcpartensky/box
+    build:
+      context: .
+      dockerfile: Dockerfile
     networks:
       - box
+    stdin_open: true
+    tty: true
 
   valentin:
-    image: marcpartensky/box
+    # image: marcpartensky/box
+    build:
+      context: .
+      dockerfile: Dockerfile
     networks:
       - box
 
   alexandre:
-    image: marcpartensky/box
+    # image: marcpartensky/box
+    build:
+      context: .
+      dockerfile: Dockerfile
     networks:
       - box
 

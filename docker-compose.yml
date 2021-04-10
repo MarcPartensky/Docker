@@ -41,6 +41,26 @@ services:
   #     - "traefik.http.routers.api.rule=Host(`monitor.example.com`)" # <== Setting the domain for the dashboard
   #     - "traefik.http.routers.api.service=api@internal" # <== Enabling the api to be a service to access
 
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2222:2222"
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+      # - ./data/certbot/conf:/etc/letsencrypt
+      # - ./data/certbot/www:/var/www/certbot
+      # - type: bind
+      #   source: /home/my-user/elk-stack/.htpasswd
+      #   target: /etc/nginx/.htpasswd
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - nginx
+      - box
+
   website:
     build:
       context: /root/git/website
@@ -80,6 +100,10 @@ services:
   postgres:
     image: postgres
     restart: unless-stopped
+    ports:
+      - "5432:5432" # filtered by firewall
+    volumes:
+      - /srv/postgres/dump:/srv/postgresql/dump
     env_file:
       - data/secrets/postgres.env
     networks:
@@ -90,21 +114,6 @@ services:
     restart: unless-stopped
     networks:
       - website
-
-  nginx:
-    image: nginx:latest
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./data/nginx:/etc/nginx/conf.d
-      - /etc/letsencrypt:/etc/letsencrypt
-      # - ./data/certbot/conf:/etc/letsencrypt
-      # - ./data/certbot/www:/var/www/certbot
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    networks:
-      - nginx
 
   certbot:
     image: certbot/certbot
@@ -151,7 +160,7 @@ services:
     build: /root/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
-    # working_dir: /app
+    working_dir: /app
     env_file:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
@@ -199,6 +208,8 @@ services:
       - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
       - LEVEL=Server
       - ONLINE_MODE=FALSE # no need for an account
+      - DIFFICULTY=hard
+      - VIEW_DISTANCE=32
       # - WORLD=/srv/minecraft/zip/Server.zip
       # - SNOOPER_ENABLED=false
     tty: true
@@ -242,23 +253,46 @@ services:
   #   ports:
   #     - "22:7020"
   #     - "8022:7021"
+  #     volumes:
 
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
-  #   environment:
-  #     - discovery.type=single-node
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
-  #   volumes:
-  #     - /srv/elasticsearch/data:/srv/elasticsearch/data
-  #   ports:
-  #     - "9200:9200"
-  #     - "9300:9300"
+  elasticsearch:
+    # image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    # image: docker.elastic.co/elasticsearch/elasticsearch:latest
+    image: elasticsearch:latest
+    environment:
+      - discovery.type=single-node
+      - ES_ENABLE_SECURITY=true
+    env_file:
+      - ./data/secrets/elasticsearch.env
+    volumes:
+      - /srv/elasticsearch/data:/srv/elasticsearch/data
+      # - elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - nginx
+      - elk
+    # ports:
+    #   - "9200:9200"
+    #   - "9300:9300"
+    # ulimits:
+    #   memlock:
+    #     soft: -1
+    #     hard: -1
+
+  kibana:
+    # image: docker.elastic.co/kibana/kibana:latest
+    image: kibana:latest
+    ports:
+      - "5601:5601"
+    env_file:
+      - ./data/secrets/kibana.env
+    depends_on:
+      - elasticsearch
+    networks:
+      - nginx
 
   ialab:
     image: marcpartensky/ialab
+    restart: unless-stopped
     build:
       context: /root/git/ialab
       dockerfile: /root/git/ialab/Dockerfile
@@ -279,6 +313,7 @@ services:
 
   open_web_calendar:
     working_dir: /app
+    restart: unless-stopped
     build:
       context: /root/fork/open-web-calendar
       dockerfile: /root/fork/open-web-calendar/Dockerfile
@@ -311,12 +346,107 @@ services:
     networks:
       - wordpress
 
+  # gitea:
+  #   image: gitea/gitea:1.13.3
+  #   environment:
+  #     - USER_UID=1000
+  #     - USER_GID=1000
+  #   restart: unless-stopped
+  #   networks:
+  #     - gitea
+  #   volumes:
+  #     - /srv/gitea:/data
+  #     - /etc/timezone:/etc/timezone:ro
+  #     - /etc/localtime:/etc/localtime:ro
+  #   ports:
+  #     - "3000:3000"
+  #     - "222:22"
+
+  # gitea_mysql:
+  #   image: mysql:5.7
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./data/secrets/gitea.env
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=gitea
+  #     - MYSQL_USER=gitea
+  #     - MYSQL_PASSWORD=gitea
+  #     - MYSQL_DATABASE=gitea
+  #   networks:
+  #     - gitea
+  #   volumes:
+  #     - ./mysql:/var/lib/mysql
+
+  samba:
+    image: dperson/samba
+    volumes:
+      - /:/mount
+    ports:
+      - "139:139"
+      - "445:445"
+
+  plantuml:
+    image: plantuml/plantuml-server:tomcat
+    networks:
+      - nginx
+
+  nextcloud_mariadb:
+    image: mariadb
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    networks:
+      - nextcloud
+    volumes:
+      - nextcloud_mariadb:/var/lib/mysql
+    env_file:
+      - ./data/secrets/nextcloud.env
+
+  nextcloud:
+    image: nextcloud
+    restart: unless-stopped
+    depends_on:
+      - nextcloud_mariadb
+    volumes:
+      - nextcloud:/var/www/html
+    env_file:
+      - ./data/secrets/nextcloud.env
+    networks:
+      - nextcloud
+      - nginx
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - nginx
+
+  searx:
+    image: searx/searx
+    restart: unless-stopped
+    volumes:
+      - ./data/searx:/etc/searx
+    # environment:
+    #   - PORT=80
+    #   - BASE_URL=http://localhost:$PORT
+    # ports:
+    #   - $PORT:8080
+    networks:
+      - nginx
+
 volumes:
   letsencrypt:
+  nextcloud:
+  nextcloud_mariadb:
 
 networks:
+  nextcloud:
   website:
     external: false
   nginx:
   wordpress:
+  gitea:
+  elk:
+  box:
   # traefik:
