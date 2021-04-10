@@ -1,14 +1,14 @@
 # Docker
 
 ## Domains
-- marcpartensky.com
-- www.marcpartensky.com
-- pandoc.marcpartensky.com
-- ialab.marcpartensky.com
-- notebook.marcpartensky.com
-- searx.marcpartensky.com
-- cloud.marcpartensky.com
-- wordpress.marcpartensky.com
+- https://marcpartensky.com
+- https://www.marcpartensky.com
+- https://pandoc.marcpartensky.com
+- https://ialab.marcpartensky.com
+- https://notebook.marcpartensky.com
+- https://searx.marcpartensky.com
+- https://cloud.marcpartensky.com
+- https://wordpress.marcpartensky.com
 <!-- # - business.marcpartensky.com -->
 <!-- # - glou.marcpartensky.com -->
 <!-- # - minecraft.marcpartensky.com -->
