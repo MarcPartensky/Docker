@@ -10,9 +10,11 @@
 - https://cloud.marcpartensky.com
 - https://wordpress.marcpartensky.com
 - https://git.marcpartensky.com
-<!-- # - business.marcpartensky.com -->
-<!-- # - glou.marcpartensky.com -->
-<!-- # - minecraft.marcpartensky.com -->
+<!-- - https://dev.marcpartensky.com -->
+<!-- - https://box.marcpartensky.com -->
+<!-- - https://business.marcpartensky.com -->
+<!-- - https://glou.marcpartensky.com -->
+<!-- - https://minecraft.marcpartensky.com -->
 
 ## Commands
 ```sh
