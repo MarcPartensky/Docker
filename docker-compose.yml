@@ -51,6 +51,7 @@ services:
     volumes:
       - ./data/nginx:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
+      - /var/log/nginx:/var/log/nginx
       # - ./data/certbot/conf:/etc/letsencrypt
       # - ./data/certbot/www:/var/www/certbot
       # - type: bind
@@ -100,8 +101,8 @@ services:
   postgres:
     image: postgres
     restart: unless-stopped
-    ports:
-      - "5432:5432" # filtered by firewall
+    # ports:
+    #   - "5432:5432" # filtered by firewall
     volumes:
       - /srv/postgres/dump:/srv/postgresql/dump
     env_file:
@@ -160,7 +161,7 @@ services:
     build: /root/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
-    working_dir: /app
+    # working_dir: /app
     env_file:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
@@ -435,6 +436,48 @@ services:
     networks:
       - nginx
 
+  todolist:
+    image: marcpartensky/je-todoapp-react
+    restart: unless-stopped
+    build:
+      context: /root/git/todoapp/react
+      dockerfile: /root/git/todoapp/react/Dockerfile
+    environment:
+      - PORT=80
+      - SPRING_API_URL=https://api.todolist.marcpartensky.com
+    depends_on:
+      - todolist_api
+    networks:
+      - nginx
+    # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
+
+  todolist_api:
+    image: marcpartensky/je-todoapp-spring-api
+    restart: unless-stopped
+    build:
+      context: /root/git/todoapp/spring-api
+      dockerfile: /root/git/todoapp/spring-api/Dockerfile
+    env_file:
+      - ./data/secrets/todolist.env
+    environment:
+      - PORT=80
+      - POSTGRES_HOST=todolist_db
+    depends_on:
+      - todolist_db
+    networks:
+      - todolist_api
+      - nginx
+
+  todolist_db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - /srv/todolist_db/dump:/srv/todolist_db/dump
+    env_file:
+      - ./data/secrets/todolist.env
+    networks:
+      - todolist_api
+
 volumes:
   letsencrypt:
   nextcloud:
@@ -449,4 +492,5 @@ networks:
   gitea:
   elk:
   box:
+  todolist_api:
   # traefik:
