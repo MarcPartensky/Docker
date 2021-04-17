@@ -1,2 +1,4 @@
 data/secrets/
 data/certbot/
+data/openvpn/
+*.ovpn
