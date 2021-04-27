@@ -1,4 +1,3 @@
 data/secrets/
 data/certbot/
-data/openvpn/
-*.ovpn
+data/traefik/

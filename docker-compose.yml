@@ -1,48 +1,53 @@
 version: "3.9"
 services:
 
-  # traefik:
-  #   image: traefik:v2.0
-  #   restart: always
-  #   container_name: traefik
-  #   ports:
-  #     - "80:80" # <== http
-  #     - "8080:8080" # <== :8080 is where the dashboard runs on
-  #     - "443:443" # <== https
-  #   command:
-  #     #### These are the CLI commands that will configure Traefik and tell it how to work! ####
-  #     ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
-  #     - --api.insecure=true # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
-  #     - --api.dashboard=true # <== Enabling the dashboard to view services, middlewares, routers, etc...
-  #     - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
-  #     ## Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
-  #     - --log.level=DEBUG # <== Setting the level of the logs from traefik
-  #     ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
-  #     - --providers.docker=true # <== Enabling docker as the provider for traefik
-  #     - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
-  #     - --providers.file.filename=/dynamic.yaml # <== Referring to a dynamic configuration file
-  #     - --providers.docker.network=web # <== Operate on the docker network named web
-  #     ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
-  #     - --entrypoints.web.address=:80 # <== Defining an entrypoint for port :80 named web
-  #     - --entrypoints.web-secured.address=:443 # <== Defining an entrypoint for https on port :443 named web-secured
-  #     ## Certificate Settings (Let's Encrypt) -  https://docs.traefik.io/https/acme/#configuration-examples ##
-  #     - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
-  #     - --certificatesresolvers.mytlschallenge.acme.email=theafkdeveloper@gmail.com # <== Setting email for certs
-  #     - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json # <== Defining acme file to store cert information
-  #   volumes:
-  #     - ./letsencrypt:/letsencrypt # <== Volume for certs (TLS)
-  #     - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
-  #     - ./dynamic.yaml:/dynamic.yaml # <== Volume for dynamic conf file, **ref: line 27
-  #   networks:
-  #     - traefik # <== Placing traefik on the network named web, to access containers on this network
-  #   labels:
-  #     #### Labels define the behavior and rules of the traefik proxy for this container ####
-  #     - "traefik.enable=true" # <== Enable traefik on itself to view dashboard and assign subdomain to view it
-  #     - "traefik.http.routers.api.rule=Host(`monitor.example.com`)" # <== Setting the domain for the dashboard
-  #     - "traefik.http.routers.api.service=api@internal" # <== Enabling the api to be a service to access
+  traefik:
+    image: traefik
+    restart: unless-stopped
+    user: root
+    command:
+      ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
+      # - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
+      - --providers.file.filename=/dynamic.yaml # <== Referring to a dynamic configuration file
+      # - --providers.docker.network=web # <== Operate on the docker network named web
+      - --providers.docker=true # <== Enabling docker as the provider for traefik
+      ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
+      - --api.insecure=true # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
+      - --api.dashboard=true # <== Enabling the dashboard to view services, middlewares, routers, etc...
+      - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
+      ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
+      - --entrypoints.websecure.address=:443
+      ## Certificate Settings (Let's Encrypt) -  https://docs.traefik.io/https/acme/#configuration-examples ##
+      - --certificatesresolvers.tls.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
+      - --certificatesresolvers.tls.acme.email=marc.partensky@gmail.com # <== Setting email for certs
+      - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json # <== Defining acme file to store cert information
+      ## Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
+      - --log.level=DEBUG # <== Setting the level of the logs from traefik
+    ports:
+      - "8081:443"
+      - "8080:8080" # The Web UI (enabled by --api.insecure=true)
+    volumes:
+      - ./data/traefik/letsencrypt:/letsencrypt
+      - ./data/traefik/dynamic.yaml:/dynamic.yaml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`traefik.marcpartensky.com`)"
+      - "traefik.http.routers.api.service=api@internal" # <== Enabling the api to be a service to access
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=tls"
+
+  whoami:
+    image: traefik/whoami
+    restart: unless-stopped
+    user: nobody
+    labels:
+      - "traefik.http.routers.whoami.rule=Host(`whoami.marcpartensky.com`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=tls"
 
   nginx:
-    image: nginx:latest
+    image: nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -73,6 +78,10 @@ services:
     command:
       - --logo
       - https://marcpartensky.com/static/home/assets/img/white-orchid.svg
+    labels:
+      - "traefik.http.routers.portainer.rule=Host(`docker.marcpartensky.com`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=tls"
 
   # registry:
   #   restart: unless-stopped
@@ -105,13 +114,13 @@ services:
   # -p 443:443
 
   website:
+    image: marcpartensky/website
+    restart: unless-stopped
     build:
       context: /root/git/website
       dockerfile: /root/git/website/Dockerfile
       args:
         env_file: /root/git/website/.env
-    image: marcpartensky/website:latest
-    restart: unless-stopped
     env_file:
       - ./data/secrets/website.env
     environment:
@@ -154,12 +163,12 @@ services:
     networks:
       - website
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - ./data/certbot/conf:/etc/letsencrypt
+  #     - ./data/certbot/www:/var/www/certbot
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   # certbot_nginx:
   #     restart: unless-stopped
@@ -177,23 +186,23 @@ services:
   #       - letsencrypt:/etc/letsencrypt
 
   esclave:
-    build: /root/git/discord-bot
     image: marcpartensky/discord-bot
     restart: unless-stopped
+    build: /root/git/discord-bot
     env_file:
       - ./data/secrets/esclave.env
 
   ia:
-    build: /root/git/discord-bot
     image: marcpartensky/discord-bot
     restart: unless-stopped
+    build: /root/git/discord-bot
     env_file:
       - ./data/secrets/ia.env
 
   esclave2:
-    build: /root/git/discord-bot
     image: marcpartensky/discord-bot
     restart: unless-stopped
+    build: /root/git/discord-bot
     env_file:
       - ./data/secrets/esclave2.env
     networks:
@@ -210,9 +219,9 @@ services:
       - ./data/secrets/discord_bot_mongo.env
 
   servant:
-    build: /root/git/servitor
     image: marcpartensky/servitor
     restart: unless-stopped
+    build: /root/git/servitor
 
   pandoc:
     build: /root/git/pandoc-api
@@ -277,11 +286,11 @@ services:
     ports:
       - "25565:25565"
 
-  pterodactyl:
-    build: /root/fork/panel
-    # restart: unless-stopped
-    networks:
-      - nginx
+  # pterodactyl:
+  #   build: /root/fork/panel
+  #   restart: unless-stopped
+  #   networks:
+  #     - nginx
 
   notebook:
     image: jupyter/base-notebook
@@ -350,6 +359,7 @@ services:
 
   ialab:
     image: marcpartensky/ialab
+    user: nobody
     restart: unless-stopped
     build:
       context: /root/git/ialab
@@ -433,8 +443,33 @@ services:
     volumes:
       - /srv/business_mysql:/var/lib/mysql
 
+  oxivia:
+    image: wordpress
+    restart: unless-stopped
+    env_file:
+      - data/secrets/oxivia.env
+    volumes:
+      - /srv/oxivia:/var/www/html
+      - ./data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - nginx
+      - oxivia
+    depends_on:
+      - oxivia_mysql
+
+  oxivia_mysql:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/oxivia.env
+    volumes:
+      - /srv/oxivia_mysql:/var/lib/mysql
+    networks:
+      - oxivia
+
   samba:
     image: dperson/samba
+    restart: unless-stopped
     volumes:
       - /:/mount
     ports:
@@ -443,25 +478,13 @@ services:
 
   plantuml:
     image: plantuml/plantuml-server:tomcat
+    restart: unless-stopped
     networks:
       - nginx
-
-  nextcloud_mariadb:
-    image: mariadb
-    restart: unless-stopped
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    networks:
-      - nextcloud
-    volumes:
-      - nextcloud_mariadb:/var/lib/mysql
-    env_file:
-      - ./data/secrets/nextcloud.env
 
   nextcloud:
     image: nextcloud
     restart: unless-stopped
-    depends_on:
-      - nextcloud_mariadb
     volumes:
       - nextcloud:/var/www/html
     env_file:
@@ -469,6 +492,19 @@ services:
     networks:
       - nextcloud
       - nginx
+    depends_on:
+      - nextcloud_mariadb
+
+  nextcloud_mariadb:
+    image: mariadb
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - nextcloud_mariadb:/var/lib/mysql
+    env_file:
+      - ./data/secrets/nextcloud.env
+    networks:
+      - nextcloud
 
   searx:
     image: searx/searx
@@ -514,10 +550,10 @@ services:
       - nginx
 
   todolist_db:
-    image: postgres:latest
+    image: postgres
     restart: unless-stopped
     volumes:
-      - /srv/todolist_db/dump:/srv/todolist_db/dump
+      - /srv/todolist/db:/var/lib/postgresql/data
     env_file:
       - ./data/secrets/todolist.env
     networks:
@@ -531,7 +567,7 @@ services:
     ports:
       - "1194:1194/udp"
     volumes:
-      - ./data/openvpn:/etc/openvpn
+      - /srv/openvpn:/etc/openvpn
     networks:
       - nginx
       - nextcloud
@@ -580,20 +616,21 @@ services:
       - nginx
 
   gitea:
-    image: gitea/gitea:1.14.0
+    image: gitea/gitea
+    restart: unless-stopped
+    # user: git
     env_file:
       - ./data/secrets/gitea.env
-    restart: unless-stopped
     networks:
       - gitea
       - nginx
     volumes:
-      - /home/git/.ssh:/data/git/.ssh
+      - /home/git:/home/git
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /srv/gitea:/data
     ports:
-      - "222:22"
+      - "127.0.0.1:2222:22"
     depends_on:
       - gitea_postgres
 
@@ -605,7 +642,7 @@ services:
     networks:
       - gitea
     volumes:
-      - /srv/gitea/postgres:/var/lib/postgresql/data
+      - /srv/gitea_postgres:/var/lib/postgresql/data
 
   archlinux:
     image: archlinux
@@ -631,4 +668,5 @@ networks:
   box:
   todolist_api:
   discord:
+  oxivia:
   # traefik:
