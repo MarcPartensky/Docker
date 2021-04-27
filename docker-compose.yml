@@ -62,6 +62,48 @@ services:
       - nginx
       - box
 
+  portainer:
+    image: portainer/portainer-ce
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/portainer:/data
+    networks:
+      - nginx
+    command:
+      - --logo
+      - https://marcpartensky.com/static/home/assets/img/white-orchid.svg
+
+  # registry:
+  #   restart: unless-stopped
+  #   image: registry:latest
+  #   ports:
+  #     - 5000:5000
+  #   environment:
+  #     REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+  #     REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+  #     REGISTRY_AUTH: htpasswd
+  #     REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+  #     REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+  #   volumes:
+  #     - /path/data:/var/lib/registry
+  #     - /path/certs:/certs
+  #     - /path/auth:/auth
+
+  # registry:
+  #   image: registry:latest
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /srv/registry:/var/lib/registry
+  #     - "$(pwd)"/certs:/certs
+  #   ports:
+  #     - "5000:7000"
+  #   environment:
+  #     - REGISTRY_HTTP_ADDR=0.0.0.0:443 \
+  #     - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+  #     - REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+  # -p 443:443
+
   website:
     build:
       context: /root/git/website
@@ -70,23 +112,23 @@ services:
         env_file: /root/git/website/.env
     image: marcpartensky/website:latest
     restart: unless-stopped
-    # ports:
-    #   - "443:443"
     env_file:
       - ./data/secrets/website.env
     environment:
       - DEBUG=false
       # - KEY=/app/privkey.pem
       # - CERT=/app/fullchain.pem
-      # - KEY=/root/docker/data/certbot/conf/keys/0000_key-certbot.pem
-      # - CERT=/root/docker/data/certbot/conf/csr/0000_csr-certbot.pem
-    # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     working_dir: /app
     tty: true
+    # - ./manage.py collectstatic --noinput
+    entrypoint: >
+      sh -c "python manage.py migrate;
+             daphne django_project.asgi:application --port 80 --bind website -v2"
+    # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
-    entrypoint: daphne django_project.asgi:application --port 80 --bind website -v2
     links:
       - redis
+      - postgres
     volumes:
       - /srv/website/media:/app/media
     networks:
@@ -95,14 +137,10 @@ services:
     depends_on:
       - redis
       - postgres
-    # tty: true
-    # stdin: true
 
   postgres:
     image: postgres
     restart: unless-stopped
-    # ports:
-    #   - "5432:5432" # filtered by firewall
     volumes:
       - /srv/postgres/dump:/srv/postgresql/dump
     env_file:
@@ -151,6 +189,25 @@ services:
     restart: unless-stopped
     env_file:
       - ./data/secrets/ia.env
+
+  esclave2:
+    build: /root/git/discord-bot
+    image: marcpartensky/discord-bot
+    restart: unless-stopped
+    env_file:
+      - ./data/secrets/esclave2.env
+    networks:
+      - discord
+    depends_on:
+      - discord_bot_mongo
+
+  discord_bot_mongo:
+    image: mongo
+    restart: unless-stopped
+    networks:
+      - discord
+    env_file:
+      - ./data/secrets/discord_bot_mongo.env
 
   servant:
     build: /root/git/servitor
@@ -256,21 +313,21 @@ services:
   #     - "8022:7021"
   #     volumes:
 
-  elasticsearch:
+  # elasticsearch:
     # image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
     # image: docker.elastic.co/elasticsearch/elasticsearch:latest
-    image: elasticsearch:latest
-    environment:
-      - discovery.type=single-node
-      - ES_ENABLE_SECURITY=true
-    env_file:
-      - ./data/secrets/elasticsearch.env
-    volumes:
-      - /srv/elasticsearch/data:/srv/elasticsearch/data
-      # - elasticsearch:/usr/share/elasticsearch/data
-    networks:
-      - nginx
-      - elk
+    # image: elasticsearch:latest
+    # environment:
+    #   - discovery.type=single-node
+    #   - ES_ENABLE_SECURITY=true
+    # env_file:
+    #   - ./data/secrets/elasticsearch.env
+    # volumes:
+    #   - /srv/elasticsearch/data:/srv/elasticsearch/data
+    #   # - elasticsearch:/usr/share/elasticsearch/data
+    # networks:
+    #   - nginx
+    #   - elk
     # ports:
     #   - "9200:9200"
     #   - "9300:9300"
@@ -279,17 +336,17 @@ services:
     #     soft: -1
     #     hard: -1
 
-  kibana:
+  # kibana:
     # image: docker.elastic.co/kibana/kibana:latest
-    image: kibana:latest
-    ports:
-      - "5601:5601"
-    env_file:
-      - ./data/secrets/kibana.env
-    depends_on:
-      - elasticsearch
-    networks:
-      - nginx
+    # image: kibana:latest
+    # ports:
+    #   - "5601:5601"
+    # env_file:
+    #   - ./data/secrets/kibana.env
+    # depends_on:
+    #   - elasticsearch
+    # networks:
+    #   - nginx
 
   ialab:
     image: marcpartensky/ialab
@@ -338,45 +395,43 @@ services:
       - wordpress
     env_file:
       - data/secrets/wordpress.env
+    volumes:
+      - /srv/wordpress:/var/www/html
+    depends_on:
+      - wordpress_mysql
 
   wordpress_mysql:
     image: mysql
     restart: unless-stopped
     env_file:
-      - data/secrets/wordpress_mysql.env
+      - data/secrets/wordpress.env
     networks:
       - wordpress
+    volumes:
+      - /srv/wordpress_mysql:/var/lib/mysql
 
-  # gitea:
-  #   image: gitea/gitea:1.13.3
-  #   environment:
-  #     - USER_UID=1000
-  #     - USER_GID=1000
-  #   restart: unless-stopped
-  #   networks:
-  #     - gitea
-  #   volumes:
-  #     - /srv/gitea:/data
-  #     - /etc/timezone:/etc/timezone:ro
-  #     - /etc/localtime:/etc/localtime:ro
-  #   ports:
-  #     - "3000:3000"
-  #     - "222:22"
+  business:
+    image: wordpress
+    restart: unless-stopped
+    networks:
+      - nginx
+      - business
+    env_file:
+      - data/secrets/business.env
+    volumes:
+      - /srv/business:/var/www/html
+    depends_on:
+      - business_mysql
 
-  # gitea_mysql:
-  #   image: mysql:5.7
-  #   restart: unless-stopped
-  #   env_file:
-  #     - ./data/secrets/gitea.env
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=gitea
-  #     - MYSQL_USER=gitea
-  #     - MYSQL_PASSWORD=gitea
-  #     - MYSQL_DATABASE=gitea
-  #   networks:
-  #     - gitea
-  #   volumes:
-  #     - ./mysql:/var/lib/mysql
+  business_mysql:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/business.env
+    networks:
+      - business
+    volumes:
+      - /srv/business_mysql:/var/lib/mysql
 
   samba:
     image: dperson/samba
@@ -415,14 +470,6 @@ services:
       - nextcloud
       - nginx
 
-  watchtower:
-    image: containrrr/watchtower
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - nginx
-
   searx:
     image: searx/searx
     restart: unless-stopped
@@ -431,8 +478,6 @@ services:
     # environment:
     #   - PORT=80
     #   - BASE_URL=http://localhost:$PORT
-    # ports:
-    #   - $PORT:8080
     networks:
       - nginx
 
@@ -440,8 +485,8 @@ services:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
     build:
-      context: /root/git/todoapp/react
-      dockerfile: /root/git/todoapp/react/Dockerfile
+      context: /root/je/todoapp/react
+      dockerfile: /root/je/todoapp/react/Dockerfile
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
@@ -455,8 +500,8 @@ services:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
     build:
-      context: /root/git/todoapp/spring-api
-      dockerfile: /root/git/todoapp/spring-api/Dockerfile
+      context: /root/je/todoapp/spring-api
+      dockerfile: /root/je/todoapp/spring-api/Dockerfile
     env_file:
       - ./data/secrets/todolist.env
     environment:
@@ -478,6 +523,97 @@ services:
     networks:
       - todolist_api
 
+  openvpn:
+    image: kylemanna/openvpn
+    restart: unless-stopped
+    cap_add:
+     - NET_ADMIN
+    ports:
+      - "1194:1194/udp"
+    volumes:
+      - ./data/openvpn:/etc/openvpn
+    networks:
+      - nginx
+      - nextcloud
+      - website
+      - wordpress
+      - gitea
+      - elk
+      - box
+      - todolist_api
+      - discord
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json
+    networks:
+      - nginx
+    command: --interval 10 --http-api-metrics --http-api-token demotoken --debug docker_prometheus_1 docker_grafana_1
+
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+    volumes:
+      - ./data/prometheus:/etc/prometheus
+      - /srv/prometheus:/prometheus
+    # ports:
+    #   - "9090:9090"
+    user: root
+    networks:
+      - nginx
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    # ports:
+    #   - "3000:3000"
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    user: root
+    volumes:
+      - ./data/grafana:/etc/grafana/provisioning
+      - /srv/grafana:/var/lib/grafana
+    networks:
+      - nginx
+
+  gitea:
+    image: gitea/gitea:1.14.0
+    env_file:
+      - ./data/secrets/gitea.env
+    restart: unless-stopped
+    networks:
+      - gitea
+      - nginx
+    volumes:
+      - /home/git/.ssh:/data/git/.ssh
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /srv/gitea:/data
+    ports:
+      - "222:22"
+    depends_on:
+      - gitea_postgres
+
+  gitea_postgres:
+    image: postgres
+    restart: unless-stopped
+    env_file:
+      - ./data/secrets/gitea.env
+    networks:
+      - gitea
+    volumes:
+      - /srv/gitea/postgres:/var/lib/postgresql/data
+
+  archlinux:
+    image: archlinux
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - /srv/archlinux:/root
+
 volumes:
   letsencrypt:
   nextcloud:
@@ -489,8 +625,10 @@ networks:
     external: false
   nginx:
   wordpress:
+  business:
   gitea:
   elk:
   box:
   todolist_api:
+  discord:
   # traefik:
