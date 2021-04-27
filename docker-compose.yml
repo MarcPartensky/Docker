@@ -651,6 +651,14 @@ services:
     volumes:
       - /srv/archlinux:/root
 
+  poiret:
+    image: poiret
+    restart: unless-stopped
+    build:
+      context: /root/git/poiret
+    networks:
+      - nginx
+
 volumes:
   letsencrypt:
   nextcloud:
