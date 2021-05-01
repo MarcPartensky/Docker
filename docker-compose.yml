@@ -616,21 +616,25 @@ services:
       - nginx
 
   gitea:
-    image: gitea/gitea
+    image: gitea/gitea:1.14.1
     restart: unless-stopped
     # user: git
+    environment:
+      - USER=git
+      - USER_UID=1004
+      - USER_GID=1004
     env_file:
       - ./data/secrets/gitea.env
     networks:
       - gitea
       - nginx
     volumes:
-      - /home/git:/home/git
+      - /home/git/.ssh/:/data/git/.ssh
+      # - /srv/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - /srv/gitea:/data
     ports:
-      - "127.0.0.1:2222:22"
+      - "7012:22"
     depends_on:
       - gitea_postgres
 
@@ -647,6 +651,7 @@ services:
   archlinux:
     image: archlinux
     restart: unless-stopped
+    stdin_open: true
     tty: true
     volumes:
       - /srv/archlinux:/root
@@ -659,15 +664,38 @@ services:
     networks:
       - nginx
 
+  healingpath:
+    image: marcpartensky/brainperformer
+    restart: unless-stopped
+    # user: healingpath
+    build:
+      context: /root/git/brainperformer
+    env_file: ./data/secrets/healingpath.env
+    networks:
+      - healingpath
+      - nginx
+    depends_on:
+      - healingpath_db
+
+  healingpath_db:
+    image: mysql
+    restart: unless-stopped
+    # user: healingpath
+    env_file: ./data/secrets/healingpath.env
+    volumes:
+      - /srv/healingpath/db:/var/lib/mysql
+    networks:
+      - healingpath
+
 volumes:
   letsencrypt:
   nextcloud:
   nextcloud_mariadb:
 
 networks:
+  healingpath:
   nextcloud:
   website:
-    external: false
   nginx:
   wordpress:
   business:
