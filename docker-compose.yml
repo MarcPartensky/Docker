@@ -218,6 +218,14 @@ services:
     env_file:
       - ./data/secrets/discord_bot_mongo.env
 
+  docker_api:
+    image: marcpartensky/docker-api
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - discord
+
   servant:
     image: marcpartensky/servitor
     restart: unless-stopped
@@ -655,6 +663,14 @@ services:
     tty: true
     volumes:
       - /srv/archlinux:/root
+
+  windows:
+    image: mcr.microsoft.com/windows:1903
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - /srv/windows:/root
 
   healingpath:
     image: marcpartensky/brainperformer
