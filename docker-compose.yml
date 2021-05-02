@@ -189,6 +189,8 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     build: /root/git/discord-bot
+    networks:
+      - discord
     env_file:
       - ./data/secrets/esclave.env
 
@@ -196,6 +198,8 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     build: /root/git/discord-bot
+    networks:
+      - discord
     env_file:
       - ./data/secrets/ia.env
 
