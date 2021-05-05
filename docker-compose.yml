@@ -532,9 +532,7 @@ services:
   todolist:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
-    build:
-      context: /root/je/todoapp/react
-      dockerfile: /root/je/todoapp/react/Dockerfile
+    build: /home/leopold/je/todoapp/react
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
@@ -548,8 +546,7 @@ services:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
     build:
-      context: /root/je/todoapp/spring-api
-      dockerfile: /root/je/todoapp/spring-api/Dockerfile
+      context: /home/leopold/je/todoapp/spring-api
     env_file:
       - ./data/secrets/todolist.env
     environment:
@@ -698,6 +695,33 @@ services:
       - /srv/healingpath/db:/var/lib/mysql
     networks:
       - healingpath
+
+  # jenkins_docker:
+  #   image: docker:dind
+  #   privileged: true
+  #   networks:
+  #     - jenkins
+  #   environment:
+  #     DOCKER_TLS_CERTDIR: certs
+  #   volumes:
+  #     - /srv/jenkins_docker/certs:/certs/client
+  #     - /srv/jenkins_docker/data:/var/jenkins_home
+  #   ports:
+  #     - "2376:2376"
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+    #   - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /srv/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker
+    networks:
+      - nginx
 
 volumes:
   letsencrypt:
