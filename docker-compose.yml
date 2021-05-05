@@ -117,8 +117,7 @@ services:
     image: marcpartensky/website
     restart: unless-stopped
     build:
-      context: /root/git/website
-      dockerfile: /root/git/website/Dockerfile
+      context: ../git/website
       args:
         env_file: /root/git/website/.env
     env_file:
@@ -326,7 +325,6 @@ services:
   #   image: marcpartensky/env
   #   build:
   #     context: /root/git/dotfiles
-  #     dockerfile: /root/git/dotfiles/Dockerfile
   #     args:
   #       env_file: /root/git/dotfiles/.env
   #   ports:
@@ -374,8 +372,7 @@ services:
     user: nobody
     restart: unless-stopped
     build:
-      context: /root/git/ialab
-      dockerfile: /root/git/ialab/Dockerfile
+      context: ../git/ialab
     environment:
       - FLASK_APP=server.py
       # - FLASK_APP=/app/server.py
@@ -395,8 +392,7 @@ services:
     working_dir: /app
     restart: unless-stopped
     build:
-      context: /root/fork/open-web-calendar
-      dockerfile: /root/fork/open-web-calendar/Dockerfile
+      context: ../fork/open-web-calendar
     environment:
       - HOST=open_web_calendar
       - PORT=80
@@ -533,8 +529,7 @@ services:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
     build:
-      context: /root/je/todoapp/react
-      dockerfile: /root/je/todoapp/react/Dockerfile
+      context: ../je/todoapp/react
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
@@ -548,8 +543,7 @@ services:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
     build:
-      context: /root/je/todoapp/spring-api
-      dockerfile: /root/je/todoapp/spring-api/Dockerfile
+      context: ../je/todoapp/spring-api
     env_file:
       - ./data/secrets/todolist.env
     environment:
