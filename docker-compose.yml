@@ -133,7 +133,7 @@ services:
     entrypoint: >
       sh -c "./manage.py migrate;
              ./manage.py createsuperuser --noinput;
-             daphne django_project.asgi:application --port 80 --bind localhost -v2"
+             daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
     # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
     links:
