@@ -131,7 +131,8 @@ services:
     tty: true
     # - ./manage.py collectstatic --noinput
     entrypoint: >
-      sh -c "python manage.py migrate;
+      sh -c "./manage.py migrate;
+             ./manage.py createsuperuser --noinput;
              daphne django_project.asgi:application --port 80 --bind website -v2"
     # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
