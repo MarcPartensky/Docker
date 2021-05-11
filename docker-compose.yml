@@ -724,6 +724,17 @@ services:
     networks:
       - nginx
 
+  tmate:
+    image: tmate/tmate-ssh-server
+    ports:
+      - "7027:22"
+    volumes:
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      SSH_KEYS_PATH: ~/.ssh
+      SSH_HOSTNAME: marcpartensky.com
+      SSH_PORT_LISTEN: 22
+
 volumes:
   letsencrypt:
   nextcloud:
