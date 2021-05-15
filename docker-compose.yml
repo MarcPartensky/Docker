@@ -475,6 +475,8 @@ services:
     restart: unless-stopped
     env_file:
       - data/secrets/oxivia.env
+    ports:
+      - "3307:3306"
     volumes:
       - /srv/oxivia_mysql:/var/lib/mysql
     networks:
