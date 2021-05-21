@@ -52,7 +52,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "2222:2222"
+      # - "2222:2222"
     volumes:
       - ./data/nginx:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
@@ -116,10 +116,6 @@ services:
   website:
     image: marcpartensky/website
     restart: unless-stopped
-    build:
-      context: ../git/website
-      args:
-        env_file: /root/git/website/.env
     env_file:
       - ./data/secrets/website.env
     environment:
@@ -130,8 +126,9 @@ services:
     tty: true
     # - ./manage.py collectstatic --noinput
     entrypoint: >
-      sh -c "python manage.py migrate;
-             daphne django_project.asgi:application --port 80 --bind website -v2"
+      sh -c "./manage.py migrate;
+             ./manage.py createsuperuser --noinput;
+             daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
     # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
     links:
@@ -187,7 +184,6 @@ services:
   esclave:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: /root/git/discord-bot
     networks:
       - discord
     env_file:
@@ -196,7 +192,6 @@ services:
   ia:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: /root/git/discord-bot
     networks:
       - discord
     env_file:
@@ -205,7 +200,6 @@ services:
   esclave2:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: /root/git/discord-bot
     env_file:
       - ./data/secrets/esclave2.env
     networks:
@@ -232,13 +226,11 @@ services:
   servant:
     image: marcpartensky/servitor
     restart: unless-stopped
-    build: /root/git/servitor
 
   pandoc:
-    build: /root/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
-    # working_dir: /app
+    working_dir: /app
     env_file:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
@@ -298,7 +290,6 @@ services:
       - "25565:25565"
 
   # pterodactyl:
-  #   build: /root/fork/panel
   #   restart: unless-stopped
   #   networks:
   #     - nginx
@@ -323,10 +314,6 @@ services:
 
 # env:
   #   image: marcpartensky/env
-  #   build:
-  #     context: /root/git/dotfiles
-  #     args:
-  #       env_file: /root/git/dotfiles/.env
   #   ports:
   #     - "22:7020"
   #     - "8022:7021"
@@ -371,8 +358,6 @@ services:
     image: marcpartensky/ialab
     user: nobody
     restart: unless-stopped
-    build:
-      context: ../git/ialab
     environment:
       - FLASK_APP=server.py
       # - FLASK_APP=/app/server.py
@@ -391,8 +376,6 @@ services:
   open_web_calendar:
     working_dir: /app
     restart: unless-stopped
-    build:
-      context: ../fork/open-web-calendar
     environment:
       - HOST=open_web_calendar
       - PORT=80
@@ -470,6 +453,8 @@ services:
     restart: unless-stopped
     env_file:
       - data/secrets/oxivia.env
+    ports:
+      - "3307:3306"
     volumes:
       - /srv/oxivia_mysql:/var/lib/mysql
     networks:
@@ -528,8 +513,6 @@ services:
   todolist:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
-    build:
-      context: ../je/todoapp/react
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
@@ -542,8 +525,6 @@ services:
   todolist_api:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
-    build:
-      context: ../je/todoapp/spring-api
     env_file:
       - ./data/secrets/todolist.env
     environment:
@@ -674,8 +655,6 @@ services:
     image: marcpartensky/brainperformer
     restart: unless-stopped
     # user: healingpath
-    build:
-      context: /root/git/brainperformer
     env_file: ./data/secrets/healingpath.env
     networks:
       - healingpath
@@ -692,6 +671,44 @@ services:
       - /srv/healingpath/db:/var/lib/mysql
     networks:
       - healingpath
+
+  # jenkins_docker:
+  #   image: docker:dind
+  #   privileged: true
+  #   networks:
+  #     - jenkins
+  #   environment:
+  #     DOCKER_TLS_CERTDIR: certs
+  #   volumes:
+  #     - /srv/jenkins_docker/certs:/certs/client
+  #     - /srv/jenkins_docker/data:/var/jenkins_home
+  #   ports:
+  #     - "2376:2376"
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+    #   - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /srv/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - nginx
+
+  tmate:
+    image: tmate/tmate-ssh-server
+    ports:
+      - "7027:22"
+    volumes:
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      SSH_KEYS_PATH: ~/.ssh
+      SSH_HOSTNAME: marcpartensky.com
+      SSH_PORT_LISTEN: 22
 
 volumes:
   letsencrypt:
