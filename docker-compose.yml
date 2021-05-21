@@ -52,7 +52,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "2222:2222"
+      # - "2222:2222"
     volumes:
       - ./data/nginx:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
@@ -240,7 +240,7 @@ services:
     build: /root/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
-    # working_dir: /app
+    working_dir: /app
     env_file:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
