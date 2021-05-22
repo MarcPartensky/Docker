@@ -374,8 +374,9 @@ services:
       - nginx
 
   open_web_calendar:
-    working_dir: /app
+    image: marcpartensky/open_web_calendar
     restart: unless-stopped
+    working_dir: /app
     environment:
       - HOST=open_web_calendar
       - PORT=80
