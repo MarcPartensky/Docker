@@ -52,7 +52,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "2222:2222"
+      # - "2222:2222"
     volumes:
       - ./data/nginx:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
@@ -131,8 +131,9 @@ services:
     tty: true
     # - ./manage.py collectstatic --noinput
     entrypoint: >
-      sh -c "python manage.py migrate;
-             daphne django_project.asgi:application --port 80 --bind website -v2"
+      sh -c "./manage.py migrate;
+             ./manage.py createsuperuser --noinput;
+             daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
     # entrypoint: "daphne -e ssl:7000:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
     links:
@@ -189,6 +190,8 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     build: /root/git/discord-bot
+    networks:
+      - discord
     env_file:
       - ./data/secrets/esclave.env
 
@@ -196,6 +199,8 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     build: /root/git/discord-bot
+    networks:
+      - discord
     env_file:
       - ./data/secrets/ia.env
 
@@ -218,6 +223,14 @@ services:
     env_file:
       - ./data/secrets/discord_bot_mongo.env
 
+  docker_api:
+    image: marcpartensky/docker-api
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - discord
+
   servant:
     image: marcpartensky/servitor
     restart: unless-stopped
@@ -227,7 +240,7 @@ services:
     build: /root/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
-    # working_dir: /app
+    working_dir: /app
     env_file:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
@@ -462,6 +475,8 @@ services:
     restart: unless-stopped
     env_file:
       - data/secrets/oxivia.env
+    ports:
+      - "3307:3306"
     volumes:
       - /srv/oxivia_mysql:/var/lib/mysql
     networks:
@@ -520,9 +535,7 @@ services:
   todolist:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
-    build:
-      context: /root/je/todoapp/react
-      dockerfile: /root/je/todoapp/react/Dockerfile
+    build: /home/leopold/je/todoapp/react
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
@@ -536,8 +549,7 @@ services:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
     build:
-      context: /root/je/todoapp/spring-api
-      dockerfile: /root/je/todoapp/spring-api/Dockerfile
+      context: /home/leopold/je/todoapp/spring-api
     env_file:
       - ./data/secrets/todolist.env
     environment:
@@ -664,6 +676,14 @@ services:
     networks:
       - nginx
 
+  windows:
+    image: mcr.microsoft.com/windows:1903
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - /srv/windows:/root
+
   healingpath:
     image: marcpartensky/brainperformer
     restart: unless-stopped
@@ -686,6 +706,44 @@ services:
       - /srv/healingpath/db:/var/lib/mysql
     networks:
       - healingpath
+
+  # jenkins_docker:
+  #   image: docker:dind
+  #   privileged: true
+  #   networks:
+  #     - jenkins
+  #   environment:
+  #     DOCKER_TLS_CERTDIR: certs
+  #   volumes:
+  #     - /srv/jenkins_docker/certs:/certs/client
+  #     - /srv/jenkins_docker/data:/var/jenkins_home
+  #   ports:
+  #     - "2376:2376"
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+    #   - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /srv/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - nginx
+
+  tmate:
+    image: tmate/tmate-ssh-server
+    ports:
+      - "7027:22"
+    volumes:
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      SSH_KEYS_PATH: ~/.ssh
+      SSH_HOSTNAME: marcpartensky.com
+      SSH_PORT_LISTEN: 22
 
 volumes:
   letsencrypt:
