@@ -746,7 +746,7 @@ services:
       SSH_PORT_LISTEN: 22
 
   vnc:
-    image: consol/ubuntu-xfce-vnc
+    image: consol/centos-xfce-vnc
     ports:
       - "5901:5901"
       # - "6901:6901"
