@@ -750,6 +750,7 @@ services:
     ports:
       - "5901:5901"
       # - "6901:6901"
+    user: root
     env_file:
       - "./data/secrets/vnc.env"
     volumes:
