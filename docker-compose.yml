@@ -117,10 +117,10 @@ services:
     image: marcpartensky/website
     restart: unless-stopped
     build:
-      context: /root/git/website
-      dockerfile: /root/git/website/Dockerfile
+      context: ~/git/website
+      dockerfile: ~/git/website/Dockerfile
       args:
-        env_file: /root/git/website/.env
+        env_file: ~/git/website/.env
     env_file:
       - ./data/secrets/website.env
     environment:
@@ -189,7 +189,7 @@ services:
   esclave:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: /root/git/discord-bot
+    build: ~/git/discord-bot
     networks:
       - discord
     env_file:
@@ -198,7 +198,7 @@ services:
   ia:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: /root/git/discord-bot
+    build: ~/git/discord-bot
     networks:
       - discord
     env_file:
@@ -207,7 +207,7 @@ services:
   esclave2:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: /root/git/discord-bot
+    build: ~/git/discord-bot
     env_file:
       - ./data/secrets/esclave2.env
     networks:
@@ -234,10 +234,10 @@ services:
   servant:
     image: marcpartensky/servitor
     restart: unless-stopped
-    build: /root/git/servitor
+    build: ~/git/servitor
 
   pandoc:
-    build: /root/git/pandoc-api
+    build: ~/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
     working_dir: /app
@@ -250,7 +250,7 @@ services:
     networks:
       - nginx
 
-  # https://github.com/itzg/docker-minecraft-server/blob/master/README.md
+  # https://~.com/itzg/docker-minecraft-server/blob/master/README.md
   # minecraft_aventure:
   #   image: itzg/minecraft-server
   #   restart: always
@@ -300,7 +300,7 @@ services:
       - "25565:25565"
 
   # pterodactyl:
-  #   build: /root/fork/panel
+  #   build: ~/fork/panel
   #   restart: unless-stopped
   #   networks:
   #     - nginx
@@ -326,10 +326,10 @@ services:
 # env:
   #   image: marcpartensky/env
   #   build:
-  #     context: /root/git/dotfiles
-  #     dockerfile: /root/git/dotfiles/Dockerfile
+  #     context: ~/git/dotfiles
+  #     dockerfile: ~/git/dotfiles/Dockerfile
   #     args:
-  #       env_file: /root/git/dotfiles/.env
+  #       env_file: ~/git/dotfiles/.env
   #   ports:
   #     - "22:7020"
   #     - "8022:7021"
@@ -375,14 +375,14 @@ services:
     user: nobody
     restart: unless-stopped
     build:
-      context: /root/git/ialab
-      dockerfile: /root/git/ialab/Dockerfile
+      context: ~/git/ialab
+      dockerfile: ~/git/ialab/Dockerfile
     environment:
       - FLASK_APP=server.py
       # - FLASK_APP=/app/server.py
       # - FLASK_APP=/app/wsgi.py
     # env_file:
-      # - /root/git/ialab/.flaskenv
+      # - ~/git/ialab/.flaskenv
     # working_dir: /app
     entrypoint: flask run --host ialab --port 80
     # entrypoint: "gunicorn server:app"
@@ -396,8 +396,8 @@ services:
     working_dir: /app
     restart: unless-stopped
     build:
-      context: /root/fork/open-web-calendar
-      dockerfile: /root/fork/open-web-calendar/Dockerfile
+      context: ~/fork/open-web-calendar
+      dockerfile: ~/fork/open-web-calendar/Dockerfile
     environment:
       - HOST=open_web_calendar
       - PORT=80
@@ -666,13 +666,13 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/archlinux:/root
+      - /srv/archlinux:~
 
   poiret:
     image: poiret
     restart: unless-stopped
     build:
-      context: /root/git/poiret
+      context: ~/git/poiret
     networks:
       - nginx
 
@@ -682,14 +682,14 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/windows:/root
+      - /srv/windows:~
 
   healingpath:
     image: marcpartensky/brainperformer
     restart: unless-stopped
     # user: healingpath
     build:
-      context: /root/git/brainperformer
+      context: ~/git/brainperformer
     env_file: ./data/secrets/healingpath.env
     networks:
       - healingpath
@@ -739,7 +739,7 @@ services:
     ports:
       - "7027:22"
     volumes:
-      - ~/.ssh:/root/.ssh:ro
+      - ~/.ssh:~/.ssh:ro
     environment:
       SSH_KEYS_PATH: ~/.ssh
       SSH_HOSTNAME: marcpartensky.com
@@ -754,7 +754,7 @@ services:
     env_file:
       - "./data/secrets/vnc.env"
     volumes:
-      - /root:/root
+      - ~:~
     networks:
       - nginx
 
