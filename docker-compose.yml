@@ -227,7 +227,9 @@ services:
     image: marcpartensky/servitor
     restart: unless-stopped
 
+
   pandoc:
+    build: ~/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
     working_dir: /app
@@ -240,7 +242,7 @@ services:
     networks:
       - nginx
 
-  # https://github.com/itzg/docker-minecraft-server/blob/master/README.md
+  # https://~.com/itzg/docker-minecraft-server/blob/master/README.md
   # minecraft_aventure:
   #   image: itzg/minecraft-server
   #   restart: always
@@ -290,6 +292,7 @@ services:
       - "25565:25565"
 
   # pterodactyl:
+  #   build: ~/fork/panel
   #   restart: unless-stopped
   #   networks:
   #     - nginx
@@ -363,7 +366,7 @@ services:
       # - FLASK_APP=/app/server.py
       # - FLASK_APP=/app/wsgi.py
     # env_file:
-      # - /root/git/ialab/.flaskenv
+      # - ~/git/ialab/.flaskenv
     # working_dir: /app
     entrypoint: flask run --host ialab --port 80
     # entrypoint: "gunicorn server:app"
@@ -642,7 +645,15 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/archlinux:/root
+      - /srv/archlinux:~
+
+  poiret:
+    image: poiret
+    restart: unless-stopped
+    build:
+      context: ~/git/poiret
+    networks:
+      - nginx
 
   windows:
     image: mcr.microsoft.com/windows:1903
@@ -650,7 +661,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/windows:/root
+      - /srv/windows:~
 
   healingpath:
     image: marcpartensky/brainperformer
@@ -705,11 +716,24 @@ services:
     ports:
       - "7027:22"
     volumes:
-      - ~/.ssh:/root/.ssh:ro
+      - ~/.ssh:~/.ssh:ro
     environment:
       SSH_KEYS_PATH: ~/.ssh
       SSH_HOSTNAME: marcpartensky.com
       SSH_PORT_LISTEN: 22
+
+  vnc:
+    image: consol/centos-xfce-vnc
+    ports:
+      - "5901:5901"
+      # - "6901:6901"
+    user: root
+    env_file:
+      - "./data/secrets/vnc.env"
+    volumes:
+      - ~:~
+    networks:
+      - nginx
 
 volumes:
   letsencrypt:
