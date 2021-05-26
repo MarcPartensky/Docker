@@ -535,7 +535,7 @@ services:
   todolist:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
-    build: /home/leopold/je/todoapp/react
+    build: ~/git/todoapp/react
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
