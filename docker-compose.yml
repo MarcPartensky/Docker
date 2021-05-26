@@ -549,7 +549,7 @@ services:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
     build:
-      context: ~/git/je/todoapp/spring-api
+      context: ~/git/todoapp/spring-api
     env_file:
       - ./data/secrets/todolist.env
     environment:
