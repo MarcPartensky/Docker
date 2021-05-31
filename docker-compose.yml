@@ -754,7 +754,7 @@ services:
     env_file:
       - "./data/secrets/vnc.env"
     volumes:
-      - ~:~
+      - ~:/root
     networks:
       - nginx
 
