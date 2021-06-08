@@ -750,11 +750,13 @@ services:
     ports:
       - "5901:5901"
       # - "6901:6901"
-    user: root
+    # user: root
     env_file:
       - "./data/secrets/vnc.env"
     volumes:
       - ~:/root
+      # - /usr/bin:/usr/bin
+      # - /usr/local/bin:/usr/local/bin
     networks:
       - nginx
 
