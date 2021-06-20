@@ -482,6 +482,53 @@ services:
     networks:
       - oxivia
 
+  wordpress_alex:
+    image: wordpress
+    restart: unless-stopped
+    networks:
+      - nginx
+      - wordpress
+    env_file:
+      - data/secrets/wordpress_alex.env
+    volumes:
+      - /srv/wordpress_alex:/var/www/html
+    depends_on:
+      - wordpress_mysql_alex
+
+  wordpress_mysql_alex:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/wordpress_alex.env
+    networks:
+      - wordpress
+    volumes:
+      - /srv/wordpress_mysql_alex:/var/lib/mysql
+
+  wordpress_marc:
+    image: wordpress
+    restart: unless-stopped
+    networks:
+      - nginx
+      - wordpress
+    env_file:
+      - data/secrets/wordpress_marc.env
+    volumes:
+      - /srv/wordpress:/var/www/html
+    depends_on:
+      - wordpress_mysql_marc
+
+  wordpress_mysql_marc:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/wordpress_marc.env
+    networks:
+      - wordpress
+    volumes:
+      - /srv/wordpress_mysql:/var/lib/mysql
+
+
   samba:
     image: dperson/samba
     restart: unless-stopped
