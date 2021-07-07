@@ -40,7 +40,6 @@ services:
   whoami:
     image: traefik/whoami
     restart: unless-stopped
-    user: nobody
     labels:
       - "traefik.http.routers.whoami.rule=Host(`whoami.marcpartensky.com`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
@@ -227,9 +226,8 @@ services:
     image: marcpartensky/servitor
     restart: unless-stopped
 
-
   pandoc:
-    build: ~/git/pandoc-api
+    build: ../git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
     working_dir: /app
@@ -242,7 +240,7 @@ services:
     networks:
       - nginx
 
-  # https://~.com/itzg/docker-minecraft-server/blob/master/README.md
+  # https://...com/itzg/docker-minecraft-server/blob/master/README.md
   # minecraft_aventure:
   #   image: itzg/minecraft-server
   #   restart: always
@@ -292,7 +290,7 @@ services:
       - "25565:25565"
 
   # pterodactyl:
-  #   build: ~/fork/panel
+  #   build: ../fork/panel
   #   restart: unless-stopped
   #   networks:
   #     - nginx
@@ -366,7 +364,7 @@ services:
       # - FLASK_APP=/app/server.py
       # - FLASK_APP=/app/wsgi.py
     # env_file:
-      # - ~/git/ialab/.flaskenv
+      # - ../git/ialab/.flaskenv
     # working_dir: /app
     entrypoint: flask run --host ialab --port 80
     # entrypoint: "gunicorn server:app"
@@ -553,12 +551,14 @@ services:
   openvpn:
     image: kylemanna/openvpn
     restart: unless-stopped
+    user: root
     cap_add:
      - NET_ADMIN
     ports:
       - "1194:1194/udp"
     volumes:
-      - ~/.vol/openvpn:/etc/openvpn
+      # - ./data/openvpn:/etc/openvpn:rw
+      - /srv/openvpn:/etc/openvpn:rw
     networks:
       - nginx
       - nextcloud
@@ -575,7 +575,7 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.docker/config.json:/config.json
+      - ../.docker/config.json:/config.json
     networks:
       - nginx
     command: --interval 10 --http-api-metrics --http-api-token demotoken --debug docker_prometheus_1 docker_grafana_1
@@ -645,13 +645,13 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/archlinux:~
+      - /srv/archlinux:..
 
   poiret:
     image: poiret
     restart: unless-stopped
     build:
-      context: ~/git/poiret
+      context: ../git/poiret
     networks:
       - nginx
 
@@ -661,7 +661,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/windows:~
+      - /srv/windows:..
 
   healingpath:
     image: marcpartensky/brainperformer
@@ -716,9 +716,9 @@ services:
     ports:
       - "7027:22"
     volumes:
-      - ~/.ssh:~/.ssh:ro
+      - ../.ssh:~/.ssh:ro
     environment:
-      SSH_KEYS_PATH: ~/.ssh
+      SSH_KEYS_PATH: ../.ssh
       SSH_HOSTNAME: marcpartensky.com
       SSH_PORT_LISTEN: 22
 
@@ -731,7 +731,7 @@ services:
     env_file:
       - "./data/secrets/vnc.env"
     volumes:
-      - ~:~
+      - ..:~
     networks:
       - nginx
 
