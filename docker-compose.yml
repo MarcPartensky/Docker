@@ -71,7 +71,7 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /srv/portainer:/data
+      - .srv/portainer:/data
     networks:
       - nginx
     command:
@@ -102,7 +102,7 @@ services:
   #   image: registry:latest
   #   restart: unless-stopped
   #   volumes:
-  #     - /srv/registry:/var/lib/registry
+  #     - .srv/registry:/var/lib/registry
   #     - "$(pwd)"/certs:/certs
   #   ports:
   #     - "5000:7000"
@@ -134,7 +134,7 @@ services:
       - redis
       - postgres
     volumes:
-      - /srv/website/media:/app/media
+      - .srv/website/media:/app/media
     networks:
       - website
       - nginx
@@ -146,7 +146,7 @@ services:
     image: postgres
     restart: unless-stopped
     volumes:
-      - /srv/postgres/dump:/srv/postgresql/dump
+      - .srv/postgres/dump:.srv/postgresql/dump
     env_file:
       - data/secrets/postgres.env
     networks:
@@ -235,7 +235,7 @@ services:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
     volumes:
-      - /srv/pandoc:/app
+      - .srv/pandoc:/app
       - /var/log/nginx:/var/log/nginx
     networks:
       - nginx
@@ -259,7 +259,7 @@ services:
   #   tty: true
   #   stdin_open: true
   #   volumes:
-  #     - /srv/minecraft/data:/data
+  #     - .srv/minecraft/data:/data
   #   ports:
   #     - "25565:25565"
 
@@ -280,12 +280,12 @@ services:
       - ONLINE_MODE=FALSE # no need for an account
       - DIFFICULTY=hard
       - VIEW_DISTANCE=32
-      # - WORLD=/srv/minecraft/zip/Server.zip
+      # - WORLD=.srv/minecraft/zip/Server.zip
       # - SNOOPER_ENABLED=false
     tty: true
     stdin_open: true
     volumes:
-      - /srv/minecraft/data/:/data
+      - .srv/minecraft/data/:/data
     ports:
       - "25565:25565"
 
@@ -330,7 +330,7 @@ services:
     # env_file:
     #   - ./data/secrets/elasticsearch.env
     # volumes:
-    #   - /srv/elasticsearch/data:/srv/elasticsearch/data
+    #   - .srv/elasticsearch/data:.srv/elasticsearch/data
     #   # - elasticsearch:/usr/share/elasticsearch/data
     # networks:
     #   - nginx
@@ -370,7 +370,7 @@ services:
     # entrypoint: "gunicorn server:app"
     # entrypoint: "gunicorn --chdir /app server:app"
     volumes:
-      - /srv/ialab:/app
+      - .srv/ialab:/app
     networks:
       - nginx
 
@@ -388,7 +388,7 @@ services:
   # discord_voice_recorder:
   #   image: drv
   #   volumes:
-  #     - /srv/discord-voice-recorder/recordings:/usr/src/bot/recordings
+  #     - .srv/discord-voice-recorder/recordings:/usr/src/bot/recordings
 
   wordpress:
     image: wordpress
@@ -399,7 +399,7 @@ services:
     env_file:
       - data/secrets/wordpress.env
     volumes:
-      - /srv/wordpress:/var/www/html
+      - .srv/wordpress:/var/www/html
     depends_on:
       - wordpress_mysql
 
@@ -411,7 +411,7 @@ services:
     networks:
       - wordpress
     volumes:
-      - /srv/wordpress_mysql:/var/lib/mysql
+      - .srv/wordpress_mysql:/var/lib/mysql
 
   business:
     image: wordpress
@@ -422,7 +422,7 @@ services:
     env_file:
       - data/secrets/business.env
     volumes:
-      - /srv/business:/var/www/html
+      - .srv/business:/var/www/html
     depends_on:
       - business_mysql
 
@@ -434,7 +434,7 @@ services:
     networks:
       - business
     volumes:
-      - /srv/business_mysql:/var/lib/mysql
+      - .srv/business_mysql:/var/lib/mysql
 
   oxivia:
     image: wordpress
@@ -442,7 +442,7 @@ services:
     env_file:
       - data/secrets/oxivia.env
     volumes:
-      - /srv/oxivia:/var/www/html
+      - .srv/oxivia:/var/www/html
       - ./data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     networks:
       - nginx
@@ -458,7 +458,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - /srv/oxivia_mysql:/var/lib/mysql
+      - .srv/oxivia_mysql:/var/lib/mysql
     networks:
       - oxivia
 
@@ -542,7 +542,7 @@ services:
     image: postgres
     restart: unless-stopped
     volumes:
-      - /srv/todolist/db:/var/lib/postgresql/data
+      - .srv/todolist/db:/var/lib/postgresql/data
     env_file:
       - ./data/secrets/todolist.env
     networks:
@@ -558,7 +558,7 @@ services:
       - "1194:1194/udp"
     volumes:
       # - ./data/openvpn:/etc/openvpn:rw
-      - /srv/openvpn:/etc/openvpn:rw
+      - .srv/openvpn:/etc/openvpn:rw
     networks:
       - nginx
       - nextcloud
@@ -585,7 +585,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/prometheus:/etc/prometheus
-      - /srv/prometheus:/prometheus
+      - .srv/prometheus:/prometheus
     # ports:
     #   - "9090:9090"
     user: root
@@ -602,7 +602,7 @@ services:
     user: root
     volumes:
       - ./data/grafana:/etc/grafana/provisioning
-      - /srv/grafana:/var/lib/grafana
+      - .srv/grafana:/var/lib/grafana
     networks:
       - nginx
 
@@ -621,7 +621,7 @@ services:
       - nginx
     volumes:
       - /home/git/.ssh/:/data/git/.ssh
-      # - /srv/gitea:/data
+      # - .srv/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -637,7 +637,7 @@ services:
     networks:
       - gitea
     volumes:
-      - /srv/gitea_postgres:/var/lib/postgresql/data
+      - .srv/gitea_postgres:/var/lib/postgresql/data
 
   archlinux:
     image: archlinux
@@ -645,7 +645,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/archlinux:..
+      - .srv/archlinux:..
 
   poiret:
     image: poiret
@@ -661,7 +661,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /srv/windows:..
+      - .srv/windows:..
 
   healingpath:
     image: marcpartensky/brainperformer
@@ -680,7 +680,7 @@ services:
     # user: healingpath
     env_file: ./data/secrets/healingpath.env
     volumes:
-      - /srv/healingpath/db:/var/lib/mysql
+      - .srv/healingpath/db:/var/lib/mysql
     networks:
       - healingpath
 
@@ -692,8 +692,8 @@ services:
   #   environment:
   #     DOCKER_TLS_CERTDIR: certs
   #   volumes:
-  #     - /srv/jenkins_docker/certs:/certs/client
-  #     - /srv/jenkins_docker/data:/var/jenkins_home
+  #     - .srv/jenkins_docker/certs:/certs/client
+  #     - .srv/jenkins_docker/data:/var/jenkins_home
   #   ports:
   #     - "2376:2376"
 
@@ -705,7 +705,7 @@ services:
     #   - "8080:8080"
       - "50000:50000"
     volumes:
-      - /srv/jenkins:/var/jenkins_home
+      - .srv/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
     networks:
