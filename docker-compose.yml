@@ -1,6 +1,7 @@
 version: "3.9"
 services:
 
+
   traefik:
     image: traefik
     restart: unless-stopped
@@ -13,56 +14,82 @@ services:
       - --providers.docker=true # <== Enabling docker as the provider for traefik
       ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
       - --api.insecure=true # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
-      - --api.dashboard=true # <== Enabling the dashboard to view services, middlewares, routers, etc...
+      - --api.dashboard=true
       - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
       ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
+      - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      ## Certificate Settings (Let's Encrypt) -  https://docs.traefik.io/https/acme/#configuration-examples ##
       - --certificatesresolvers.tls.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
-      - --certificatesresolvers.tls.acme.email=marc.partensky@gmail.com # <== Setting email for certs
-      - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json # <== Defining acme file to store cert information
-      ## Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
+      - --certificatesresolvers.tls.acme.email=marc.partensky@gmail.com
+      - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json # Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
       - --log.level=DEBUG # <== Setting the level of the logs from traefik
     ports:
-      - "8081:443"
-      - "8080:8080" # The Web UI (enabled by --api.insecure=true)
+      - "80:80"
+      - "443:443"
+      - "7080:8080" # The Web UI (enabled by --api.insecure=true)
     volumes:
       - ./data/traefik/letsencrypt:/letsencrypt
-      - ./data/traefik/dynamic.yaml:/dynamic.yaml
+      # - ./data/traefik/dynamic.yaml:/dynamic.yaml
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`traefik.marcpartensky.com`)"
-      - "traefik.http.routers.api.service=api@internal" # <== Enabling the api to be a service to access
+      - "traefik.http.routers.traefik.rule=Host(`traefik.marcpartensky.com`)"
+      - "traefik.http.routers.traefik.service=api@internal" # <== Enabling the api to be a service to access
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=tls"
 
   whoami:
     image: traefik/whoami
     restart: unless-stopped
-    user: nobody
+    environment:
+     - VIRTUAL_HOST=whoami.local
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.marcpartensky.com`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=tls"
+      - "traefik.http.routers.whoami-https.rule=Host(`whoami.marcpartensky.com`)"
+      - "traefik.http.routers.whoami-https.entrypoints=websecure"
+      - "traefik.http.routers.whoami-https.tls.certresolver=tls"
+
+  # nginx:
+  #   image: nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #     - "2222:2222"
+  #   volumes:
+  #     - ./data/nginx:/etc/nginx/conf.d
+  #     - /etc/letsencrypt:/etc/letsencrypt
+  #     - /var/log/nginx:/var/log/nginx
+  #     # - ./data/certbot/conf:/etc/letsencrypt
+  #     # - ./data/certbot/www:/var/www/certbot
+  #     # - type: bind
+  #     #   source: /home/my-user/elk-stack/.htpasswd
+  #     #   target: /etc/nginx/.htpasswd
+  #   command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  #   networks:
+  #     - nginx
+  #     - box
 
   nginx:
-    image: nginx
+    image: jwilder/nginx-proxy
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
-      # - "2222:2222"
     volumes:
-      - ./data/nginx:/etc/nginx/conf.d
-      - /etc/letsencrypt:/etc/letsencrypt
-      - /var/log/nginx:/var/log/nginx
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./data/nginx:/etc/nginx/conf.d
+      # - /etc/letsencrypt:/etc/letsencrypt
+      # - /var/log/nginx:/var/log/nginx
       # - ./data/certbot/conf:/etc/letsencrypt
       # - ./data/certbot/www:/var/www/certbot
       # - type: bind
       #   source: /home/my-user/elk-stack/.htpasswd
-      #   target: /etc/nginx/.htpasswd
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+        # target: /etc/nginx/.htpasswd
+    # command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     networks:
       - nginx
       - box
@@ -79,6 +106,7 @@ services:
       - --logo
       - https://marcpartensky.com/static/home/assets/img/white-orchid.svg
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`docker.marcpartensky.com`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls.certresolver=tls"
@@ -124,7 +152,9 @@ services:
     env_file:
       - ./data/secrets/website.env
     environment:
-      - DEBUG=false
+      # - DEBUG=false
+      - DEBUG=true
+      # - SECURE_SSL_REDIRECT=false
       # - KEY=/app/privkey.pem
       # - CERT=/app/fullchain.pem
     working_dir: /app
@@ -147,6 +177,21 @@ services:
     depends_on:
       - redis
       - postgres
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost/admin"]
+        interval: 1m30s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.website.port=80"
+      # - "traefik.http.routers.website.rule=Host(`marcpartensky.com`)"
+      - "traefik.website.rule=Host:marcpartensky.com"
+      - "traefik.http.routers.website.entrypoints=websecure"
+      - "traefik.http.routers.website.tls.certresolver=tls"
+      # - "traefik.http.services.website.loadbalancer.server.port=80"
 
   postgres:
     image: postgres
@@ -391,6 +436,12 @@ services:
       - /srv/ialab:/app
     networks:
       - nginx
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ialab.rule=Host(`marcpartensky.com`)"
+      - "traefik.http.routers.ialab.entrypoints=websecure"
+      - "traefik.http.routers.ialab.tls.certresolver=tls"
+      - "traefik.http.services.ialab.loadbalancer.server.port=80"
 
   open_web_calendar:
     working_dir: /app
