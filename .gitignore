@@ -1,4 +1,5 @@
-data/openvpn/
-data/secrets/
-data/certbot/
-data/traefik/
+data/openvpn
+data/secrets
+data/certbot
+data/traefik
+data/caddy
