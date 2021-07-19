@@ -1140,6 +1140,7 @@ services:
 
   schtroumpfix:
     restart: unless-stopped
+    image: marcpartensky/schtroumpfix
     build:
       context: ~/git/schtroumpfix
       # dockerfile: ~/git/schtroumpfix/Dockerfile
