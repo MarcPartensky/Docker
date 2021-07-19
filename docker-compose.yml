@@ -1144,6 +1144,8 @@ services:
     build:
       context: ~/git/schtroumpfix
       # dockerfile: ~/git/schtroumpfix/Dockerfile
+    env_file:
+      - data/secrets/schtroumpfix.env
     environment:
       - PORT=80
     networks:
