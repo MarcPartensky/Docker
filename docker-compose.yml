@@ -101,7 +101,7 @@ services:
       - nginx
       - box
 
-  caddy_proxy:
+  caddy:
     image: lucaslorentz/caddy-docker-proxy:ci-alpine
     restart: unless-stopped
     ports:
@@ -114,9 +114,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data/caddy:/data
     networks:
-      - caddy
       - nginx
       - box
+      - caddy
 
   portainer:
     image: portainer/portainer-ce
