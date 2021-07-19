@@ -27,6 +27,9 @@ services:
       - "80:80"
       - "443:443"
       - "7080:8080" # The Web UI (enabled by --api.insecure=true)
+    networks:
+      - caddy
+      - nginx
     volumes:
       - ./data/traefik/letsencrypt:/letsencrypt
       # - ./data/traefik/dynamic.yaml:/dynamic.yaml
@@ -45,14 +48,11 @@ services:
      - VIRTUAL_HOST=whoami.local
     labels:
       - "caddy=whoami.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 80}}"
+      - "caddy.reverse_proxy={{upstreams http 80}}"
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.marcpartensky.com`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=tls"
-      - "traefik.http.routers.whoami-https.rule=Host(`whoami.marcpartensky.com`)"
-      - "traefik.http.routers.whoami-https.entrypoints=websecure"
-      - "traefik.http.routers.whoami-https.tls.certresolver=tls"
     networks:
       - nginx
       - caddy
@@ -108,7 +108,6 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      # - CADDY_INGRESS_NETWORKS=nginx
       - CADDY_INGRESS_NETWORKS=caddy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -129,14 +128,18 @@ services:
       - /srv/portainer:/data
     networks:
       - nginx
+      - caddy
     command:
       - --logo
       - https://marcpartensky.com/static/home/assets/img/white-orchid.svg
     labels:
+      - "caddy=docker.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 9000}}"
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`docker.marcpartensky.com`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls.certresolver=tls"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
   # registry:
   #   restart: unless-stopped
@@ -217,13 +220,14 @@ services:
       - "caddy=marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams 80}}"
       - "traefik.enable=true"
-      - "traefik.port=80"
-      - "traefik.website.port=80"
-      # - "traefik.http.routers.website.rule=Host(`marcpartensky.com`)"
-      - "traefik.website.rule=Host:marcpartensky.com"
+      # - "traefik.port=80"
+      # - "traefik.website.port=80"
+      - "traefik.http.routers.website.rule=Host(`marcpartensky.com`)"
+      # - "traefik.website.rule=Host:marcpartensky.com"
       - "traefik.http.routers.website.entrypoints=websecure"
       - "traefik.http.routers.website.tls.certresolver=tls"
-      # - "traefik.http.services.website.loadbalancer.server.port=80"
+      - "traefik.http.services.website.loadbalancer.server.port=80"
+
 
   postgres:
     image: postgres
@@ -324,8 +328,17 @@ services:
     volumes:
       - /srv/pandoc:/app
       - /var/log/nginx:/var/log/nginx
+    labels:
+      - "caddy=pandoc.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pandoc.rule=Host(`pandoc.marcpartensky.com`)"
+      - "traefik.http.routers.pandoc.entrypoints=websecure"
+      - "traefik.http.routers.pandoc.tls.certresolver=tls"
+      - "traefik.http.services.pandoc.loadbalancer.server.port=80"
     networks:
       - nginx
+      - caddy
 
   # https://~.com/itzg/docker-minecraft-server/blob/master/README.md
   # minecraft_aventure:
@@ -392,6 +405,17 @@ services:
       - JUPYTER_ENABLE_LAB=yes
       - GRANT_SUDO=yes
     entrypoint: start.sh jupyter lab --user root
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=notebook.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 8888}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.notebook.rule=Host(`notebook.marcpartensky.com`)"
+      - "traefik.http.routers.notebook.entrypoints=websecure"
+      - "traefik.http.routers.notebook.tls.certresolver=tls"
+      - "traefik.http.services.notebook.loadbalancer.server.port=8888"
     # entrypoint: start-notebook.sh \
     #     --NotebookApp.keyfile=key/0000_key-certbot.pem
     #     --NotebookApp.certfile=cert/0000_csr-certbot.pem
@@ -467,10 +491,13 @@ services:
     volumes:
       - /srv/ialab:/app
     networks:
+      - caddy
       - nginx
     labels:
+      - "caddy=ialab.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
       - "traefik.enable=true"
-      - "traefik.http.routers.ialab.rule=Host(`marcpartensky.com`)"
+      - "traefik.http.routers.ialab.rule=Host(`ialab.marcpartensky.com`)"
       - "traefik.http.routers.ialab.entrypoints=websecure"
       - "traefik.http.routers.ialab.tls.certresolver=tls"
       - "traefik.http.services.ialab.loadbalancer.server.port=80"
@@ -485,8 +512,17 @@ services:
       - HOST=open_web_calendar
       - PORT=80
     networks:
+      - caddy
       - nginx
     entrypoint: python app.py
+    labels:
+      - "caddy=calendar.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.open_web_calendar.rule=Host(`calendar.marcpartensky.com`)"
+      - "traefik.http.routers.open_web_calendar.entrypoints=websecure"
+      - "traefik.http.routers.open_web_calendar.tls.certresolver=tls"
+      - "traefik.http.services.open_web_calendar.loadbalancer.server.port=80"
 
   # discord_voice_recorder:
   #   image: drv
@@ -497,6 +533,7 @@ services:
     image: wordpress
     restart: unless-stopped
     networks:
+      - caddy
       - nginx
       - wordpress
     env_file:
@@ -505,6 +542,14 @@ services:
       - /srv/wordpress:/var/www/html
     depends_on:
       - wordpress_mysql
+    labels:
+      - "caddy=wordpress.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.rule=Host(`wordpress.marcpartensky.com`)"
+      - "traefik.http.routers.wordpress.entrypoints=websecure"
+      - "traefik.http.routers.wordpress.tls.certresolver=tls"
+      - "traefik.http.services.wordpress.loadbalancer.server.port=80"
 
   wordpress_mysql:
     image: mysql
@@ -512,6 +557,7 @@ services:
     env_file:
       - data/secrets/wordpress.env
     networks:
+      - caddy
       - wordpress
     volumes:
       - /srv/wordpress_mysql:/var/lib/mysql
@@ -520,6 +566,7 @@ services:
     image: wordpress
     restart: unless-stopped
     networks:
+      - caddy
       - nginx
       - business
     env_file:
@@ -528,6 +575,14 @@ services:
       - /srv/business:/var/www/html
     depends_on:
       - business_mysql
+    labels:
+      - "caddy=business.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.business.rule=Host(`business.marcpartensky.com`)"
+      - "traefik.http.routers.business.entrypoints=websecure"
+      - "traefik.http.routers.business.tls.certresolver=tls"
+      - "traefik.http.services.business.loadbalancer.server.port=80"
 
   business_mysql:
     image: mysql
@@ -535,6 +590,7 @@ services:
     env_file:
       - data/secrets/business.env
     networks:
+      - caddy
       - business
     volumes:
       - /srv/business_mysql:/var/lib/mysql
@@ -548,10 +604,19 @@ services:
       - /srv/oxivia:/var/www/html
       - ./data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     networks:
+      - caddy
       - nginx
       - oxivia
     depends_on:
       - oxivia_mysql
+    labels:
+      - "caddy=oxivia.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.oxivia.rule=Host(`oxivia.marcpartensky.com`)"
+      - "traefik.http.routers.oxivia.entrypoints=websecure"
+      - "traefik.http.routers.oxivia.tls.certresolver=tls"
+      - "traefik.http.services.oxivia.loadbalancer.server.port=80"
 
   oxivia_mysql:
     image: mysql
@@ -563,12 +628,14 @@ services:
     volumes:
       - /srv/oxivia_mysql:/var/lib/mysql
     networks:
+      - caddy
       - oxivia
 
   wordpress_alex:
     image: wordpress
     restart: unless-stopped
     networks:
+      - caddy
       - nginx
       - wordpress_alex
     env_file:
@@ -577,6 +644,14 @@ services:
       - /srv/wordpress_alex:/var/www/html
     depends_on:
       - wordpress_mysql_alex
+    labels:
+      - "caddy=alex.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress_alex.rule=Host(`alex.wp.marcpartensky.com`)"
+      - "traefik.http.routers.wordpress_alex.entrypoints=websecure"
+      - "traefik.http.routers.wordpress_alex.tls.certresolver=tls"
+      - "traefik.http.services.wordpress_alex.loadbalancer.server.port=80"
 
   wordpress_mysql_alex:
     image: mysql
@@ -584,6 +659,7 @@ services:
     env_file:
       - data/secrets/wordpress_alex.env
     networks:
+      - caddy
       - wordpress_alex
     volumes:
       - /srv/wordpress_mysql_alex:/var/lib/mysql
@@ -592,6 +668,7 @@ services:
     image: wordpress
     restart: unless-stopped
     networks:
+      - caddy
       - nginx
       - wordpress_marc
     env_file:
@@ -600,6 +677,14 @@ services:
       - /srv/wordpress_marc:/var/www/html
     depends_on:
       - wordpress_mysql_marc
+    labels:
+      - "caddy=marc.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress_marc.rule=Host(`marc.wp.marcpartensky.com`)"
+      - "traefik.http.routers.wordpress_marc.entrypoints=websecure"
+      - "traefik.http.routers.wordpress_marc.tls.certresolver=tls"
+      - "traefik.http.services.wordpress_marc.loadbalancer.server.port=80"
 
   wordpress_mysql_marc:
     image: mysql
@@ -607,6 +692,7 @@ services:
     env_file:
       - data/secrets/wordpress_marc.env
     networks:
+      - caddy
       - wordpress_marc
     volumes:
       - /srv/wordpress_mysql_marc:/var/lib/mysql
@@ -625,7 +711,16 @@ services:
     image: plantuml/plantuml-server:tomcat
     restart: unless-stopped
     networks:
+      - caddy
       - nginx
+    labels:
+      - "caddy=plantuml.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 8080}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.plantuml.rule=Host(`uml.marcpartensky.com`)"
+      - "traefik.http.routers.plantuml.entrypoints=websecure"
+      - "traefik.http.routers.plantuml.tls.certresolver=tls"
+      - "traefik.http.services.plantuml.loadbalancer.server.port=8080"
 
   nextcloud:
     image: nextcloud
@@ -635,10 +730,19 @@ services:
     env_file:
       - ./data/secrets/nextcloud.env
     networks:
+      - caddy
       - nextcloud
       - nginx
     depends_on:
       - nextcloud_mariadb
+    labels:
+      - "caddy=cloud.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=Host(`cloud.marcpartensky.com`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=tls"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
 
   nextcloud_mariadb:
     image: mariadb
@@ -649,6 +753,7 @@ services:
     env_file:
       - ./data/secrets/nextcloud.env
     networks:
+      - caddy
       - nextcloud
 
   searx:
@@ -660,7 +765,16 @@ services:
     #   - PORT=80
     #   - BASE_URL=http://localhost:$PORT
     networks:
+      - caddy
       - nginx
+    labels:
+      - "caddy=searx.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.searx.rule=Host(`searx.marcpartensky.com`)"
+      - "traefik.http.routers.searx.entrypoints=websecure"
+      - "traefik.http.routers.searx.tls.certresolver=tls"
+      - "traefik.http.services.searx.loadbalancer.server.port=80"
 
   todolist:
     image: marcpartensky/je-todoapp-react
@@ -672,7 +786,16 @@ services:
     depends_on:
       - todolist_api
     networks:
+      - caddy
       - nginx
+    labels:
+      - "caddy=todolist.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.todolist.rule=Host(`todolist.marcpartensky.com`)"
+      - "traefik.http.routers.todolist.entrypoints=websecure"
+      - "traefik.http.routers.todolist.tls.certresolver=tls"
+      - "traefik.http.services.todolist.loadbalancer.server.port=80"
     # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
 
   todolist_api:
@@ -688,8 +811,17 @@ services:
     depends_on:
       - todolist_db
     networks:
+      - caddy
       - todolist_api
       - nginx
+    labels:
+      - "caddy=api.todolist.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 8080}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.todolist_api.rule=Host(`api.todolist.marcpartensky.com`)"
+      - "traefik.http.routers.todolist_api.entrypoints=websecure"
+      - "traefik.http.routers.todolist_api.tls.certresolver=tls"
+      - "traefik.http.services.todolist_api.loadbalancer.server.port=8080"
 
   todolist_db:
     image: postgres
@@ -699,6 +831,7 @@ services:
     env_file:
       - ./data/secrets/todolist.env
     networks:
+      - caddy
       - todolist_api
 
   openvpn:
@@ -711,6 +844,7 @@ services:
     volumes:
       - /srv/openvpn:/etc/openvpn
     networks:
+      - caddy
       - nginx
       - nextcloud
       - website
@@ -728,6 +862,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.docker/config.json:/config.json
     networks:
+      - caddy
       - nginx
     command: --interval 10 --http-api-metrics --http-api-token demotoken --debug docker_prometheus_1 docker_grafana_1
 
@@ -741,7 +876,11 @@ services:
     #   - "9090:9090"
     user: root
     networks:
+      - caddy
       - nginx
+    labels:
+      - "caddy=prometheus.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
 
   grafana:
     image: grafana/grafana
@@ -755,7 +894,16 @@ services:
       - ./data/grafana:/etc/grafana/provisioning
       - /srv/grafana:/var/lib/grafana
     networks:
+      - caddy
       - nginx
+    labels:
+      - "caddy=grafana.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 3000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.marcpartensky.com`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=tls"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   gitea:
     image: gitea/gitea:1.14.1
@@ -768,6 +916,7 @@ services:
     env_file:
       - ./data/secrets/gitea.env
     networks:
+      - caddy
       - gitea
       - nginx
     volumes:
@@ -779,6 +928,14 @@ services:
       - "7012:22"
     depends_on:
       - gitea_postgres
+    labels:
+      - "caddy=git.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 3000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`git.marcpartensky.com`)"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.routers.gitea.tls.certresolver=tls"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
   gitea_postgres:
     image: postgres
@@ -786,6 +943,7 @@ services:
     env_file:
       - ./data/secrets/gitea.env
     networks:
+      - caddy
       - gitea
     volumes:
       - /srv/gitea_postgres:/var/lib/postgresql/data
@@ -805,7 +963,16 @@ services:
     build:
       context: ~/git/poiret
     networks:
+      - caddy
       - nginx
+    labels:
+      - "caddy=poiret.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.poiret.rule=Host(`poiret.marcpartensky.com`)"
+      - "traefik.http.routers.poiret.entrypoints=websecure"
+      - "traefik.http.routers.poiret.tls.certresolver=tls"
+      - "traefik.http.services.poiret.loadbalancer.server.port=80"
 
   windows:
     image: mcr.microsoft.com/windows:1903
@@ -823,10 +990,19 @@ services:
       context: ~/git/brainperformer
     env_file: ./data/secrets/healingpath.env
     networks:
+      - caddy
       - healingpath
       - nginx
     depends_on:
       - healingpath_db
+    labels:
+      - "caddy=healingpath.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.healingpath.rule=Host(`healingpath.marcpartensky.com`)"
+      - "traefik.http.routers.healingpath.entrypoints=websecure"
+      - "traefik.http.routers.healingpath.tls.certresolver=tls"
+      - "traefik.http.services.healingpath.loadbalancer.server.port=80"
 
   healingpath_db:
     image: mysql
@@ -838,12 +1014,14 @@ services:
     volumes:
       - /srv/healingpath/db:/var/lib/mysql
     networks:
+      - caddy
       - healingpath
 
   # jenkins_docker:
   #   image: docker:dind
   #   privileged: true
   #   networks:
+      # - caddy
   #     - jenkins
   #   environment:
   #     DOCKER_TLS_CERTDIR: certs
@@ -865,7 +1043,16 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
     networks:
+      - caddy
       - nginx
+    labels:
+      - "caddy=jenkins.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 8000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.jenkins.rule=Host(`jenkins.marcpartensky.com`)"
+      - "traefik.http.routers.jenkins.entrypoints=websecure"
+      - "traefik.http.routers.jenkins.tls.certresolver=tls"
+      - "traefik.http.services.jenkins.loadbalancer.server.port=8000"
 
   tmate:
     image: tmate/tmate-ssh-server
@@ -891,6 +1078,7 @@ services:
       # - /usr/bin:/usr/bin
       # - /usr/local/bin:/usr/local/bin
     networks:
+      - caddy
       - nginx
 
   pihole:
@@ -912,6 +1100,16 @@ services:
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     cap_add:
       - NET_ADMIN
+    networks:
+      - caddy
+    labels:
+      - "caddy=dns.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`dns.marcpartensky.com`)"
+      - "traefik.http.routers.pihole.entrypoints=websecure"
+      - "traefik.http.routers.pihole.tls.certresolver=tls"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
 
   smtp:
     image: namshi/smtp
