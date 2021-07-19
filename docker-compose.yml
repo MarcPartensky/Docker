@@ -44,6 +44,8 @@ services:
     environment:
      - VIRTUAL_HOST=whoami.local
     labels:
+      - "caddy=whoami.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 80}}"
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.marcpartensky.com`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
@@ -51,6 +53,9 @@ services:
       - "traefik.http.routers.whoami-https.rule=Host(`whoami.marcpartensky.com`)"
       - "traefik.http.routers.whoami-https.entrypoints=websecure"
       - "traefik.http.routers.whoami-https.tls.certresolver=tls"
+    networks:
+      - nginx
+      - caddy
 
   nginx:
     image: nginx
@@ -73,7 +78,7 @@ services:
       - nginx
       - box
 
-  nginx-proxy:
+  nginx_proxy:
     image: jwilder/nginx-proxy
     restart: unless-stopped
     environment:
@@ -96,18 +101,20 @@ services:
       - nginx
       - box
 
-  caddy-proxy:
+  caddy_proxy:
     image: lucaslorentz/caddy-docker-proxy:ci-alpine
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     environment:
-      - CADDY_INGRESS_NETWORKS=nginx
+      # - CADDY_INGRESS_NETWORKS=nginx
+      - CADDY_INGRESS_NETWORKS=caddy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data/caddy:/data
     networks:
+      - caddy
       - nginx
       - box
 
@@ -196,6 +203,7 @@ services:
     networks:
       - website
       - nginx
+      - caddy
     depends_on:
       - redis
       - postgres
@@ -919,6 +927,8 @@ volumes:
   nextcloud_mariadb:
 
 networks:
+  caddy:
+    external: true
   healingpath:
   nextcloud:
   website:
