@@ -23,6 +23,9 @@ services:
       - --certificatesresolvers.tls.acme.email=marc.partensky@gmail.com
       - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json # Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
       - --log.level=DEBUG # <== Setting the level of the logs from traefik
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
     ports:
       - "80:80"
       - "443:443"
@@ -40,6 +43,10 @@ services:
       - "traefik.http.routers.traefik.service=api@internal" # <== Enabling the api to be a service to access
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=tls"
+      # - "traefik.http.routers.redirs.entrypoints=web"
+      # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # - "traefik.http.routers.redirs.middlewares=redirect-to-https"
+      # - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
 
   whoami:
     image: traefik/whoami
@@ -223,11 +230,14 @@ services:
       # - "traefik.port=80"
       # - "traefik.website.port=80"
       - "traefik.http.routers.website.rule=Host(`marcpartensky.com`)"
-      # - "traefik.website.rule=Host:marcpartensky.com"
       - "traefik.http.routers.website.entrypoints=websecure"
       - "traefik.http.routers.website.tls.certresolver=tls"
       - "traefik.http.services.website.loadbalancer.server.port=80"
-
+      # - "entrypoints.web.address=:80"
+      # - "entrypoints.websecure.address=:443"
+      # - "entrypoints.web.http.redirections.entryPoint.to=websecure"
+      # - "entrypoints.web.http.redirections.entryPoint.scheme=https"
+      # - "entrypoints.web.http.redirections.entrypoint.permanent=true"
 
   postgres:
     image: postgres
