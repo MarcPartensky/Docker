@@ -1138,6 +1138,26 @@ services:
      - "25:25"
     # environment:
 
+  schtroumpfix:
+    restart: unless-stopped
+    build:
+      context: ~/git/schtroumpfix
+      # dockerfile: ~/git/schtroumpfix/Dockerfile
+    environment:
+      - PORT=80
+    networks:
+      - caddy
+      - nginx
+      # - traefik
+    labels:
+      - "caddy=schtroumpfix.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.schtroupmfix.rule=Host(`schtroumpfix.marcpartensky.com`)"
+      - "traefik.http.routers.schtroupmfix.entrypoints=websecure"
+      - "traefik.http.routers.schtroupmfix.tls.certresolver=tls"
+      - "traefik.http.services.schtroupmfix.loadbalancer.server.port=80"
+
 volumes:
   letsencrypt:
   nextcloud:
