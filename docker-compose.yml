@@ -13,7 +13,7 @@ services:
       # - --providers.docker.network=web # <== Operate on the docker network named web
       - --providers.docker=true # <== Enabling docker as the provider for traefik
       ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
-      - --api.insecure=true # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
+      - --api.insecure=false # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
       - --api.dashboard=true
       - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
       ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
@@ -29,7 +29,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "7080:8080" # The Web UI (enabled by --api.insecure=true)
     networks:
       - caddy
       - nginx
@@ -1137,6 +1136,9 @@ services:
     ports:
      - "25:25"
     # environment:
+      # - MAILNAME="marcpartensky.com"
+      # - GMAIL_USER="contact"
+      # - GMAIL_PASSWORD="contact"
 
   schtroumpfix:
     restart: unless-stopped
