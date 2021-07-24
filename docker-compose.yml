@@ -336,7 +336,7 @@ services:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
     volumes:
-      - /srv/pandoc:/app
+      - /srv/pandoc:/app/files
       - /var/log/nginx:/var/log/nginx
     labels:
       - "caddy=pandoc.marcpartensky.com"
