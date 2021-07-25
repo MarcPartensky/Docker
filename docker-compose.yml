@@ -1183,8 +1183,7 @@ services:
   mailserver:
     image: docker.io/mailserver/docker-mailserver:latest
     hostname: mail
-    domainname: example.com
-    container_name: mailserver
+    domainname: marcpartensky.com
     restart: unless-stopped
     ports:
       - "25:25"
@@ -1192,11 +1191,11 @@ services:
       - "587:587"
       - "993:993"
     volumes:
-      - ./data/maildata:/var/mail
-      - ./data/mailstate:/var/mail-state
-      - ./data/maillogs:/var/log/mail
+      - /srv/mailserver/maildata:/var/mail
+      - /srv/mailserver/mailstate:/var/mail-state
+      - /serv/mailserver/maillogs:/var/log/mail
+      - ./data/mailserver/config/:/tmp/docker-mailserver/
       - /etc/localtime:/etc/localtime:ro
-      - ./config/:/tmp/docker-mailserver/
     environment:
       - ENABLE_SPAMASSASSIN=1
       - SPAMASSASSIN_SPAM_TO_INBOX=1
