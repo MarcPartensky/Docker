@@ -620,10 +620,10 @@ services:
     depends_on:
       - oxivia_mysql
     labels:
-      - "caddy=oxivia.marcpartensky.com"
+      - "caddy=oxivia.business.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams}}"
       - "traefik.enable=true"
-      - "traefik.http.routers.oxivia.rule=Host(`oxivia.marcpartensky.com`)"
+      - "traefik.http.routers.oxivia.rule=Host(`oxivia.business.marcpartensky.com`)"
       - "traefik.http.routers.oxivia.entrypoints=websecure"
       - "traefik.http.routers.oxivia.tls.certresolver=tls"
       - "traefik.http.services.oxivia.loadbalancer.server.port=80"
@@ -1179,6 +1179,24 @@ services:
       - "traefik.http.routers.mail.entrypoints=websecure"
       - "traefik.http.routers.mail.tls.certresolver=tls"
       - "traefik.http.services.mail.loadbalancer.server.port=8025"
+
+  samy:
+    restart: unless-stopped
+    image: mailhog/mailhog
+    networks:
+      - caddy
+      - nginx
+    ports:
+      - "1025:1025"
+    labels:
+      - "caddy=samy.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams marcpartensky.com }}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.samy.rule=Host(`samy.marcpartensky.com`)"
+      - "traefik.http.routers.samy.entrypoints=websecure"
+      - "traefik.http.routers.samy.tls.certresolver=tls"
+      - "traefik.http.services.samy.loadbalancer.server.port=8025"
+
 
   mailserver:
     image: docker.io/mailserver/docker-mailserver:latest
