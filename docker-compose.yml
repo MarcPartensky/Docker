@@ -42,6 +42,7 @@ services:
       - "traefik.http.routers.traefik.service=api@internal" # <== Enabling the api to be a service to access
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=tls"
+      - "traefik.docker.network=nginx"
       # - "traefik.http.routers.redirs.entrypoints=web"
       # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       # - "traefik.http.routers.redirs.middlewares=redirect-to-https"
@@ -1211,8 +1212,8 @@ services:
     volumes:
       - /srv/mailserver/maildata:/var/mail
       - /srv/mailserver/mailstate:/var/mail-state
-      - /serv/mailserver/maillogs:/var/log/mail
-      - ./data/mailserver/config/:/tmp/docker-mailserver/
+      - /srv/mailserver/maillogs:/var/log/mail
+      - /srv/mailserver/config/:/tmp/docker-mailserver/
       - /etc/localtime:/etc/localtime:ro
     environment:
       - ENABLE_SPAMASSASSIN=1
