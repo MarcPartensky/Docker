@@ -937,7 +937,7 @@ services:
       - nginx
     volumes:
       - /home/git/.ssh/:/data/git/.ssh
-      # - /srv/gitea:/data
+      - /srv/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
