@@ -891,7 +891,12 @@ services:
       - nginx
     labels:
       - "caddy=prometheus.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams}}"
+      - "caddy.reverse_proxy={{upstreams 9090}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.marcpartensky.com`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=tls"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   grafana:
     image: grafana/grafana
