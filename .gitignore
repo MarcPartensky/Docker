@@ -3,3 +3,4 @@ data/secrets
 data/certbot
 data/traefik
 data/caddy
+data.tar.gz
