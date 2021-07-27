@@ -148,21 +148,30 @@ services:
       - "traefik.http.routers.portainer.tls.certresolver=tls"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
-  # registry:
-  #   restart: unless-stopped
-  #   image: registry:latest
-  #   ports:
-  #     - 5000:5000
-  #   environment:
-  #     REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
-  #     REGISTRY_HTTP_TLS_KEY: /certs/domain.key
-  #     REGISTRY_AUTH: htpasswd
-  #     REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-  #     REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
-  #   volumes:
-  #     - /path/data:/var/lib/registry
-  #     - /path/certs:/certs
-  #     - /path/auth:/auth
+  registry:
+    restart: unless-stopped
+    image: registry:latest
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:443
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+      REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    volumes:
+      - /srv/registry/data:/var/lib/registry
+      - /srv/registry/certs:/certs
+      - /srv/registry/auth:/auth
+    labels:
+      - "caddy=registry.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 443}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry.rule=Host(`registry.marcpartensky.com`)"
+      - "traefik.http.routers.registry.entrypoints=websecure"
+      - "traefik.http.routers.registry.tls.certresolver=tls"
+      - "traefik.http.services.registry.loadbalancer.server.port=443"
 
   # registry:
   #   image: registry:latest
