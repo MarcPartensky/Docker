@@ -330,7 +330,6 @@ services:
 
 
   pandoc:
-    build: ~/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
     working_dir: /app
@@ -402,7 +401,6 @@ services:
       - "25565:25565"
 
   # pterodactyl:
-  #   build: ~/fork/panel
   #   restart: unless-stopped
   #   networks:
   #     - nginx
@@ -960,8 +958,6 @@ services:
   poiret:
     image: poiret
     restart: unless-stopped
-    build:
-      context: ~/git/poiret
     networks:
       # - caddy
       - nginx
@@ -1131,8 +1127,6 @@ services:
   schtroumpfix:
     restart: unless-stopped
     image: marcpartensky/schtroumpfix
-    build:
-      context: ~/git/schtroumpfix
       # dockerfile: ~/git/schtroumpfix/Dockerfile
     env_file:
       - data/secrets/schtroumpfix.env
