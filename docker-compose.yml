@@ -799,7 +799,9 @@ services:
   todolist:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
-    build: ~/git/todoapp/react
+    build:
+      context: ~/git/todoapp/react
+      dockerfile: ~/git/todoapp/react/Dockerfile
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
@@ -823,6 +825,7 @@ services:
     restart: unless-stopped
     build:
       context: ~/git/todoapp/spring-api
+      dockerfile: ~/git/todoapp/spring-api/Dockerfile
     env_file:
       - ./data/secrets/todolist.env
     environment:
