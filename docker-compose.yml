@@ -1279,6 +1279,15 @@ services:
       - "traefik.http.routers.thai_wara.tls.certresolver=tls"
       - "traefik.http.services.thai_wara.loadbalancer.server.port=80"
 
+  ssh_honeypot:
+    image: local/ssh-honeypot
+    restart: unless-stopped
+    build: ~/fork/ssh-honeypot/docker
+    ports:
+      - "22:2022"
+    volumes:
+      - /var/log/ssh-honeypot.log:/home/honeycomb/log
+      - /srv/ssh_honeypot:/home/honeycomb/rsa
 
 volumes:
   letsencrypt:
