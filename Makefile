@@ -1,8 +1,6 @@
 export:
-	tar cvzf /tmp/docker_data.tgz /root/docker/data
-	gpg --encrypt --recipient 'marc.partensky@gmail.com' /tmp/docker_data.tgz
-	mv /tmp/docker_data.tgz.gpg .
-	rm /tmp/docker_data.tgz
+	tar cvzf data.tgz data
+	gpg --encrypt --recipient 'marc.partensky@gmail.com' data.tgz
+	rm data.tgz
 clean:
-	rm ./docker_data.tgz.gpg
-	rm /tmp/docker_data.tgz
+	rm data.tgz.gpg
