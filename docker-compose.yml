@@ -1287,6 +1287,23 @@ services:
       - "traefik.http.routers.samy.tls.certresolver=tls"
       - "traefik.http.services.samy.loadbalancer.server.port=80"
 
+  openldap:
+    image: bitnami/openldap:2
+    ports:
+      - "1389:1389"
+      - "1636:1636"
+    env_file:
+      - data/secrets/openldap.env
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_USERS=user01,user02
+      - LDAP_PASSWORDS=password1,password2
+    networks:
+      - ldap
+    volumes:
+      - /srv/openldap:/bitnami/openldap
+
 
   mailserver:
     image: docker.io/mailserver/docker-mailserver:latest
@@ -1377,6 +1394,7 @@ networks:
   nextcloud:
   website:
   nginx:
+  ldap:
   wordpress:
   business:
   wordpress_alex:
