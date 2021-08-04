@@ -432,7 +432,7 @@ services:
       - EULA=TRUE
       - OPS=MazexRedstone
       - ENABLE_COMMAND_BLOCK=TRUE
-      - MEMORY=2G
+      - MEMORY=1G
       - VERSION=1.16.5
       - ICON=https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
       - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
