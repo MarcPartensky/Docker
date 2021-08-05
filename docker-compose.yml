@@ -1382,6 +1382,24 @@ services:
       - /var/log/ssh-honeypot.log:/home/honeycomb/log
       - /srv/ssh_honeypot:/home/honeycomb/rsa
 
+  valentin:
+    image: sebp/lighttpd
+    restart: unless-stopped
+    volumes:
+      - ~/git/valentin:/var/www/localhost/htdocs
+    tty: true
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=valentin.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.valentin.rule=Host(`valentin.marcpartensky.com`)"
+      - "traefik.http.routers.valentin.entrypoints=websecure"
+      - "traefik.http.routers.valentin.tls.certresolver=tls"
+      - "traefik.http.services.valentin.loadbalancer.server.port=80"
+
 volumes:
   letsencrypt:
   nextcloud:
