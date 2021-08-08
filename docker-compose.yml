@@ -432,8 +432,34 @@ services:
       - EULA=TRUE
       - OPS=MazexRedstone
       - ENABLE_COMMAND_BLOCK=TRUE
-      - MEMORY=1G
+      - MEMORY=2G
       - VERSION=1.16.5
+      - ICON=https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
+      - MOTD=Made in Marc Partensky
+      - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
+      - LEVEL=Server
+      - ONLINE_MODE=FALSE # no need for an account
+      - DIFFICULTY=hard
+      - VIEW_DISTANCE=32
+      # - WORLD=$BIND_MOUNTS/minecraft/zip/Server.zip
+      # - SNOOPER_ENABLED=false
+    tty: true
+    stdin_open: true
+    volumes:
+      - $BIND_MOUNTS/minecraft/data/:/data
+    ports:
+      - "25565:25565"
+
+  minecraft_1.17:
+    image: itzg/minecraft-server
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Paris
+      - EULA=TRUE
+      - OPS=MazexRedstone
+      - ENABLE_COMMAND_BLOCK=TRUE
+      - MEMORY=2G
+      - VERSION=1.17.1
       - ICON=https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
       - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
       - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
@@ -448,7 +474,7 @@ services:
     volumes:
       - $BIND_MOUNTS/minecraft/data/:/data
     ports:
-      - "25565:25565"
+      - "25566:25565"
 
   # pterodactyl:
   #   build: ~/fork/panel
