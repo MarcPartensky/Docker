@@ -115,10 +115,12 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - caddy_INGRESS_NETWORKS=caddy
+      CADDY_INGRESS_NETWORKS: caddy
+      # CADDY_DOCKER_CADDYFILE_PATH: /etc/Caddyfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./data/caddy:/data
+      - $BIND_MOUNTS/caddy:/data/caddy
+      # - ./data/caddy/Caddyfile:/etc/Caddyfile
     networks:
       - nginx
       - box
