@@ -478,6 +478,27 @@ services:
     ports:
       - "25566:25565"
 
+  mcmyadmin:
+    image: tekgator/docker-mcmyadmin:latest
+    restart: unless-stopped
+    environment:
+      PUID: 1001
+      PGID: 1001
+      EULA: 1
+    volumes:
+      - $BIND_MOUNTS/mcmyadmin/mcmyadmin:/data
+    ports:
+      - "25567:25565"
+    stop_grace_period: 30s
+    labels:
+      - "caddy=minecraft.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 8080}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.minecraft.rule=Host(`minecraft.marcpartensky.com`)"
+      - "traefik.http.routers.minecraft.entrypoints=websecure"
+      - "traefik.http.routers.minecraft.tls.certresolver=tls"
+      - "traefik.http.services.minecraft.loadbalancer.server.port=8080"
+
   # pterodactyl:
   #   build: ~/fork/panel
   #   restart: unless-stopped
