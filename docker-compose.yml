@@ -443,8 +443,9 @@ services:
       - ONLINE_MODE=FALSE # no need for an account
       - DIFFICULTY=hard
       - VIEW_DISTANCE=32
+      # - MAX_PLAYERS=50
       # - WORLD=$BIND_MOUNTS/minecraft/zip/Server.zip
-      # - SNOOPER_ENABLED=false
+      - SNOOPER_ENABLED=false
     tty: true
     stdin_open: true
     volumes:
