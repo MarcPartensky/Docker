@@ -539,6 +539,7 @@ services:
     volumes:
       - /dev/shm:/dev/shm
       - mcvnc:/home/marc
+      - mcvnc_usr:/usr
     ports:
       - 8065:80
       - 5900:5900
@@ -1501,6 +1502,7 @@ volumes:
   nextcloud:
   nextcloud_mariadb:
   mcvnc:
+  mcvnc_usr:
 
 networks:
   caddy:
