@@ -424,27 +424,29 @@ services:
       - caddy
 
   # https://~.com/itzg/docker-minecraft-server/blob/master/README.md
-  # minecraft_aventure:
-  #   image: itzg/minecraft-server
-  #   restart: always
-  #   environment:
-  #     - TZ=Europe/Paris
-  #     - OPS=MazexRedstone
-  #     - EULA=TRUE
-  #     - ENABLE_AUTOPAUSE=TRUE
-  #     - ENABLE_COMMAND_BLOCK=TRUE
-  #     - MEMORY=2G
-  #     - VERSION=1.13.2
-  #     - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
-  #     - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
-  #     - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
-  #     # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
-  #   tty: true
-  #   stdin_open: true
-  #   volumes:
-  #     - $BIND_MOUNTS/minecraft/data:/data
-  #   ports:
-  #     - "25565:25565"
+  minecraft_aventure:
+    image: itzg/minecraft-server
+    restart: always
+    environment:
+      - TZ=Europe/Paris
+      - OPS=MazexRedstone
+      - EULA=TRUE
+      - ENABLE_AUTOPAUSE=TRUE
+      - ENABLE_COMMAND_BLOCK=TRUE
+      - MEMORY=1G
+      - VERSION=1.13.2
+      - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
+      - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
+      - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
+      # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
+    tty: true
+    stdin_open: true
+    volumes:
+      - $BIND_MOUNTS/minecraft/data:/data
+    ports:
+      - "25567:25565"
+    networks:
+      - minecraft
 
   minecraft:
     image: itzg/minecraft-server
@@ -472,6 +474,8 @@ services:
       - $BIND_MOUNTS/minecraft/data/:/data
     ports:
       - "25565:25565"
+    networks:
+      - minecraft
 
   minecraft_1.17:
     image: itzg/minecraft-server
@@ -498,6 +502,8 @@ services:
       - $BIND_MOUNTS/minecraft/data_v17/:/data
     ports:
       - "25566:25565"
+    networks:
+      - minecraft
 
   mcmyadmin:
     image: tekgator/docker-mcmyadmin:latest
@@ -509,7 +515,9 @@ services:
     volumes:
       - $BIND_MOUNTS/mcmyadmin/mcmyadmin:/data
     ports:
-      - "25567:25565"
+      - "25568:25565"
+    networks:
+      - minecraft
     stop_grace_period: 30s
     labels:
       - "caddy=minecraft.marcpartensky.com"
@@ -525,6 +533,24 @@ services:
   #   restart: unless-stopped
   #   networks:
   #     - nginx
+
+  mcvnc:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    volumes:
+      - /dev/shm:/dev/shm
+      - mcvnc:/home/marc
+    ports:
+      - 8065:80
+      - 5900:5900
+    environment:
+      USER: marc
+      PASSWORD: test
+    networks:
+      - minecraft
+    links:
+      - minecraft
+      - minecraft_1.17
+      - minecraft_aventure
 
   notebook:
     image: jupyter/base-notebook
@@ -1474,6 +1500,7 @@ volumes:
   letsencrypt:
   nextcloud:
   nextcloud_mariadb:
+  mcvnc:
 
 networks:
   caddy:
@@ -1494,4 +1521,5 @@ networks:
   todolist_api:
   discord:
   oxivia:
+  minecraft:
   # traefik:
