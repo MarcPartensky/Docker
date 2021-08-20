@@ -426,7 +426,7 @@ services:
   # https://~.com/itzg/docker-minecraft-server/blob/master/README.md
   minecraft_aventure:
     image: itzg/minecraft-server
-    restart: always
+    restart: unless-stopped
     environment:
       - TZ=Europe/Paris
       - OPS=MazexRedstone
@@ -442,7 +442,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - $BIND_MOUNTS/minecraft/data:/data
+      - $BIND_MOUNTS/minecraft/data_aventure:/data
     ports:
       - "25567:25565"
     networks:
