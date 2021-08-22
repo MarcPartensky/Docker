@@ -125,6 +125,10 @@ services:
       - nginx
       - box
       - caddy
+    logging:
+      options:
+        max-size: 5m
+        max-file: "10"
 
   portainer:
     image: portainer/portainer-ce
