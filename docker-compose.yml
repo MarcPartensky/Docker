@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3"
 services:
 
 
@@ -327,7 +327,9 @@ services:
   esclave:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: ~/git/discord-bot
+    build:
+      context: ~/git/discord-bot
+      dockerfile: ~/git/discord-bot/Dockerfile
     networks:
       - discord
     links:
@@ -626,9 +628,7 @@ services:
       context: ~/git/ialab
       dockerfile: ~/git/ialab/Dockerfile
     environment:
-      - FLASK_APP=server.py
-      # - FLASK_APP=/app/server.py
-      # - FLASK_APP=/app/wsgi.py
+      FLASK_APP: server.py
     # env_file:
       # - ~/git/ialab/.flaskenv
     # working_dir: /app
