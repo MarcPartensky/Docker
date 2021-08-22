@@ -211,7 +211,7 @@ services:
       - postgres
     volumes:
       - $BIND_MOUNTS/website/media:/app/media
-      - ~/git/website:/app
+      - $HOME/git/website:/app
     networks:
       - website
       - nginx
@@ -238,10 +238,10 @@ services:
     image: marcpartensky/website
     restart: unless-stopped
     build:
-      context: ~/git/website
-      dockerfile: ~/git/website/Dockerfile
+      context: $HOME/git/website
+      dockerfile: $HOME/git/website/Dockerfile
       args:
-        env_file: ~/git/website/.env
+        env_file: $HOME/git/website/.env
     env_file:
       - ./data/secrets/website.env
     environment:
@@ -328,8 +328,8 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     build:
-      context: ~/git/discord-bot
-      dockerfile: ~/git/discord-bot/Dockerfile
+      context: $HOME/git/discord-bot
+      dockerfile: $HOME/git/discord-bot/Dockerfile
     networks:
       - discord
     links:
@@ -341,18 +341,18 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     volumes:
-      - ~/git/discord-bot:/app
+      - $HOME/git/discord-bot:/app
     networks:
       - discord
     links:
       - docker_api
     env_file:
-      - ~/git/discord-bot/.env
+      - $HOME/git/discord-bot/.env
 
   ia:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: ~/git/discord-bot
+    build: $HOME/git/discord-bot
     networks:
       - discord
     env_file:
@@ -369,7 +369,7 @@ services:
   docker_api:
     image: marcpartensky/docker-api
     restart: unless-stopped
-    build: ~/git/docker-api
+    build: $HOME/git/docker-api
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -389,10 +389,10 @@ services:
   servant:
     image: marcpartensky/servitor
     restart: unless-stopped
-    build: ~/git/servitor
+    build: $HOME/git/servitor
 
   pandoc:
-    build: ~/git/pandoc-api
+    build: $HOME/git/pandoc-api
     image: marcpartensky/pandoc-api
     restart: unless-stopped
     working_dir: /app
@@ -414,7 +414,7 @@ services:
       - nginx
       - caddy
 
-  # https://~.com/itzg/docker-minecraft-server/blob/master/README.md
+  # https://$HOME.com/itzg/docker-minecraft-server/blob/master/README.md
   minecraft_aventure:
     image: itzg/minecraft-server
     restart: unless-stopped
@@ -520,7 +520,7 @@ services:
       - "traefik.http.services.minecraft.loadbalancer.server.port=8080"
 
   # pterodactyl:
-  #   build: ~/fork/panel
+  #   build: $HOME/fork/panel
   #   restart: unless-stopped
   #   networks:
   #     - nginx
@@ -576,10 +576,10 @@ services:
 # env:
   #   image: marcpartensky/env
   #   build:
-  #     context: ~/git/dotfiles
-  #     dockerfile: ~/git/dotfiles/Dockerfile
+  #     context: $HOME/git/dotfiles
+  #     dockerfile: $HOME/git/dotfiles/Dockerfile
   #     args:
-  #       env_file: ~/git/dotfiles/.env
+  #       env_file: $HOME/git/dotfiles/.env
   #   ports:
   #     - "22:7020"
   #     - "8022:7021"
@@ -625,12 +625,12 @@ services:
     user: nobody
     restart: unless-stopped
     build:
-      context: ~/git/ialab
-      dockerfile: ~/git/ialab/Dockerfile
+      context: $HOME/git/ialab
+      dockerfile: $HOME/git/ialab/Dockerfile
     environment:
       FLASK_APP: server.py
     # env_file:
-      # - ~/git/ialab/.flaskenv
+      # - $HOME/git/ialab/.flaskenv
     # working_dir: /app
     entrypoint: flask run --host ialab --port 80
     # entrypoint: "gunicorn server:app"
@@ -653,8 +653,8 @@ services:
     working_dir: /app
     restart: unless-stopped
     build:
-      context: ~/fork/open-web-calendar
-      dockerfile: ~/fork/open-web-calendar/Dockerfile
+      context: $HOME/fork/open-web-calendar
+      dockerfile: $HOME/fork/open-web-calendar/Dockerfile
     environment:
       - HOST=open_web_calendar
       - PORT=80
@@ -960,8 +960,8 @@ services:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
     build:
-      context: ~/git/todoapp/react
-      dockerfile: ~/git/todoapp/react/Dockerfile
+      context: $HOME/git/todoapp/react
+      dockerfile: $HOME/git/todoapp/react/Dockerfile
     environment:
       - PORT=80
       - SPRING_API_URL=https://api.todolist.marcpartensky.com
@@ -984,8 +984,8 @@ services:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
     build:
-      context: ~/git/todoapp/spring-api
-      dockerfile: ~/git/todoapp/spring-api/Dockerfile
+      context: $HOME/git/todoapp/spring-api
+      dockerfile: $HOME/git/todoapp/spring-api/Dockerfile
     env_file:
       - ./data/secrets/todolist.env
     environment:
@@ -1043,7 +1043,7 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.docker/config.json:/config.json
+      - $HOME/.docker/config.json:/config.json
     networks:
       - caddy
       - nginx
@@ -1150,7 +1150,7 @@ services:
     image: poiret
     restart: unless-stopped
     build:
-      context: ~/git/poiret
+      context: $HOME/git/poiret
     networks:
       - caddy
       - nginx
@@ -1169,14 +1169,14 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - $BIND_MOUNTS/windows:~
+      - $BIND_MOUNTS/windows:$HOME
 
   healingpath:
     image: marcpartensky/brainperformer
     restart: unless-stopped
     # user: healingpath
     build:
-      context: ~/git/brainperformer
+      context: $HOME/git/brainperformer
     env_file: ./data/secrets/healingpath.env
     networks:
       - caddy
@@ -1248,9 +1248,9 @@ services:
     ports:
       - "7027:22"
     volumes:
-      - ~/.ssh:~/.ssh:ro
+      - $HOME/.ssh:$HOME/.ssh:ro
     environment:
-      SSH_KEYS_PATH: ~/.ssh
+      SSH_KEYS_PATH: $HOME/.ssh
       SSH_HOSTNAME: marcpartensky.com
       SSH_PORT_LISTEN: 22
 
@@ -1263,7 +1263,7 @@ services:
     env_file:
       - "./data/secrets/vnc.env"
     volumes:
-      - ~:/root
+      - $HOME:/root
       # - /usr/bin:/usr/bin
       # - /usr/local/bin:/usr/local/bin
     networks:
@@ -1323,8 +1323,8 @@ services:
     restart: unless-stopped
     image: marcpartensky/schtroumpfix
     build:
-      context: ~/git/schtroumpfix
-      # dockerfile: ~/git/schtroumpfix/Dockerfile
+      context: $HOME/git/schtroumpfix
+      # dockerfile: $HOME/git/schtroumpfix/Dockerfile
     env_file:
       - data/secrets/schtroumpfix.env
     environment:
@@ -1444,8 +1444,8 @@ services:
     image: sebp/lighttpd
     restart: unless-stopped
     volumes:
-      - ~/git/thaiwara:/var/www/localhost/htdocs
-      - ~/git/thaiwara/etc/lighttpd:/etc/lighttpd
+      - $HOME/git/thaiwara:/var/www/localhost/htdocs
+      - $HOME/git/thaiwara/etc/lighttpd:/etc/lighttpd
     tty: true
     networks:
       - caddy
@@ -1462,7 +1462,7 @@ services:
   ssh_honeypot:
     image: local/ssh-honeypot
     restart: unless-stopped
-    build: ~/fork/ssh-honeypot/docker
+    build: $HOME/fork/ssh-honeypot/docker
     ports:
       - "22:2022"
     volumes:
@@ -1473,7 +1473,7 @@ services:
     image: sebp/lighttpd
     restart: unless-stopped
     volumes:
-      - ~/git/valentin:/var/www/localhost/htdocs
+      - $HOME/git/valentin:/var/www/localhost/htdocs
     tty: true
     networks:
       - caddy
