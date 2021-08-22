@@ -339,6 +339,8 @@ services:
         env_file: $HOME/git/discord-bot/.env
     networks:
       - discord
+    links:
+      - docker_api
     env_file:
       - ./data/secrets/ia.env
 
@@ -352,6 +354,8 @@ services:
         env_file: $HOME/git/discord-bot/.env
     networks:
       - discord
+    links:
+      - docker_api
     env_file:
       - ./data/secrets/discord_bot_mongo.env
 
