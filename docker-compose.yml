@@ -197,7 +197,7 @@ services:
     env_file:
       - ./data/secrets/website.env
     environment:
-      - VIRTUAL_HOST=marcpartensky.com
+      - VIRTUAL_HOST=dev.marcpartensky.com
       - VIRTUAL_PORT=80
       - DEBUG=true
     working_dir: /app
@@ -1087,7 +1087,7 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   gitea:
-    image: gitea/gitea:1.14.1
+    image: gitea/gitea:1.14.6
     restart: unless-stopped
     # user: git
     environment:
