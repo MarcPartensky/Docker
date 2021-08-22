@@ -130,8 +130,8 @@ services:
     image: portainer/portainer-ce
     restart: unless-stopped
     environment:
-      - VIRTUAL_HOST=docker.marcpartensky.com
-      - VIRTUAL_PORT=9000
+      VIRTUAL_HOST: docker.marcpartensky.com
+      VIRTUAL_PORT: 9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - $BIND_MOUNTS/portainer:/data
@@ -302,34 +302,14 @@ services:
     networks:
       - website
 
-  # certbot:
-  #   image: certbot/certbot
-  #   volumes:
-  #     - ./data/certbot/conf:/etc/letsencrypt
-  #     - ./data/certbot/www:/var/www/certbot
-  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
-  # certbot_nginx:
-  #     restart: unless-stopped
-  #     image: staticfloat/nginx-certbot
-  #     ports:
-  #         - "80:80/tcp"
-  #         - "443:443/tcp"
-  #     environment:
-  #         CERTBOT_EMAIL: marc.partensky@gmail.com
-  #         # variable names are space-separated
-  #         ENVSUBST_VARS: FQDN
-  #         FQDN: marcpartensky.com
-  #     volumes:
-  #       - ./conf.d:/etc/nginx/user.conf.d:ro
-  #       - letsencrypt:/etc/letsencrypt
-
   esclave:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     build:
       context: $HOME/git/discord-bot
       dockerfile: $HOME/git/discord-bot/Dockerfile
+      args:
+        env_file: $HOME/git/discord-bot/.env
     networks:
       - discord
     links:
@@ -352,7 +332,11 @@ services:
   ia:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build: $HOME/git/discord-bot
+    build:
+      context: $HOME/git/discord-bot
+      dockerfile: $HOME/git/discord-bot/Dockerfile
+      args:
+        env_file: $HOME/git/discord-bot/.env
     networks:
       - discord
     env_file:
@@ -361,6 +345,11 @@ services:
   discord_bot_mongo:
     image: mongo
     restart: unless-stopped
+    build:
+      context: $HOME/git/discord-bot
+      dockerfile: $HOME/git/discord-bot/Dockerfile
+      args:
+        env_file: $HOME/git/discord-bot/.env
     networks:
       - discord
     env_file:
