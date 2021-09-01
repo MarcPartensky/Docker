@@ -712,13 +712,13 @@ services:
     networks:
       - caddy
       - nginx
-      - business
+      - wordpress
     env_file:
       - data/secrets/business.env
     volumes:
       - $BIND_MOUNTS/business:/var/www/html
     depends_on:
-      - business_mysql
+      - wordpress_mysql
     labels:
       - "caddy=business.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams}}"
@@ -728,16 +728,16 @@ services:
       - "traefik.http.routers.business.tls.certresolver=tls"
       - "traefik.http.services.business.loadbalancer.server.port=80"
 
-  business_mysql:
-    image: mysql
-    restart: unless-stopped
-    env_file:
-      - data/secrets/business.env
-    networks:
-      - caddy
-      - business
-    volumes:
-      - $BIND_MOUNTS/business_mysql:/var/lib/mysql
+  # business_mysql:
+  #   image: mysql
+  #   restart: unless-stopped
+  #   env_file:
+  #     - data/secrets/business.env
+  #   networks:
+  #     - caddy
+  #     - wordpress
+  #   volumes:
+  #     - $BIND_MOUNTS/business_mysql:/var/lib/mysql
 
   oxivia:
     image: wordpress
@@ -903,7 +903,8 @@ services:
     image: nextcloud
     restart: unless-stopped
     volumes:
-      - nextcloud:/var/www/html
+      # - nextcloud:/var/www/html
+      - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud:/var/www/html
     env_file:
       - ./data/secrets/nextcloud.env
     networks:
@@ -925,8 +926,11 @@ services:
     image: mariadb
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    ports:
+      - "7200:3306"
     volumes:
-      - nextcloud_mariadb:/var/lib/mysql
+      # - nextcloud_mariadb:/var/lib/mysql
+      - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud_mariadb:/var/www/html
     env_file:
       - ./data/secrets/nextcloud.env
     networks:
@@ -1196,7 +1200,7 @@ services:
     # user: healingpath
     env_file: ./data/secrets/healingpath.env
     ports:
-      - "8006:3306"
+      - "7201:3306"
     volumes:
       - $BIND_MOUNTS/healingpath/db:/var/lib/mysql
     networks:
