@@ -904,10 +904,10 @@ services:
     restart: unless-stopped
     volumes:
       - nextcloud:/var/www/html
-      - config:/var/www/html/config
       - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud:/var/www/html/data
-      # - theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
-      # - apps:/var/www/html/custom_apps
+      # - nextcloud_theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
+      # - nextcloud_apps:/var/www/html/custom_apps
+      # - nextcloud_config:/var/www/html/config
     env_file:
       - ./data/secrets/nextcloud.env
     networks:
