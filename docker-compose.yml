@@ -903,7 +903,7 @@ services:
     image: nextcloud
     restart: unless-stopped
     volumes:
-      - nextcloud:/var/www/html
+      # - nextcloud:/var/www/html
       - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud:/var/www/html/data
       # - nextcloud_theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
       # - nextcloud_apps:/var/www/html/custom_apps
