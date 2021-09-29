@@ -535,10 +535,10 @@ services:
       PASSWORD: test
     networks:
       - minecraft
-    links:
-      - minecraft
-      - minecraft_1.17
-      - minecraft_aventure
+    # links:
+    #   - minecraft
+    #   - minecraft_1.17
+    #   - minecraft_aventure
 
   notebook:
     image: jupyter/base-notebook
