@@ -529,7 +529,7 @@ services:
       - mcvnc_usr:/usr
     ports:
       - 8065:80
-      - 5900:5900
+      - 5901:5900
     environment:
       USER: marc
       PASSWORD: test
