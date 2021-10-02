@@ -1253,8 +1253,9 @@ services:
     volumes:
       - $HOME/.ssh:$HOME/.ssh:ro
     environment:
-      SSH_KEYS_PATH: $HOME/.ssh
-      SSH_HOSTNAME: marcpartensky.com
+      SSH_KEYS_PATH: $HOME/.ssh/id_rsa
+      # SSH_HOSTNAME: marcpartensky.com
+      SSH_HOSTNAME: fedora.local
       SSH_PORT_LISTEN: 22
 
   vnc:
