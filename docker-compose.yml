@@ -1117,6 +1117,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "7012:22"
+      - "3000:3000"
     depends_on:
       - gitea_postgres
     labels:
