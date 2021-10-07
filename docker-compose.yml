@@ -1445,6 +1445,24 @@ services:
       - NET_ADMIN
       - SYS_PTRACE
 
+  facebook:
+    image: sebp/lighttpd
+    restart: unless-stopped
+    volumes:
+      - $HOME/git/facebook:/var/www/localhost/htdocs
+    tty: true
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=facebook.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.facebook.rule=Host(`facebook.marcpartensky.com`)"
+      - "traefik.http.routers.facebook.entrypoints=websecure"
+      - "traefik.http.routers.facebook.tls.certresolver=tls"
+      - "traefik.http.services.facebook.loadbalancer.server.port=80"
+
   thaiwara:
     image: sebp/lighttpd
     restart: unless-stopped
