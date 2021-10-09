@@ -1,7 +1,6 @@
 version: "3"
 services:
 
-
   traefik:
     image: traefik
     restart: unless-stopped
@@ -807,6 +806,60 @@ services:
     volumes:
       - $BIND_MOUNTS/wordpress_mysql_arnaud:/var/lib/mysql
 
+  wordpress_anaelle:
+    image: wordpress
+    restart: unless-stopped
+    networks:
+      - caddy
+      - nginx
+      - wordpress_anaelle
+    env_file:
+      - data/secrets/wordpress_anaelle.env
+    volumes:
+      - $BIND_MOUNTS/wordpress_anaelle:/var/www/html
+    depends_on:
+      - wordpress_mysql_anaelle
+    labels:
+      - "caddy=anaelle.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress_anaelle.rule=Host(`anaelle.wp.marcpartensky.com`)"
+      - "traefik.http.routers.wordpress_anaelle.entrypoints=websecure"
+      - "traefik.http.routers.wordpress_anaelle.tls.certresolver=tls"
+      - "traefik.http.services.wordpress_anaelle.loadbalancer.server.port=80"
+
+  wordpress_mysql_anaelle:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/wordpress_anaelle.env
+    networks:
+      - caddy
+      - wordpress_anaelle
+    ports:
+      - "7036:3306"
+    volumes:
+      - $BIND_MOUNTS/wordpress_mysql_anaelle:/var/lib/mysql
+
+  wordpress_anaelle_phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    networks:
+      - wordpress_anaelle
+      - caddy
+    depends_on:
+      - wordpress_mysql_anaelle
+    env_file:
+      - data/secrets/wordpress_anaelle.env
+    labels:
+      - "caddy=phpmyadmin.anaelle.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress_anaelle.rule=Host(`phpmyadmin.anaelle.wp.marcpartensky.com`)"
+      - "traefik.http.routers.wordpress_anaelle.entrypoints=websecure"
+      - "traefik.http.routers.wordpress_anaelle.tls.certresolver=tls"
+      - "traefik.http.services.wordpress_anaelle.loadbalancer.server.port=80"
+
   wordpress_alex:
     image: wordpress
     restart: unless-stopped
@@ -1566,8 +1619,9 @@ networks:
   nginx:
   ldap:
   wordpress:
-  business:
+  # business:
   wordpress_alex:
+  wordpress_anaelle:
   wordpress_marc:
   wordpress_arnaud:
   gitea:
