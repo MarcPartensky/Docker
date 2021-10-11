@@ -1591,6 +1591,7 @@ services:
       - "1194:1194/udp"
       - "1194:1194/tcp"
       - "80:80/tcp"
+      - "443:443/tcp"
     networks:
       - caddy
       - nginx
