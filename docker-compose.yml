@@ -1326,12 +1326,14 @@ services:
     ports:
       - "7027:22"
     volumes:
-      - $HOME/.ssh:$HOME/.ssh:ro
+      - $HOME/.ssh:/root/.ssh
     environment:
-      SSH_KEYS_PATH: $HOME/.ssh/id_rsa
-      # SSH_HOSTNAME: marcpartensky.com
-      SSH_HOSTNAME: fedora.local
+      SSH_KEYS_PATH: /root/.ssh/id_rsa
+      SSH_HOSTNAME: marcpartensky.com
+      HAS_WEBSOCKET: 1
+      USE_PROXY_PROTOCOL: 1
       SSH_PORT_LISTEN: 22
+      SSH_PORT_ADVERTISE: 7023
 
   vnc:
     image: consol/centos-xfce-vnc
