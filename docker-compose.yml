@@ -1600,7 +1600,7 @@ services:
     # depends_on:
     #     - mongo
     environment:
-      REVERSE_PROXY: true
+      REVERSE_PROXY: "true"
       TZ: Europe/Paris
     # volumes:
     #   - /etc/localtime:/etc/localtime:ro
