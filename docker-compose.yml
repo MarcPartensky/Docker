@@ -1623,7 +1623,7 @@ services:
 
   mongo:
     image: mongo:latest
-    container_name: pritunldb
+    # container_name: pritunldb
     hostname: pritunldb
     volumes:
       - $BIND_MOUNTS/pritunl_mongo:/data/db
