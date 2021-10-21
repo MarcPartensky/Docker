@@ -1,0 +1,1504 @@
+version: "3"
+services:
+
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CADDY_INGRESS_NETWORKS: caddy
+      # CADDY_DOCKER_CADDYFILE_PATH: /etc/Caddyfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $BIND_MOUNTS/caddy:/data/caddy
+      # - ./data/caddy/Caddyfile:/etc/Caddyfile
+    networks:
+      - nginx
+      - box
+      - caddy
+    logging:
+      options:
+        max-size: 5m
+        max-file: "10"
+
+  portainer:
+    image: portainer/portainer-ce
+    restart: unless-stopped
+    environment:
+      VIRTUAL_HOST: docker.marcpartensky.com
+      VIRTUAL_PORT: 9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $BIND_MOUNTS/portainer:/data
+    networks:
+      - nginx
+      - caddy
+    command:
+      - --logo
+      - https://marcpartensky.com/static/home/assets/img/white-orchid.svg
+    labels:
+      - "caddy=docker.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 9000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`docker.marcpartensky.com`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=tls"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+
+  registry:
+    restart: unless-stopped
+    image: registry:latest
+    # ports:
+    #   - 5000:5000
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:80
+      REGISTRY_HTTP_SECRET: akdfjkalsdjfkljadklsfjkajsdfklj
+      # REGISTRY_HTTP_ADDR: 0.0.0.0:443
+      # REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+      # REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+      # REGISTRY_AUTH: htpasswd
+      # REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      # REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    volumes:
+      - $BIND_MOUNTS/registry/data:/var/lib/registry
+      - $BIND_MOUNTS/registry/certs:/certs
+      - $BIND_MOUNTS/registry/auth:/auth
+    labels:
+      - "caddy=registry.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry.rule=Host(`registry.marcpartensky.com`)"
+      - "traefik.http.routers.registry.entrypoints=websecure"
+      - "traefik.http.routers.registry.tls.certresolver=tls"
+      - "traefik.http.services.registry.loadbalancer.server.port=80"
+
+  # website_dev:
+  #   image: marcpartensky/website
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./data/secrets/website.env
+  #   environment:
+  #     - VIRTUAL_HOST=dev.marcpartensky.com
+  #     - VIRTUAL_PORT=80
+  #     - DEBUG=true
+  #   working_dir: /app
+  #   tty: true
+  #   entrypoint: >
+  #     sh -c "./manage.py migrate;
+  #            ./manage.py createsuperuser --noinput;
+  #            daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
+  #   links:
+  #     - redis
+  #     - postgres
+  #   volumes:
+  #     - $BIND_MOUNTS/website/media:/app/media
+  #     - $HOME/git/website:/app
+  #   networks:
+  #     - website
+  #     - nginx
+  #     - caddy
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #   healthcheck:
+  #       test: ["CMD", "curl", "-f", "http://localhost/robots.txt"]
+  #       interval: 1m30s
+  #       timeout: 10s
+  #       retries: 3
+  #       # start_period: 40s
+  #   labels:
+  #     - "caddy=dev.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 80}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.website_dev.rule=Host(`dev.marcpartensky.com`)"
+  #     - "traefik.http.routers.website_dev.entrypoints=websecure"
+  #     - "traefik.http.routers.website_dev.tls.certresolver=tls"
+  #     - "traefik.http.services.website_dev.loadbalancer.server.port=80"
+
+  website:
+    image: marcpartensky/website
+    restart: unless-stopped
+    build:
+      context: $HOME/git/website
+      dockerfile: $HOME/git/website/Dockerfile
+      args:
+        env_file: $HOME/git/website/.env
+    env_file:
+      - ./data/secrets/website.env
+    environment:
+      - VIRTUAL_HOST=marcpartensky.com
+      - VIRTUAL_PORT=80
+      - DEBUG=true
+      # - SECURE_SSL_REDIRECT=false
+      # - KEY=/app/privkey.pem
+      # - CERT=/app/fullchain.pem
+    working_dir: /app
+    tty: true
+    entrypoint: >
+      sh -c "./manage.py migrate;
+             ./manage.py createsuperuser --noinput;
+             daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
+    # entrypoint: "daphne -e ssl:443:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
+    # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
+    links:
+      - redis
+      - postgres
+    volumes:
+      - $BIND_MOUNTS/website/media:/app/media
+    networks:
+      - website
+      - nginx
+      - caddy
+    depends_on:
+      - redis
+      - postgres
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost/robots.txt"]
+        interval: 1m30s
+        timeout: 10s
+        retries: 3
+        # start_period: 40s
+    labels:
+      - "caddy=marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.website.rule=Host(`marcpartensky.com`)"
+      - "traefik.http.routers.website.entrypoints=websecure"
+      - "traefik.http.routers.website.tls.certresolver=tls"
+      - "traefik.http.services.website.loadbalancer.server.port=80"
+
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - $BIND_MOUNTS/postgres/dump:$BIND_MOUNTS/postgresql/dump
+    env_file:
+      - data/secrets/postgres.env
+    networks:
+      - website
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    networks:
+      - website
+
+  esclave:
+    image: marcpartensky/discord-bot
+    restart: unless-stopped
+    build:
+      context: $HOME/git/discord-bot
+      dockerfile: $HOME/git/discord-bot/Dockerfile
+      args:
+        env_file: $HOME/git/discord-bot/.env
+    networks:
+      - discord
+    links:
+      - docker_api
+    env_file:
+      - ./data/secrets/esclave.env
+
+  # esclave_dev:
+  #   image: marcpartensky/discord-bot
+  #   restart: unless-stopped
+  #   volumes:
+  #     - $HOME/git/discord-bot:/app
+  #   networks:
+  #     - discord
+  #   links:
+  #     - docker_api
+  #   env_file:
+  #     - $HOME/git/discord-bot/.env
+
+  ia:
+    image: marcpartensky/discord-bot
+    restart: unless-stopped
+    build:
+      context: $HOME/git/discord-bot
+      dockerfile: $HOME/git/discord-bot/Dockerfile
+      args:
+        env_file: $HOME/git/discord-bot/.env
+    networks:
+      - discord
+    links:
+      - docker_api
+    env_file:
+      - ./data/secrets/ia.env
+
+  discord_bot_mongo:
+    image: mongo
+    restart: unless-stopped
+    volumes:
+      - /srv/discord_bot_mongo:/data/db
+    networks:
+      - discord
+    ports:
+      - "27017:27017"
+    links:
+      - docker_api
+    env_file:
+      - ./data/secrets/discord_bot_mongo.env
+
+  docker_api:
+    image: marcpartensky/docker-api
+    restart: unless-stopped
+    build: $HOME/git/docker-api
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - discord
+      # - caddy
+    # labels:
+    #   - "caddy=api.docker.marcpartensky.com"
+    #   - "caddy.handle_path=/docs"
+    #   - "caddy.handle_path.0_rewrite=/"
+    #   - "caddy.reverse_proxy={{upstreams 80}}"
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.docker_api.rule=Host(`api.docker.marcpartensky.com`)"
+    #   - "traefik.http.routers.docker_api.entrypoints=websecure"
+    #   - "traefik.http.routers.docker_api.tls.certresolver=tls"
+    #   - "traefik.http.services.docker_api.loadbalancer.server.port=80"
+
+  servant:
+    image: marcpartensky/servitor
+    restart: unless-stopped
+    build: $HOME/git/servitor
+
+  pandoc:
+    build: $HOME/git/pandoc-api
+    image: marcpartensky/pandoc-api
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - ./data/secrets/pandoc.env
+    entrypoint: "flask run --host pandoc --port 80"
+    volumes:
+      - $BIND_MOUNTS/pandoc:/app/files
+      - /var/log/nginx:/var/log/nginx
+    labels:
+      - "caddy=pandoc.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pandoc.rule=Host(`pandoc.marcpartensky.com`)"
+      - "traefik.http.routers.pandoc.entrypoints=websecure"
+      - "traefik.http.routers.pandoc.tls.certresolver=tls"
+      - "traefik.http.services.pandoc.loadbalancer.server.port=80"
+    networks:
+      - nginx
+      - caddy
+
+  # https://$HOME.com/itzg/docker-minecraft-server/blob/master/README.md
+  # minecraft_aventure:
+  #   image: itzg/minecraft-server
+  #   restart: unless-stopped
+  #   environment:
+  #     - TZ=Europe/Paris
+  #     - OPS=MazexRedstone
+  #     - EULA=TRUE
+  #     - ENABLE_AUTOPAUSE=TRUE
+  #     - ENABLE_COMMAND_BLOCK=TRUE
+  #     - MEMORY=1G
+  #     - VERSION=1.13.2
+  #     - ICON=https://cdn.discordapp.com/attachments/507519157387132940/816443237384454144/maxime.png
+  #     - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
+  #     - WORLD=https://download2342.mediafire.com/89adsak3r96g/xavlx2bmrypq2s0/Across+The+Time+II+-+Time+For+Regrets+%28release+1.0.4%29.zip
+  #     # - MODS=https://www.example.com/mods/mod1.jar,https://www.example.com/mods/mod2.jar
+  #   tty: true
+  #   stdin_open: true
+  #   volumes:
+  #     - $BIND_MOUNTS/minecraft/data_aventure:/data
+  #   ports:
+  #     - "25567:25565"
+  #   networks:
+  #     - minecraft
+
+  # minecraft:
+  #   image: itzg/minecraft-server
+  #   restart: unless-stopped
+  #   environment:
+  #     - TZ=Europe/Paris
+  #     - EULA=TRUE
+  #     - OPS=MazexRedstone
+  #     - ENABLE_COMMAND_BLOCK=TRUE
+  #     - MEMORY=2G
+  #     - VERSION=1.16.5
+  #     - ICON=https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
+  #     - MOTD=Made in Marc Partensky
+  #     - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
+  #     - LEVEL=Server
+  #     - ONLINE_MODE=FALSE # no need for an account
+  #     - DIFFICULTY=hard
+  #     - VIEW_DISTANCE=32
+  #     # - MAX_PLAYERS=50
+  #     # - WORLD=$BIND_MOUNTS/minecraft/zip/Server.zip
+  #     - SNOOPER_ENABLED=false
+  #   tty: true
+  #   stdin_open: true
+  #   volumes:
+  #     - $BIND_MOUNTS/minecraft/data/:/data
+  #   ports:
+  #     - "25565:25565"
+  #   networks:
+  #     - minecraft
+
+  # minecraft_1.17:
+  #   image: itzg/minecraft-server
+  #   restart: unless-stopped
+  #   environment:
+  #     - TZ=Europe/Paris
+  #     - EULA=TRUE
+  #     - OPS=MazexRedstone
+  #     - ENABLE_COMMAND_BLOCK=TRUE
+  #     - MEMORY=2G
+  #     - VERSION=1.17.1
+  #     - ICON=https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
+  #     - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
+  #     - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
+  #     - LEVEL=Server
+  #     - ONLINE_MODE=FALSE # no need for an account
+  #     - DIFFICULTY=hard
+  #     - VIEW_DISTANCE=32
+  #     # - WORLD=$BIND_MOUNTS/minecraft/zip/Server.zip
+  #     # - SNOOPER_ENABLED=false
+  #   tty: true
+  #   stdin_open: true
+  #   volumes:
+  #     - $BIND_MOUNTS/minecraft/data_v17/:/data
+  #   ports:
+  #     - "25566:25565"
+  #   networks:
+  #     - minecraft
+
+  # mcmyadmin:
+  #   image: tekgator/docker-mcmyadmin:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     PUID: 1001
+  #     PGID: 1001
+  #     EULA: 1
+  #   volumes:
+  #     - $BIND_MOUNTS/mcmyadmin/mcmyadmin:/data
+  #   ports:
+  #     - "25568:25565"
+  #   networks:
+  #     - minecraft
+  #   stop_grace_period: 30s
+  #   labels:
+  #     - "caddy=minecraft.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 8080}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.minecraft.rule=Host(`minecraft.marcpartensky.com`)"
+  #     - "traefik.http.routers.minecraft.entrypoints=websecure"
+  #     - "traefik.http.routers.minecraft.tls.certresolver=tls"
+  #     - "traefik.http.services.minecraft.loadbalancer.server.port=8080"
+
+  # pterodactyl:
+  #   build: $HOME/fork/panel
+  #   restart: unless-stopped
+  #   networks:
+  #     - nginx
+
+  mcvnc:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    volumes:
+      - /dev/shm:/dev/shm
+      - mcvnc:/home/marc
+      - mcvnc_usr:/usr
+    ports:
+      - 8065:80
+      - 5901:5900
+    environment:
+      USER: marc
+      PASSWORD: test
+    networks:
+      - minecraft
+    # links:
+    #   - minecraft
+    #   - minecraft_1.17
+    #   - minecraft_aventure
+
+  notebook:
+    image: jupyter/base-notebook
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+    #   - GEN_CERT=yes
+      - JUPYTER_ENABLE_LAB=yes
+      - GRANT_SUDO=yes
+    entrypoint: start.sh jupyter lab --user root
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=notebook.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 8888}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.notebook.rule=Host(`notebook.marcpartensky.com`)"
+      - "traefik.http.routers.notebook.entrypoints=websecure"
+      - "traefik.http.routers.notebook.tls.certresolver=tls"
+      - "traefik.http.services.notebook.loadbalancer.server.port=8888"
+    # entrypoint: start-notebook.sh \
+    #     --NotebookApp.keyfile=key/0000_key-certbot.pem
+    #     --NotebookApp.certfile=cert/0000_csr-certbot.pem
+    # volumes:
+    #   - /etc/letsencrypt/keys:/home/jovyan/work/key
+    #   - /etc/letsencrypt/csr:/home/jovyan/work/cert
+    #   - /etc/letsencrypt:/etc/letsencrypt
+
+# env:
+  #   image: marcpartensky/env
+  #   build:
+  #     context: $HOME/git/dotfiles
+  #     dockerfile: $HOME/git/dotfiles/Dockerfile
+  #     args:
+  #       env_file: $HOME/git/dotfiles/.env
+  #   ports:
+  #     - "22:7020"
+  #     - "8022:7021"
+  #     volumes:
+
+  # elasticsearch:
+    # image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    # image: docker.elastic.co/elasticsearch/elasticsearch:latest
+    # image: elasticsearch:latest
+    # environment:
+    #   - discovery.type=single-node
+    #   - ES_ENABLE_SECURITY=true
+    # env_file:
+    #   - ./data/secrets/elasticsearch.env
+    # volumes:
+    #   - $BIND_MOUNTS/elasticsearch/data:$BIND_MOUNTS/elasticsearch/data
+    #   # - elasticsearch:/usr/share/elasticsearch/data
+    # networks:
+    #   - nginx
+    #   - elk
+    # ports:
+    #   - "9200:9200"
+    #   - "9300:9300"
+    # ulimits:
+    #   memlock:
+    #     soft: -1
+    #     hard: -1
+
+  # kibana:
+    # image: docker.elastic.co/kibana/kibana:latest
+    # image: kibana:latest
+    # ports:
+    #   - "5601:5601"
+    # env_file:
+    #   - ./data/secrets/kibana.env
+    # depends_on:
+    #   - elasticsearch
+    # networks:
+    #   - nginx
+
+  ialab:
+    image: marcpartensky/ialab
+    user: nobody
+    restart: unless-stopped
+    build:
+      context: $HOME/git/ialab
+      dockerfile: $HOME/git/ialab/Dockerfile
+    environment:
+      FLASK_APP: server.py
+    # env_file:
+      # - $HOME/git/ialab/.flaskenv
+    # working_dir: /app
+    entrypoint: flask run --host ialab --port 80
+    # entrypoint: "gunicorn server:app"
+    # entrypoint: "gunicorn --chdir /app server:app"
+    volumes:
+      - $BIND_MOUNTS/ialab:/app
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=ialab.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.ialab.rule=Host(`ialab.marcpartensky.com`)"
+      - "traefik.http.routers.ialab.entrypoints=websecure"
+      - "traefik.http.routers.ialab.tls.certresolver=tls"
+      - "traefik.http.services.ialab.loadbalancer.server.port=80"
+
+  open_web_calendar:
+    working_dir: /app
+    restart: unless-stopped
+    build:
+      context: $HOME/fork/open-web-calendar
+      dockerfile: $HOME/fork/open-web-calendar/Dockerfile
+    environment:
+      - HOST=open_web_calendar
+      - PORT=80
+    networks:
+      - caddy
+      - nginx
+    entrypoint: python app.py
+    labels:
+      - "caddy=calendar.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.open_web_calendar.rule=Host(`calendar.marcpartensky.com`)"
+      - "traefik.http.routers.open_web_calendar.entrypoints=websecure"
+      - "traefik.http.routers.open_web_calendar.tls.certresolver=tls"
+      - "traefik.http.services.open_web_calendar.loadbalancer.server.port=80"
+
+  # discord_voice_recorder:
+  #   image: drv
+  #   volumes:
+  #     - $BIND_MOUNTS/discord-voice-recorder/recordings:/usr/src/bot/recordings
+
+  # wordpress:
+  #   image: wordpress
+  #   restart: unless-stopped
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - wordpress
+  #   env_file:
+  #     - data/secrets/wordpress.env
+  #   volumes:
+  #     - $BIND_MOUNTS/wordpress:/var/www/html
+  #   depends_on:
+  #     - wordpress_mysql
+  #   labels:
+  #     - "caddy=wordpress.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.wordpress.rule=Host(`wordpress.marcpartensky.com`)"
+  #     - "traefik.http.routers.wordpress.entrypoints=websecure"
+  #     - "traefik.http.routers.wordpress.tls.certresolver=tls"
+  #     - "traefik.http.services.wordpress.loadbalancer.server.port=80"
+
+  # wordpress_mysql:
+  #   image: mysql
+  #   restart: unless-stopped
+  #   env_file:
+  #     - data/secrets/wordpress.env
+  #   networks:
+  #     - caddy
+  #     - wordpress
+  #   volumes:
+  #     - $BIND_MOUNTS/wordpress_mysql:/var/lib/mysql
+
+  # business:
+  #   image: wordpress
+  #   restart: unless-stopped
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - wordpress
+  #   env_file:
+  #     - data/secrets/business.env
+  #   volumes:
+  #     - $BIND_MOUNTS/business:/var/www/html
+  #   depends_on:
+  #     - wordpress_mysql
+  #   labels:
+  #     - "caddy=business.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.business.rule=Host(`business.marcpartensky.com`)"
+  #     - "traefik.http.routers.business.entrypoints=websecure"
+  #     - "traefik.http.routers.business.tls.certresolver=tls"
+  #     - "traefik.http.services.business.loadbalancer.server.port=80"
+
+  # business_mysql:
+  #   image: mysql
+  #   restart: unless-stopped
+  #   env_file:
+  #     - data/secrets/business.env
+  #   networks:
+  #     - caddy
+  #     - wordpress
+  #   volumes:
+  #     - $BIND_MOUNTS/business_mysql:/var/lib/mysql
+
+  oxivia:
+    image: wordpress
+    restart: unless-stopped
+    env_file:
+      - data/secrets/oxivia.env
+    volumes:
+      - $BIND_MOUNTS/oxivia:/var/www/html
+      - ./data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - caddy
+      - nginx
+      - oxivia
+    depends_on:
+      - oxivia_mysql
+    labels:
+      - "caddy=oxivia.business.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.oxivia.rule=Host(`oxivia.business.marcpartensky.com`)"
+      - "traefik.http.routers.oxivia.entrypoints=websecure"
+      - "traefik.http.routers.oxivia.tls.certresolver=tls"
+      - "traefik.http.services.oxivia.loadbalancer.server.port=80"
+
+  oxivia_mysql:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/oxivia.env
+    ports:
+      - "3307:3306"
+    volumes:
+      - $BIND_MOUNTS/oxivia_mysql:/var/lib/mysql
+    networks:
+      - caddy
+      - oxivia
+
+  # wordpress_arnaud:
+  #   image: wordpress
+  #   restart: unless-stopped
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - wordpress_arnaud
+  #   env_file:
+  #     - data/secrets/wordpress_arnaud.env
+  #   volumes:
+  #     - $BIND_MOUNTS/wordpress_arnaud:/var/www/html
+  #   depends_on:
+  #     - wordpress_mysql_arnaud
+  #   labels:
+  #     - "caddy=arnaud.wp.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.wordpress_arnaud.rule=Host(`arnaud.wp.marcpartensky.com`)"
+  #     - "traefik.http.routers.wordpress_arnaud.entrypoints=websecure"
+  #     - "traefik.http.routers.wordpress_arnaud.tls.certresolver=tls"
+  #     - "traefik.http.services.wordpress_arnaud.loadbalancer.server.port=80"
+
+  # wordpress_mysql_arnaud:
+  #   image: mysql
+  #   restart: unless-stopped
+  #   env_file:
+  #     - data/secrets/wordpress_arnaud.env
+  #   networks:
+  #     - caddy
+  #     - wordpress_arnaud
+  #   volumes:
+  #     - $BIND_MOUNTS/wordpress_mysql_arnaud:/var/lib/mysql
+
+  wordpress_alex:
+    image: wordpress
+    restart: unless-stopped
+    networks:
+      - caddy
+      - nginx
+      - wordpress_alex
+    env_file:
+      - data/secrets/wordpress_alex.env
+    volumes:
+      - $BIND_MOUNTS/wordpress_alex:/var/www/html
+    depends_on:
+      - wordpress_mysql_alex
+    labels:
+      - "caddy=alex.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress_alex.rule=Host(`alex.wp.marcpartensky.com`)"
+      - "traefik.http.routers.wordpress_alex.entrypoints=websecure"
+      - "traefik.http.routers.wordpress_alex.tls.certresolver=tls"
+      - "traefik.http.services.wordpress_alex.loadbalancer.server.port=80"
+
+  wordpress_mysql_alex:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/wordpress_alex.env
+    networks:
+      - caddy
+      - wordpress_alex
+    ports:
+      - "7306:3306"
+    volumes:
+      - $BIND_MOUNTS/wordpress_mysql_alex:/var/lib/mysql
+
+  wordpress_alex_phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    networks:
+      - wordpress_alex
+      - caddy
+    depends_on:
+      - wordpress_mysql_alex
+    env_file:
+      - data/secrets/wordpress_alex.env
+    labels:
+      - "caddy=phpmyadmin.alex.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress_alex.rule=Host(`phpmyadmin.alex.wp.marcpartensky.com`)"
+      - "traefik.http.routers.wordpress_alex.entrypoints=websecure"
+      - "traefik.http.routers.wordpress_alex.tls.certresolver=tls"
+      - "traefik.http.services.wordpress_alex.loadbalancer.server.port=80"
+
+  # wordpress_marc:
+  #   image: wordpress
+  #   restart: unless-stopped
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - wordpress_marc
+  #   env_file:
+  #     - data/secrets/wordpress_marc.env
+  #   volumes:
+  #     - $BIND_MOUNTS/wordpress_marc:/var/www/html
+  #   depends_on:
+  #     - wordpress_mysql_marc
+  #   labels:
+  #     - "caddy=marc.wp.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.wordpress_marc.rule=Host(`marc.wp.marcpartensky.com`)"
+  #     - "traefik.http.routers.wordpress_marc.entrypoints=websecure"
+  #     - "traefik.http.routers.wordpress_marc.tls.certresolver=tls"
+  #     - "traefik.http.services.wordpress_marc.loadbalancer.server.port=80"
+
+  # wordpress_mysql_marc:
+  #   image: mysql
+  #   restart: unless-stopped
+  #   env_file:
+  #     - data/secrets/wordpress_marc.env
+  #   networks:
+  #     - caddy
+  #     - wordpress_marc
+  #   volumes:
+  #     - $BIND_MOUNTS/wordpress_mysql_marc:/var/lib/mysql
+
+
+  # samba:
+  #   image: dperson/samba
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /:/mount
+  #   ports:
+  #     - "139:139"
+  #     - "445:445"
+
+  # plantuml:
+  #   image: plantuml/plantuml-server:tomcat
+  #   restart: unless-stopped
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=uml.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 8080}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.plantuml.rule=Host(`uml.marcpartensky.com`)"
+  #     - "traefik.http.routers.plantuml.entrypoints=websecure"
+  #     - "traefik.http.routers.plantuml.tls.certresolver=tls"
+  #     - "traefik.http.services.plantuml.loadbalancer.server.port=8080"
+
+  nextcloud:
+    image: nextcloud
+    restart: unless-stopped
+    volumes:
+      # - nextcloud:/var/www/html
+      - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud:/var/www/html/data
+      # - nextcloud_theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
+      # - nextcloud_apps:/var/www/html/custom_apps
+      # - nextcloud_config:/var/www/html/config
+    env_file:
+      - ./data/secrets/nextcloud.env
+    networks:
+      - caddy
+      - nextcloud
+      - nginx
+    depends_on:
+      - nextcloud_mariadb
+    labels:
+      - "caddy=cloud.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=Host(`cloud.marcpartensky.com`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=tls"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+
+  nextcloud_mariadb:
+    image: mariadb
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    ports:
+      - "7200:3306"
+    volumes:
+      # - nextcloud_mariadb:/var/lib/mysql
+      - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud_mariadb:/var/www/html
+    env_file:
+      - ./data/secrets/nextcloud.env
+    networks:
+      - caddy
+      - nextcloud
+
+  searx:
+    image: searx/searx
+    restart: unless-stopped
+    volumes:
+      - ./data/searx:/etc/searx
+    # environment:
+    #   - PORT=80
+    #   - BASE_URL=http://localhost:$PORT
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=searx.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.searx.rule=Host(`searx.marcpartensky.com`)"
+      - "traefik.http.routers.searx.entrypoints=websecure"
+      - "traefik.http.routers.searx.tls.certresolver=tls"
+      - "traefik.http.services.searx.loadbalancer.server.port=80"
+
+  todolist:
+    image: marcpartensky/je-todoapp-react
+    restart: unless-stopped
+    build:
+      context: $HOME/git/todoapp/react
+      dockerfile: $HOME/git/todoapp/react/Dockerfile
+    environment:
+      - PORT=80
+      - SPRING_API_URL=https://api.todolist.marcpartensky.com
+    depends_on:
+      - todolist_api
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=todolist.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.todolist.rule=Host(`todolist.marcpartensky.com`)"
+      - "traefik.http.routers.todolist.entrypoints=websecure"
+      - "traefik.http.routers.todolist.tls.certresolver=tls"
+      - "traefik.http.services.todolist.loadbalancer.server.port=80"
+    # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
+
+  todolist_api:
+    image: marcpartensky/je-todoapp-spring-api
+    restart: unless-stopped
+    build:
+      context: $HOME/git/todoapp/spring-api
+      dockerfile: $HOME/git/todoapp/spring-api/Dockerfile
+    env_file:
+      - ./data/secrets/todolist.env
+    environment:
+      - PORT=80
+      - POSTGRES_HOST=todolist_db
+    depends_on:
+      - todolist_db
+    networks:
+      - caddy
+      - nginx
+      - todolist_api
+    labels:
+      - "caddy=api.todolist.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 8080}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.todolist_api.rule=Host(`api.todolist.marcpartensky.com`)"
+      - "traefik.http.routers.todolist_api.entrypoints=websecure"
+      - "traefik.http.routers.todolist_api.tls.certresolver=tls"
+      - "traefik.http.services.todolist_api.loadbalancer.server.port=8080"
+
+  todolist_db:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - $BIND_MOUNTS/todolist/db:/var/lib/postgresql/data
+    env_file:
+      - ./data/secrets/todolist.env
+    networks:
+      - caddy
+      - todolist_api
+
+  # openvpn:
+  #   image: kylemanna/openvpn
+  #   restart: unless-stopped
+  #   cap_add:
+  #    - NET_ADMIN
+  #   ports:
+  #     - "1194:1194/udp"
+  #   volumes:
+  #     - $BIND_MOUNTS/openvpn:/etc/openvpn
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - nextcloud
+  #     - website
+  #     - wordpress
+  #     - gitea
+  #     - elk
+  #     - box
+  #     - todolist_api
+  #     - discord
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $HOME/.docker/config.json:/config.json
+    networks:
+      - caddy
+      - nginx
+    command: --interval 10 --http-api-metrics --http-api-token demotoken --debug docker_prometheus_1 docker_grafana_1
+
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+    volumes:
+      - ./data/prometheus:/etc/prometheus
+      - $BIND_MOUNTS/prometheus:/prometheus
+    # ports:
+    #   - "9090:9090"
+    user: root
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=prometheus.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 9090}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.marcpartensky.com`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=tls"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    # ports:
+    #   - "3000:3000"
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    user: root
+    volumes:
+      - ./data/grafana:/etc/grafana/provisioning
+      - $BIND_MOUNTS/grafana:/var/lib/grafana
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=grafana.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 3000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.marcpartensky.com`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=tls"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+  # gitea:
+  #   image: gitea/gitea:1.14.6
+  #   restart: unless-stopped
+  #   # user: git
+  #   environment:
+  #     - USER=git
+  #     - USER_UID=1004
+  #     - USER_GID=1004
+  #   env_file:
+  #     - ./data/secrets/gitea.env
+  #   networks:
+  #     - caddy
+  #     - gitea
+  #     - nginx
+  #   volumes:
+  #     - /home/git/.ssh/:/data/git/.ssh
+  #     - /mnt/dav/users/marcpartensky/bind_mounts/gitea:/data
+  #     - /etc/timezone:/etc/timezone:ro
+  #     - /etc/localtime:/etc/localtime:ro
+  #   ports:
+  #     - "7012:22"
+  #     - "3000:3000"
+  #   depends_on:
+  #     - gitea_postgres
+  #   labels:
+  #     - "caddy=git.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 3000}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.gitea.rule=Host(`git.marcpartensky.com`)"
+  #     - "traefik.http.routers.gitea.entrypoints=websecure"
+  #     - "traefik.http.routers.gitea.tls.certresolver=tls"
+  #     - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+
+  # gitea_postgres:
+  #   image: postgres
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./data/secrets/gitea.env
+  #   networks:
+  #     - caddy
+  #     - gitea
+  #   volumes:
+  #     # - $BIND_MOUNTS/gitea_postgres:/var/lib/postgresql/data
+  #     - $BIND_MOUNTS/gitea_postgres:/var/lib/postgresql/data
+
+  # archlinux:
+  #   image: archlinux
+  #   user: root
+  #   restart: unless-stopped
+  #   stdin_open: true
+  #   tty: true
+  #   volumes:
+  #     - $BIND_MOUNTS/archlinux:/root
+
+  # poiret:
+  #   image: poiret
+  #   restart: unless-stopped
+  #   build:
+  #     context: $HOME/git/poiret
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=poiret.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 8000}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.poiret.rule=Host(`poiret.marcpartensky.com`)"
+  #     - "traefik.http.routers.poiret.entrypoints=websecure"
+  #     - "traefik.http.routers.poiret.tls.certresolver=tls"
+  #     - "traefik.http.services.poiret.loadbalancer.server.port=8000"
+
+  # windows:
+  #   image: mcr.microsoft.com/windows:1903
+  #   restart: unless-stopped
+  #   stdin_open: true
+  #   tty: true
+  #   volumes:
+  #     - $BIND_MOUNTS/windows:$HOME
+
+  # healingpath:
+  #   image: marcpartensky/brainperformer
+  #   restart: unless-stopped
+  #   # user: healingpath
+  #   build:
+  #     context: $HOME/git/brainperformer
+  #   env_file: ./data/secrets/healingpath.env
+  #   networks:
+  #     - caddy
+  #     - healingpath
+  #     - nginx
+  #   depends_on:
+  #     - healingpath_db
+  #   labels:
+  #     - "caddy=healingpath.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.healingpath.rule=Host(`healingpath.marcpartensky.com`)"
+  #     - "traefik.http.routers.healingpath.entrypoints=websecure"
+  #     - "traefik.http.routers.healingpath.tls.certresolver=tls"
+  #     - "traefik.http.services.healingpath.loadbalancer.server.port=80"
+
+  # healingpath_db:
+  #   image: mysql
+  #   restart: unless-stopped
+  #   # user: healingpath
+  #   env_file: ./data/secrets/healingpath.env
+  #   ports:
+  #     - "7201:3306"
+  #   volumes:
+  #     - $BIND_MOUNTS/healingpath/db:/var/lib/mysql
+  #   networks:
+  #     - caddy
+  #     - healingpath
+
+  # jenkins_docker:
+  #   image: docker:dind
+  #   privileged: true
+  #   networks:
+      # - caddy
+  #     - jenkins
+  #   environment:
+  #     DOCKER_TLS_CERTDIR: certs
+  #   volumes:
+  #     - $BIND_MOUNTS/jenkins_docker/certs:/certs/client
+  #     - $BIND_MOUNTS/jenkins_docker/data:/var/jenkins_home
+  #   ports:
+  #     - "2376:2376"
+
+  # jenkins:
+  #   image: jenkins/jenkins:lts
+  #   privileged: true
+  #   user: root
+  #   ports:
+  #   #   - "8080:8080"
+  #     - "50000:50000"
+  #   volumes:
+  #     - $BIND_MOUNTS/jenkins:/var/jenkins_home
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - /usr/bin/docker:/usr/bin/docker
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=jenkins.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 8000}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.jenkins.rule=Host(`jenkins.marcpartensky.com`)"
+  #     - "traefik.http.routers.jenkins.entrypoints=websecure"
+  #     - "traefik.http.routers.jenkins.tls.certresolver=tls"
+  #     - "traefik.http.services.jenkins.loadbalancer.server.port=8000"
+
+  tmate:
+    image: tmate/tmate-ssh-server
+    ports:
+      - "7027:22"
+    volumes:
+      - $HOME/.ssh:/root/.ssh
+    environment:
+      SSH_KEYS_PATH: /root/.ssh/id_rsa
+      SSH_HOSTNAME: marcpartensky.com
+      HAS_WEBSOCKET: 1
+      USE_PROXY_PROTOCOL: 1
+      SSH_PORT_LISTEN: 22
+      SSH_PORT_ADVERTISE: 7023
+
+  vnc:
+    image: consol/centos-xfce-vnc
+    ports:
+      - "5901:5901"
+      # - "6901:6901"
+    # user: root
+    env_file:
+      - "./data/secrets/vnc.env"
+    volumes:
+      - $HOME:/root
+      # - /usr/bin:/usr/bin
+      # - /usr/local/bin:/usr/local/bin
+    networks:
+      - caddy
+      - nginx
+    labels:
+      - "caddy=vnc.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 6901}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.vnc.rule=Host(`vnc.marcpartensky.com`)"
+      - "traefik.http.routers.vnc.entrypoints=websecure"
+      - "traefik.http.routers.vnc.tls.certresolver=tls"
+      - "traefik.http.services.vnc.loadbalancer.server.port=6901"
+
+  pihole:
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      # - "80:80/tcp"
+    environment:
+      TZ: 'France/Paris'
+      # WEBPASSWORD: 'set a secure password here or it will be random'
+    # Volumes store your data between container upgrades
+    volumes:
+      - $BIND_MOUNTS/pihole/etc-pihole/:/etc/pihole/
+      - $BIND_MOUNTS/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN
+    # networks:
+      - caddy
+    labels:
+      - "caddy=dns.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`dns.marcpartensky.com`)"
+      - "traefik.http.routers.pihole.entrypoints=websecure"
+      - "traefik.http.routers.pihole.tls.certresolver=tls"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+
+  # smtp:
+  #   image: namshi/smtp
+  #   # container_name: smtp_relay
+  #   restart: unless-stopped
+  #   ports:
+  #    - "25:25"
+    # environment:
+      # - MAILNAME="marcpartensky.com"
+      # - GMAIL_USER="contact"
+      # - GMAIL_PASSWORD="contact"
+
+  # schtroumpfix:
+  #   restart: unless-stopped
+  #   image: marcpartensky/schtroumpfix
+  #   build:
+  #     context: $HOME/git/schtroumpfix
+  #     # dockerfile: $HOME/git/schtroumpfix/Dockerfile
+  #   env_file:
+  #     - data/secrets/schtroumpfix.env
+  #   environment:
+  #     - PORT=80
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     # - traefik
+  #   labels:
+  #     - "caddy=schtroumpfix.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.schtroupmfix.rule=Host(`schtroumpfix.marcpartensky.com`)"
+  #     - "traefik.http.routers.schtroupmfix.entrypoints=websecure"
+  #     - "traefik.http.routers.schtroupmfix.tls.certresolver=tls"
+  #     - "traefik.http.services.schtroupmfix.loadbalancer.server.port=80"
+
+  # fake-smtp:
+  #   restart: unless-stopped
+  #   image: mailhog/mailhog
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   ports:
+  #     - "1025:1025"
+  #   labels:
+  #     - "caddy=mail.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 8025}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.mail.rule=Host(`mail.marcpartensky.com`)"
+  #     - "traefik.http.routers.mail.entrypoints=websecure"
+  #     - "traefik.http.routers.mail.tls.certresolver=tls"
+  #     - "traefik.http.services.mail.loadbalancer.server.port=8025"
+
+  # samy:
+  #   restart: unless-stopped
+  #   image: marcpartensky/samy.github.io
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=samy.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 80}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.samy.rule=Host(`samy.marcpartensky.com`)"
+  #     - "traefik.http.routers.samy.entrypoints=websecure"
+  #     - "traefik.http.routers.samy.tls.certresolver=tls"
+  #     - "traefik.http.services.samy.loadbalancer.server.port=80"
+
+  # openldap:
+  #   image: bitnami/openldap:2
+  #   ports:
+  #     - "1389:1389"
+  #     - "1636:1636"
+  #   env_file:
+  #     - data/secrets/openldap.env
+  #   environment:
+  #     - LDAP_ADMIN_USERNAME=admin
+  #     - LDAP_ADMIN_PASSWORD=adminpassword
+  #     - LDAP_USERS=user01,user02
+  #     - LDAP_PASSWORDS=password1,password2
+  #   networks:
+  #     - ldap
+  #   volumes:
+  #     - $BIND_MOUNTS/openldap:/bitnami/openldap
+
+
+  # mailserver:
+  #   image: docker.io/mailserver/docker-mailserver:latest
+  #   hostname: mail
+  #   domainname: marcpartensky.com
+  #   restart: unless-stopped
+  #   ports:
+  #     - "25:25"
+  #     - "143:143"
+  #     - "587:587"
+  #     - "993:993"
+  #   volumes:
+  #     - $BIND_MOUNTS/mailserver/maildata:/var/mail
+  #     - $BIND_MOUNTS/mailserver/mailstate:/var/mail-state
+  #     - $BIND_MOUNTS/mailserver/maillogs:/var/log/mail
+  #     - $BIND_MOUNTS/mailserver/config/:/tmp/docker-mailserver/
+  #     - /etc/localtime:/etc/localtime:ro
+  #   environment:
+  #     - ENABLE_SPAMASSASSIN=1
+  #     - SPAMASSASSIN_SPAM_TO_INBOX=1
+  #     - ENABLE_CLAMAV=1
+  #     - ENABLE_FAIL2BAN=1
+  #     - ENABLE_POSTGREY=1
+  #     - ONE_DIR=1
+  #     - DMS_DEBUG=0
+  #     - ENABLE_LDAP=1
+  #     - LDAP_SERVER_HOST=ldap # your ldap container/IP/ServerName
+  #     - LDAP_SEARCH_BASE=ou=people,dc=localhost,dc=localdomain
+  #     - LDAP_BIND_DN=cn=admin,dc=localhost,dc=localdomain
+  #     - LDAP_BIND_PW=admin
+  #     - LDAP_QUERY_FILTER_USER=(&(mail=%s)(mailEnabled=TRUE))
+  #     - LDAP_QUERY_FILTER_GROUP=(&(mailGroupMember=%s)(mailEnabled=TRUE))
+  #     - LDAP_QUERY_FILTER_ALIAS=(|(&(mailAlias=%s)(objectClass=PostfixBookMailForward))(&(mailAlias=%s)(objectClass=PostfixBookMailAccount)(mailEnabled=TRUE)))
+  #     - LDAP_QUERY_FILTER_DOMAIN=(|(&(mail=*@%s)(objectClass=PostfixBookMailAccount)(mailEnabled=TRUE))(&(mailGroupMember=*@%s)(objectClass=PostfixBookMailAccount)(mailEnabled=TRUE))(&(mailalias=*@%s)(objectClass=PostfixBookMailForward)))
+  #     - DOVECOT_PASS_FILTER=(&(objectClass=PostfixBookMailAccount)(uniqueIdentifier=%n))
+  #     - DOVECOT_USER_FILTER=(&(objectClass=PostfixBookMailAccount)(uniqueIdentifier=%n))
+  #     - ENABLE_SASLAUTHD=1
+  #     - SASLAUTHD_MECHANISMS=ldap
+  #     - SASLAUTHD_LDAP_SERVER=ldap
+  #     - SASLAUTHD_LDAP_BIND_DN=cn=admin,dc=localhost,dc=localdomain
+  #     - SASLAUTHD_LDAP_PASSWORD=admin
+  #     - SASLAUTHD_LDAP_SEARCH_BASE=ou=people,dc=localhost,dc=localdomain
+  #     - SASLAUTHD_LDAP_FILTER=(&(objectClass=PostfixBookMailAccount)(uniqueIdentifier=%U))
+  #     - POSTMASTER_ADDRESS=postmaster@localhost.localdomain
+  #     - POSTFIX_MESSAGE_SIZE_LIMIT=100000000
+  #   cap_add:
+  #     - NET_ADMIN
+  #     - SYS_PTRACE
+
+  # facebook:
+  #   image: sebp/lighttpd
+  #   restart: unless-stopped
+  #   volumes:
+  #     - $HOME/git/facebook:/var/www/localhost/htdocs
+  #   tty: true
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=facebook.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 80}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.facebook.rule=Host(`facebook.marcpartensky.com`)"
+  #     - "traefik.http.routers.facebook.entrypoints=websecure"
+  #     - "traefik.http.routers.facebook.tls.certresolver=tls"
+  #     - "traefik.http.services.facebook.loadbalancer.server.port=80"
+
+  # thaiwara:
+  #   image: sebp/lighttpd
+  #   restart: unless-stopped
+  #   volumes:
+  #     - $HOME/git/thaiwara:/var/www/localhost/htdocs
+  #     - $HOME/git/thaiwara/etc/lighttpd:/etc/lighttpd
+  #   tty: true
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=thaiwara.business.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 80}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.thaiwara.rule=Host(`thaiwara.business.marcpartensky.com`)"
+  #     - "traefik.http.routers.thaiwara.entrypoints=websecure"
+  #     - "traefik.http.routers.thaiwara.tls.certresolver=tls"
+  #     - "traefik.http.services.thaiwara.loadbalancer.server.port=80"
+
+  ssh_honeypot:
+    image: local/ssh-honeypot
+    restart: unless-stopped
+    build: $HOME/fork/ssh-honeypot/docker
+    ports:
+      - "22:2022"
+    volumes:
+      - /var/log/ssh-honeypot.log:/home/honeycomb/log
+      - $BIND_MOUNTS/ssh_honeypot:/home/honeycomb/rsa
+
+  # valentin:
+  #   image: sebp/lighttpd
+  #   restart: unless-stopped
+  #   volumes:
+  #     - $HOME/git/valentin:/var/www/localhost/htdocs
+  #   tty: true
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=valentin.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 80}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.valentin.rule=Host(`valentin.marcpartensky.com`)"
+  #     - "traefik.http.routers.valentin.entrypoints=websecure"
+  #     - "traefik.http.routers.valentin.tls.certresolver=tls"
+  #     - "traefik.http.services.valentin.loadbalancer.server.port=80"
+
+  pritunl:
+    # image: jippi/pritunl
+    image: goofball222/pritunl
+    restart: unless-stopped
+    ports:
+      - "1194:1194/udp"
+      - "1194:1194/tcp"
+      # - "1080:80/tcp"
+      # - "1443:443/tcp"
+    depends_on:
+        - mongo
+    # depends_on:
+    #     - mongo
+    environment:
+      REVERSE_PROXY: "true"
+      TZ: Europe/Paris
+    # volumes:
+    #   - /etc/localtime:/etc/localtime:ro
+    networks:
+      - caddy
+      - nginx
+      - pritunl
+    labels:
+      - "caddy=vpn.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 9700}}"
+      # - "caddy.reverse_proxy={{upstreams http 80}}"
+      # - "caddy.reverse_proxy={{upstreams https 443}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pritunl.rule=Host(`vpn.marcpartensky.com`)"
+      - "traefik.http.routers.pritunl.entrypoints=websecure"
+      - "traefik.http.routers.pritunl.tls.certresolver=tls"
+      - "traefik.http.services.pritunl.loadbalancer.server.port=9700"
+      # - "traefik.http.services.pritunl.loadbalancer.server.port=80"
+      # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
+
+  mongo:
+    image: mongo:latest
+    # container_name: pritunldb
+    hostname: pritunldb
+    volumes:
+      - $BIND_MOUNTS/pritunl_mongo:/data/db
+    networks:
+      - pritunl
+
+
+  gitlab:
+    image: gitlab/gitlab-ee:latest
+    restart: unless-stopped
+    hostname: gitlab.marcpartensky.com
+    # environment:
+    #   GITLAB_OMNIBUS_CONFIG: |
+    #     external_url 'http://gitlab.marcpartensky.com:8929'
+    #     gitlab_rails['gitlab_shell_ssh_port'] = 2224
+    # ports:
+    #   - '8929:8929'
+    #   - '2224:22'
+    volumes:
+      - $BIND_MOUNTS/gitlab/config:/etc/gitlab
+      - $BIND_MOUNTS/gitlab/logs:/var/log/gitlab
+      - $BIND_MOUNTS/gitlab/data:/var/opt/gitlab
+
+volumes:
+  nextcloud:
+  nextcloud_mariadb:
+  mcvnc:
+  mcvnc_usr:
+
+networks:
+  caddy:
+    external: true
+  pritunl:
+  healingpath:
+  nextcloud:
+  website:
+  nginx:
+  ldap:
+  wordpress:
+  # business:
+  wordpress_alex:
+  wordpress_anaelle:
+  wordpress_marc:
+  wordpress_arnaud:
+  gitea:
+  elk:
+  box:
+  todolist_api:
+  discord:
+  oxivia:
+  minecraft:
+  # traefik:
