@@ -400,20 +400,20 @@ services:
   #   networks:
   #     - nginx
 
-  mcvnc:
-    image: dorowu/ubuntu-desktop-lxde-vnc
-    volumes:
-      - /dev/shm:/dev/shm
-      - mcvnc:/home/marc
-      - mcvnc_usr:/usr
-    ports:
-      - 8065:80
-      - 5901:5900
-    environment:
-      USER: marc
-      PASSWORD: test
-    networks:
-      - minecraft
+  # mcvnc:
+  #   image: dorowu/ubuntu-desktop-lxde-vnc
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #     - mcvnc:/home/marc
+  #     - mcvnc_usr:/usr
+  #   ports:
+  #     - 8065:80
+  #     - 5901:5900
+  #   environment:
+  #     USER: marc
+  #     PASSWORD: test
+  #   networks:
+  #     - minecraft
     # links:
     #   - minecraft
     #   - minecraft_1.17
@@ -839,86 +839,86 @@ services:
       - caddy
       - nextcloud
 
-  searx:
-    image: searx/searx
-    restart: unless-stopped
-    volumes:
-      - ./data/searx:/etc/searx
-    # environment:
-    #   - PORT=80
-    #   - BASE_URL=http://localhost:$PORT
-    networks:
-      - caddy
-      - nginx
-    labels:
-      - "caddy=searx.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.searx.rule=Host(`searx.marcpartensky.com`)"
-      - "traefik.http.routers.searx.entrypoints=websecure"
-      - "traefik.http.routers.searx.tls.certresolver=tls"
-      - "traefik.http.services.searx.loadbalancer.server.port=80"
+  # searx:
+  #   image: searx/searx
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./data/searx:/etc/searx
+  #   # environment:
+  #   #   - PORT=80
+  #   #   - BASE_URL=http://localhost:$PORT
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=searx.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.searx.rule=Host(`searx.marcpartensky.com`)"
+  #     - "traefik.http.routers.searx.entrypoints=websecure"
+  #     - "traefik.http.routers.searx.tls.certresolver=tls"
+  #     - "traefik.http.services.searx.loadbalancer.server.port=80"
 
-  todolist:
-    image: marcpartensky/je-todoapp-react
-    restart: unless-stopped
-    build:
-      context: $HOME/git/todoapp/react
-      dockerfile: $HOME/git/todoapp/react/Dockerfile
-    environment:
-      - PORT=80
-      - SPRING_API_URL=https://api.todolist.marcpartensky.com
-    depends_on:
-      - todolist_api
-    networks:
-      - caddy
-      - nginx
-    labels:
-      - "caddy=todolist.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.todolist.rule=Host(`todolist.marcpartensky.com`)"
-      - "traefik.http.routers.todolist.entrypoints=websecure"
-      - "traefik.http.routers.todolist.tls.certresolver=tls"
-      - "traefik.http.services.todolist.loadbalancer.server.port=80"
-    # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
+  # todolist:
+  #   image: marcpartensky/je-todoapp-react
+  #   restart: unless-stopped
+  #   build:
+  #     context: $HOME/git/todoapp/react
+  #     dockerfile: $HOME/git/todoapp/react/Dockerfile
+  #   environment:
+  #     - PORT=80
+  #     - SPRING_API_URL=https://api.todolist.marcpartensky.com
+  #   depends_on:
+  #     - todolist_api
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=todolist.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.todolist.rule=Host(`todolist.marcpartensky.com`)"
+  #     - "traefik.http.routers.todolist.entrypoints=websecure"
+  #     - "traefik.http.routers.todolist.tls.certresolver=tls"
+  #     - "traefik.http.services.todolist.loadbalancer.server.port=80"
+  #   # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
 
-  todolist_api:
-    image: marcpartensky/je-todoapp-spring-api
-    restart: unless-stopped
-    build:
-      context: $HOME/git/todoapp/spring-api
-      dockerfile: $HOME/git/todoapp/spring-api/Dockerfile
-    env_file:
-      - ./data/secrets/todolist.env
-    environment:
-      - PORT=80
-      - POSTGRES_HOST=todolist_db
-    depends_on:
-      - todolist_db
-    networks:
-      - caddy
-      - nginx
-      - todolist_api
-    labels:
-      - "caddy=api.todolist.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams http 8080}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.todolist_api.rule=Host(`api.todolist.marcpartensky.com`)"
-      - "traefik.http.routers.todolist_api.entrypoints=websecure"
-      - "traefik.http.routers.todolist_api.tls.certresolver=tls"
-      - "traefik.http.services.todolist_api.loadbalancer.server.port=8080"
+  # todolist_api:
+  #   image: marcpartensky/je-todoapp-spring-api
+  #   restart: unless-stopped
+  #   build:
+  #     context: $HOME/git/todoapp/spring-api
+  #     dockerfile: $HOME/git/todoapp/spring-api/Dockerfile
+  #   env_file:
+  #     - ./data/secrets/todolist.env
+  #   environment:
+  #     - PORT=80
+  #     - POSTGRES_HOST=todolist_db
+  #   depends_on:
+  #     - todolist_db
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - todolist_api
+  #   labels:
+  #     - "caddy=api.todolist.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 8080}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.todolist_api.rule=Host(`api.todolist.marcpartensky.com`)"
+  #     - "traefik.http.routers.todolist_api.entrypoints=websecure"
+  #     - "traefik.http.routers.todolist_api.tls.certresolver=tls"
+  #     - "traefik.http.services.todolist_api.loadbalancer.server.port=8080"
 
-  todolist_db:
-    image: postgres
-    restart: unless-stopped
-    volumes:
-      - $BIND_MOUNTS/todolist/db:/var/lib/postgresql/data
-    env_file:
-      - ./data/secrets/todolist.env
-    networks:
-      - caddy
-      - todolist_api
+#   todolist_db:
+#     image: postgres
+#     restart: unless-stopped
+#     volumes:
+#       - $BIND_MOUNTS/todolist/db:/var/lib/postgresql/data
+#     env_file:
+#       - ./data/secrets/todolist.env
+#     networks:
+#       - caddy
+#       - todolist_api
 
   # openvpn:
   #   image: kylemanna/openvpn
@@ -952,49 +952,49 @@ services:
       - nginx
     command: --interval 10 --http-api-metrics --http-api-token demotoken --debug docker_prometheus_1 docker_grafana_1
 
-  prometheus:
-    image: prom/prometheus
-    restart: unless-stopped
-    volumes:
-      - ./data/prometheus:/etc/prometheus
-      - $BIND_MOUNTS/prometheus:/prometheus
-    # ports:
-    #   - "9090:9090"
-    user: root
-    networks:
-      - caddy
-      - nginx
-    labels:
-      - "caddy=prometheus.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 9090}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.marcpartensky.com`)"
-      - "traefik.http.routers.prometheus.entrypoints=websecure"
-      - "traefik.http.routers.prometheus.tls.certresolver=tls"
-      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+  # prometheus:
+  #   image: prom/prometheus
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./data/prometheus:/etc/prometheus
+  #     - $BIND_MOUNTS/prometheus:/prometheus
+  #   # ports:
+  #   #   - "9090:9090"
+  #   user: root
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=prometheus.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 9090}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.prometheus.rule=Host(`prometheus.marcpartensky.com`)"
+  #     - "traefik.http.routers.prometheus.entrypoints=websecure"
+  #     - "traefik.http.routers.prometheus.tls.certresolver=tls"
+  #     - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
-  grafana:
-    image: grafana/grafana
-    restart: unless-stopped
-    # ports:
-    #   - "3000:3000"
-    environment:
-      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
-    user: root
-    volumes:
-      - ./data/grafana:/etc/grafana/provisioning
-      - $BIND_MOUNTS/grafana:/var/lib/grafana
-    networks:
-      - caddy
-      - nginx
-    labels:
-      - "caddy=grafana.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 3000}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.marcpartensky.com`)"
-      - "traefik.http.routers.grafana.entrypoints=websecure"
-      - "traefik.http.routers.grafana.tls.certresolver=tls"
-      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+  # grafana:
+  #   image: grafana/grafana
+  #   restart: unless-stopped
+  #   # ports:
+  #   #   - "3000:3000"
+  #   environment:
+  #     GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+  #   user: root
+  #   volumes:
+  #     - ./data/grafana:/etc/grafana/provisioning
+  #     - $BIND_MOUNTS/grafana:/var/lib/grafana
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=grafana.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 3000}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.grafana.rule=Host(`grafana.marcpartensky.com`)"
+  #     - "traefik.http.routers.grafana.entrypoints=websecure"
+  #     - "traefik.http.routers.grafana.tls.certresolver=tls"
+  #     - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   # gitea:
   #   image: gitea/gitea:1.14.6
@@ -1185,35 +1185,35 @@ services:
   #     - "traefik.http.routers.vnc.tls.certresolver=tls"
   #     - "traefik.http.services.vnc.loadbalancer.server.port=6901"
 
-  pihole:
-    image: pihole/pihole:latest
-    restart: unless-stopped
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
-      # - "80:80/tcp"
-    environment:
-      TZ: 'France/Paris'
-      # WEBPASSWORD: 'set a secure password here or it will be random'
-    # Volumes store your data between container upgrades
-    volumes:
-      - $BIND_MOUNTS/pihole/etc-pihole/:/etc/pihole/
-      - $BIND_MOUNTS/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/
-    # Recommended but not required (DHCP needs NET_ADMIN)
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    cap_add:
-      - NET_ADMIN
-    # networks:
-      - caddy
-    labels:
-      - "caddy=dns.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`dns.marcpartensky.com`)"
-      - "traefik.http.routers.pihole.entrypoints=websecure"
-      - "traefik.http.routers.pihole.tls.certresolver=tls"
-      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+  # pihole:
+  #   image: pihole/pihole:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - "53:53/tcp"
+  #     - "53:53/udp"
+  #     - "67:67/udp"
+  #     # - "80:80/tcp"
+  #   environment:
+  #     TZ: 'France/Paris'
+  #     # WEBPASSWORD: 'set a secure password here or it will be random'
+  #   # Volumes store your data between container upgrades
+  #   volumes:
+  #     - $BIND_MOUNTS/pihole/etc-pihole/:/etc/pihole/
+  #     - $BIND_MOUNTS/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/
+  #   # Recommended but not required (DHCP needs NET_ADMIN)
+  #   #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+  #   cap_add:
+  #     - NET_ADMIN
+  #   # networks:
+  #     - caddy
+  #   labels:
+  #     - "caddy=dns.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.pihole.rule=Host(`dns.marcpartensky.com`)"
+  #     - "traefik.http.routers.pihole.entrypoints=websecure"
+  #     - "traefik.http.routers.pihole.tls.certresolver=tls"
+  #     - "traefik.http.services.pihole.loadbalancer.server.port=80"
 
   # smtp:
   #   image: namshi/smtp
