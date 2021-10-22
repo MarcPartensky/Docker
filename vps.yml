@@ -47,32 +47,32 @@ services:
       - "traefik.http.routers.portainer.tls.certresolver=tls"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
-  registry:
-    restart: unless-stopped
-    image: registry:latest
-    # ports:
-    #   - 5000:5000
-    environment:
-      REGISTRY_HTTP_ADDR: 0.0.0.0:80
-      REGISTRY_HTTP_SECRET: akdfjkalsdjfkljadklsfjkajsdfklj
-      # REGISTRY_HTTP_ADDR: 0.0.0.0:443
-      # REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
-      # REGISTRY_HTTP_TLS_KEY: /certs/domain.key
-      # REGISTRY_AUTH: htpasswd
-      # REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-      # REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
-    volumes:
-      - $BIND_MOUNTS/registry/data:/var/lib/registry
-      - $BIND_MOUNTS/registry/certs:/certs
-      - $BIND_MOUNTS/registry/auth:/auth
-    labels:
-      - "caddy=registry.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 80}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.registry.rule=Host(`registry.marcpartensky.com`)"
-      - "traefik.http.routers.registry.entrypoints=websecure"
-      - "traefik.http.routers.registry.tls.certresolver=tls"
-      - "traefik.http.services.registry.loadbalancer.server.port=80"
+  # registry:
+  #   restart: unless-stopped
+  #   image: registry:latest
+  #   # ports:
+  #   #   - 5000:5000
+  #   environment:
+  #     REGISTRY_HTTP_ADDR: 0.0.0.0:80
+  #     REGISTRY_HTTP_SECRET: akdfjkalsdjfkljadklsfjkajsdfklj
+  #     # REGISTRY_HTTP_ADDR: 0.0.0.0:443
+  #     # REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+  #     # REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+  #     # REGISTRY_AUTH: htpasswd
+  #     # REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+  #     # REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+  #   volumes:
+  #     - $BIND_MOUNTS/registry/data:/var/lib/registry
+  #     - $BIND_MOUNTS/registry/certs:/certs
+  #     - $BIND_MOUNTS/registry/auth:/auth
+  #   labels:
+  #     - "caddy=registry.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 80}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.registry.rule=Host(`registry.marcpartensky.com`)"
+  #     - "traefik.http.routers.registry.entrypoints=websecure"
+  #     - "traefik.http.routers.registry.tls.certresolver=tls"
+  #     - "traefik.http.services.registry.loadbalancer.server.port=80"
 
   # website_dev:
   #   image: marcpartensky/website
@@ -525,8 +525,9 @@ services:
       - "traefik.http.services.ialab.loadbalancer.server.port=80"
 
   open_web_calendar:
-    working_dir: /app
+    image: marcpartensky/open-web-calendar
     restart: unless-stopped
+    working_dir: /app
     build:
       context: $HOME/fork/open-web-calendar
       dockerfile: $HOME/fork/open-web-calendar/Dockerfile
