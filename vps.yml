@@ -1161,29 +1161,29 @@ services:
       SSH_PORT_LISTEN: 22
       SSH_PORT_ADVERTISE: 7023
 
-  vnc:
-    image: consol/centos-xfce-vnc
-    ports:
-      - "5901:5901"
-      # - "6901:6901"
-    # user: root
-    env_file:
-      - "./data/secrets/vnc.env"
-    volumes:
-      - $HOME:/root
-      # - /usr/bin:/usr/bin
-      # - /usr/local/bin:/usr/local/bin
-    networks:
-      - caddy
-      - nginx
-    labels:
-      - "caddy=vnc.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 6901}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.vnc.rule=Host(`vnc.marcpartensky.com`)"
-      - "traefik.http.routers.vnc.entrypoints=websecure"
-      - "traefik.http.routers.vnc.tls.certresolver=tls"
-      - "traefik.http.services.vnc.loadbalancer.server.port=6901"
+  # vnc:
+  #   image: consol/centos-xfce-vnc
+  #   ports:
+  #     - "5901:5901"
+  #     # - "6901:6901"
+  #   # user: root
+  #   env_file:
+  #     - "./data/secrets/vnc.env"
+  #   volumes:
+  #     - $HOME:/root
+  #     # - /usr/bin:/usr/bin
+  #     # - /usr/local/bin:/usr/local/bin
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=vnc.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 6901}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.vnc.rule=Host(`vnc.marcpartensky.com`)"
+  #     - "traefik.http.routers.vnc.entrypoints=websecure"
+  #     - "traefik.http.routers.vnc.tls.certresolver=tls"
+  #     - "traefik.http.services.vnc.loadbalancer.server.port=6901"
 
   pihole:
     image: pihole/pihole:latest
