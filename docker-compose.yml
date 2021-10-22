@@ -539,6 +539,22 @@ services:
     #   - minecraft_1.17
     #   - minecraft_aventure
 
+  novnc:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    volumes:
+      - /dev/shm:/dev/shm
+      - novnc:/home/marc
+      - novnc_usr:/usr
+    ports:
+      - 8066:80
+      - 5903:5900
+    environment:
+      USER: marc
+      PASSWORD: test
+    privileged: true
+    cap_add:
+      - CAP_SYS_ADMIN
+
   notebook:
     image: jupyter/base-notebook
     restart: unless-stopped
@@ -1652,6 +1668,8 @@ volumes:
   nextcloud_mariadb:
   mcvnc:
   mcvnc_usr:
+  novnc:
+  novnc_usr:
 
 networks:
   caddy:
