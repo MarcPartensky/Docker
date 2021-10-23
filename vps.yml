@@ -1469,6 +1469,9 @@ services:
     # ports:
     #   - '8929:8929'
     #   - '2224:22'
+    networks:
+      - caddy
+      - nginx
     volumes:
       - gitlab_config:/etc/gitlab
       - gitlab_log:/var/log/gitlab
