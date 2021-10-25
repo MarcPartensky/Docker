@@ -205,10 +205,7 @@ services:
       - DEBUG=true
     working_dir: /app
     tty: true
-    entrypoint: >
-      sh -c "./manage.py migrate;
-             ./manage.py createsuperuser --noinput;
-             daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
+    entrypoint: /app/entrypoint.sh
     links:
       - redis
       - postgres
