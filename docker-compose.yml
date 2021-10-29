@@ -540,8 +540,12 @@ services:
     image: dorowu/ubuntu-desktop-lxde-vnc
     volumes:
       - /dev/shm:/dev/shm
-      - novnc:/home/marc
+      - novnc_home:/home
       - novnc_usr:/usr
+      - novnc_var:/var
+      - novnc_etc:/etc
+      - novnc_root:/root
+      - novnc_opt:/opt
     ports:
       - 8066:80
       - 5903:5900
@@ -1665,8 +1669,12 @@ volumes:
   nextcloud_mariadb:
   mcvnc:
   mcvnc_usr:
-  novnc:
+  novnc_home:
   novnc_usr:
+  novnc_var:
+  novnc_etc:
+  novnc_root:
+  novnc_opt:
 
 networks:
   caddy:
