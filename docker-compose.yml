@@ -1613,7 +1613,7 @@ services:
       # - "1080:80/tcp"
       # - "1443:443/tcp"
     depends_on:
-        - mongo
+        - pritunl_mongo
     # depends_on:
     #     - mongo
     environment:
@@ -1638,7 +1638,15 @@ services:
       # - "traefik.http.services.pritunl.loadbalancer.server.port=80"
       # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
 
-  mongo:
+  pritunl_zero:
+    image: pritunl/pritunl-zero
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      MONGO_URI: mongodb://pritunl_mongo
+
+  pritunl_mongo:
     image: mongo:latest
     # container_name: pritunldb
     hostname: pritunldb
