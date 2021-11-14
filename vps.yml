@@ -870,8 +870,8 @@ services:
     ports:
       - "7200:3306"
     volumes:
-      # - nextcloud_mariadb:/var/lib/mysql
-      - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud_mariadb:/var/www/html
+      - nextcloud_mariadb:/var/lib/mysql
+      # - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud_mariadb:/var/www/html
     env_file:
       - ./data/secrets/nextcloud.env
     networks:
