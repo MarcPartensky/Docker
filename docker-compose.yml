@@ -1250,18 +1250,20 @@ services:
       - "traefik.http.services.jenkins.loadbalancer.server.port=8000"
 
   tmate:
-    image: tmate/tmate-ssh-server
+    image: marcpartensky/tmate
     ports:
       - "7027:22"
     volumes:
       - $HOME/.ssh:/root/.ssh
     environment:
-      SSH_KEYS_PATH: /root/.ssh/id_rsa
+      SSH_KEYS_PATH: /root/.ssh/authorized_keys
       SSH_HOSTNAME: marcpartensky.com
       HAS_WEBSOCKET: 1
       USE_PROXY_PROTOCOL: 1
       SSH_PORT_LISTEN: 22
       SSH_PORT_ADVERTISE: 7023
+    cap_add:
+      - SYS_ADMIN
 
   vnc:
     image: consol/centos-xfce-vnc
