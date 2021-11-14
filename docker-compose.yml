@@ -1250,8 +1250,7 @@ services:
       - "traefik.http.services.jenkins.loadbalancer.server.port=8000"
 
   tmate:
-    # image: marcpartensky/tmate
-    image: tmate/tmate-ssh-server
+    image: marcpartensky/tmate-ssh-server
     ports:
       - "7023:7023"
     volumes:
