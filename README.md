@@ -1,3 +1,5 @@
+[![Docker](https://github.com/MarcPartensky/Docker/actions/workflows/docker-push.yml/badge.svg)](https://github.com/MarcPartensky/Docker/actions/workflows/docker-push.yml)
+
 # Docker
 
 ## Domains
@@ -9,7 +11,7 @@
 - https://cloud.marcpartensky.com
 - https://wordpress.marcpartensky.com
 - https://git.marcpartensky.com
-- https://business.marcpartensky.com
+- https://gitlab.marcpartensky.com
 - https://todolist.marcpartensky.com
 - https://api.todolist.marcpartensky.com
 - https://marc.wp.marcpartensky.com
@@ -18,8 +20,7 @@
 - https://grafana.marcpartensky.com
 - https://prometheus.marcpartensky.com
 - https://dns.marcpartensky.com
-<!-- - https://dev.marcpartensky.com -->
-<!-- - https://box.marcpartensky.com -->
+- https://dev.marcpartensky.com
 <!-- - https://glou.marcpartensky.com -->
 <!-- - https://minecraft.marcpartensky.com -->
 
@@ -29,14 +30,10 @@ The `docker-compose.yml` configuration is compatible with the following reverse-
 - caddy
 - nginx
 
-## Commands
-```sh
-certbot certonly -d newdomain.com -n --standalone
-certbot -d domain name,subdomain.domain name,www.domain name --expand
-```
 
-```sh
-docker exec -i docker_minecraft_1 rcon-cli
+## Deploy the stack
+```
+docker stack deploy -c vps.yml vps
 ```
 
 ### Links
