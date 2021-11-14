@@ -482,7 +482,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - minecraft_v17/:/data
+      - minecraft_v17:/data
     ports:
       - "25566:25565"
     networks:
