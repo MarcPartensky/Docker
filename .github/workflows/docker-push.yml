@@ -1,0 +1,36 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - master
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
+env:
+  IMAGE_NAME: docker
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: docker:dind
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy the stack
+      run: docker stack deploy -c vps.yml vps
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: marcpartensky/website:latest
