@@ -1607,6 +1607,7 @@ volumes:
   wordpress_mysql:
   wordpress:
   wordpress_business:
+  wordpress_arnaud:
   todolist_db:
   openvpn:
   nextcloud:
@@ -1640,7 +1641,6 @@ networks:
   nginx:
   ldap:
   wordpress:
-  # business:
   wordpress_alex:
   wordpress_anaelle:
   wordpress_marc:
