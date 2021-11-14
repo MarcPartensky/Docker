@@ -118,7 +118,7 @@ services:
       # CADDY_DOCKER_CADDYFILE_PATH: /etc/Caddyfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - $BIND_MOUNTS/caddy:/data/caddy
+      - caddy:/data/caddy
       # - ./data/caddy/Caddyfile:/etc/Caddyfile
     networks:
       - nginx
@@ -137,7 +137,7 @@ services:
       VIRTUAL_PORT: 9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - $BIND_MOUNTS/portainer:/data
+      - portainer:/data
     networks:
       - nginx
       - caddy
@@ -168,9 +168,9 @@ services:
   #     # REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
   #     # REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
   #   volumes:
-  #     - $BIND_MOUNTS/registry/data:/var/lib/registry
-  #     - $BIND_MOUNTS/registry/certs:/certs
-  #     - $BIND_MOUNTS/registry/auth:/auth
+  #     - registry_data:/var/lib/registry
+  #     - registry_certs:/certs
+  #     - registry_auth:/auth
   #   labels:
   #     - "caddy=registry.marcpartensky.com"
   #     - "caddy.reverse_proxy={{upstreams 80}}"
@@ -184,7 +184,7 @@ services:
   #   image: registry:latest
   #   restart: unless-stopped
   #   volumes:
-  #     - $BIND_MOUNTS/registry:/var/lib/registry
+  #     - registry:/var/lib/registry
   #     - "$(pwd)"/certs:/certs
   #   ports:
   #     - "5000:7000"
@@ -210,7 +210,7 @@ services:
       - redis
       - postgres
     volumes:
-      - $BIND_MOUNTS/website/media:/app/media
+      - website_media:/app/media
       - $HOME/git/website:/app
     networks:
       - website
@@ -263,7 +263,7 @@ services:
       - redis
       - postgres
     volumes:
-      - $BIND_MOUNTS/website/media:/app/media
+      - website_media:/app/media
     networks:
       - website
       - nginx
@@ -290,7 +290,7 @@ services:
     image: postgres
     restart: unless-stopped
     volumes:
-      - $BIND_MOUNTS/postgres/dump:$BIND_MOUNTS/postgresql/dump
+      - postgres:/var/lib/postgresql/data/pgdata
     env_file:
       - data/secrets/postgres.env
     networks:
@@ -392,7 +392,7 @@ services:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
     volumes:
-      - $BIND_MOUNTS/pandoc:/app/files
+      - pandoc:/app/files
       - /var/log/nginx:/var/log/nginx
     labels:
       - "caddy=pandoc.marcpartensky.com"
@@ -407,7 +407,7 @@ services:
       - caddy
 
   # https://$HOME.com/itzg/docker-minecraft-server/blob/master/README.md
-  minecraft_aventure:
+  minecraft_accross_the_time:
     image: itzg/minecraft-server
     restart: unless-stopped
     environment:
@@ -425,7 +425,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - $BIND_MOUNTS/minecraft/data_aventure:/data
+      - minecraft_accross_the_time:/data
     ports:
       - "25567:25565"
     networks:
@@ -449,12 +449,12 @@ services:
       - DIFFICULTY=hard
       - VIEW_DISTANCE=32
       # - MAX_PLAYERS=50
-      # - WORLD=$BIND_MOUNTS/minecraft/zip/Server.zip
+      # - WORLD=minecraft/zip/Server.zip
       - SNOOPER_ENABLED=false
     tty: true
     stdin_open: true
     volumes:
-      - $BIND_MOUNTS/minecraft/data/:/data
+      - minecraft:/data
     ports:
       - "25565:25565"
     networks:
@@ -477,12 +477,12 @@ services:
       - ONLINE_MODE=FALSE # no need for an account
       - DIFFICULTY=hard
       - VIEW_DISTANCE=32
-      # - WORLD=$BIND_MOUNTS/minecraft/zip/Server.zip
+      # - WORLD=minecraft/zip/Server.zip
       # - SNOOPER_ENABLED=false
     tty: true
     stdin_open: true
     volumes:
-      - $BIND_MOUNTS/minecraft/data_v17/:/data
+      - minecraft_v17/:/data
     ports:
       - "25566:25565"
     networks:
@@ -496,7 +496,7 @@ services:
       PGID: 1001
       EULA: 1
     volumes:
-      - $BIND_MOUNTS/mcmyadmin/mcmyadmin:/data
+      - mcmyadmin:/data
     ports:
       - "25568:25565"
     networks:
@@ -546,12 +546,13 @@ services:
       - novnc_etc:/etc
       - novnc_root:/root
       - novnc_opt:/opt
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - 8066:80
-      - 5903:5900
+      - 8010:80
+      - 5910:5900
     environment:
       USER: marc
-      PASSWORD: test
+      PASSWORD: marc
     privileged: true
     cap_add:
       - CAP_SYS_ADMIN
@@ -607,7 +608,6 @@ services:
     # env_file:
     #   - ./data/secrets/elasticsearch.env
     # volumes:
-    #   - $BIND_MOUNTS/elasticsearch/data:$BIND_MOUNTS/elasticsearch/data
     #   # - elasticsearch:/usr/share/elasticsearch/data
     # networks:
     #   - nginx
@@ -648,7 +648,7 @@ services:
     # entrypoint: "gunicorn server:app"
     # entrypoint: "gunicorn --chdir /app server:app"
     volumes:
-      - $BIND_MOUNTS/ialab:/app
+      - ialab:/app
     networks:
       - caddy
       - nginx
@@ -686,7 +686,38 @@ services:
   # discord_voice_recorder:
   #   image: drv
   #   volumes:
-  #     - $BIND_MOUNTS/discord-voice-recorder/recordings:/usr/src/bot/recordings
+  #     - discord-voice-recorder/recordings:/usr/src/bot/recordings
+
+  wordpress_mysql:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - data/secrets/wordpress.env
+    networks:
+      - caddy
+      - wordpress
+    volumes:
+      - wordpress_mysql:/var/lib/mysql
+
+  wordpress_phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    networks:
+      - wordpress
+      - caddy
+      - nginx
+    depends_on:
+      - wordpress_mysql
+    env_file:
+      - data/secrets/wordpress.env
+    labels:
+      - "caddy=phpmyadmin.wp.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.rule=Host(`phpmyadmin.wp.marcpartensky.com`)"
+      - "traefik.http.routers.entrypoints=websecure"
+      - "traefik.http.routers.tls.certresolver=tls"
+      - "traefik.http.services.loadbalancer.server.port=80"
 
   wordpress:
     image: wordpress
@@ -698,7 +729,7 @@ services:
     env_file:
       - data/secrets/wordpress.env
     volumes:
-      - $BIND_MOUNTS/wordpress:/var/www/html
+      - wordpress:/var/www/html
     depends_on:
       - wordpress_mysql
     labels:
@@ -710,18 +741,7 @@ services:
       - "traefik.http.routers.wordpress.tls.certresolver=tls"
       - "traefik.http.services.wordpress.loadbalancer.server.port=80"
 
-  wordpress_mysql:
-    image: mysql
-    restart: unless-stopped
-    env_file:
-      - data/secrets/wordpress.env
-    networks:
-      - caddy
-      - wordpress
-    volumes:
-      - $BIND_MOUNTS/wordpress_mysql:/var/lib/mysql
-
-  business:
+  wordpress_business:
     image: wordpress
     restart: unless-stopped
     networks:
@@ -731,7 +751,7 @@ services:
     env_file:
       - data/secrets/business.env
     volumes:
-      - $BIND_MOUNTS/business:/var/www/html
+      - business:/var/www/html
     depends_on:
       - wordpress_mysql
     labels:
@@ -742,17 +762,6 @@ services:
       - "traefik.http.routers.business.entrypoints=websecure"
       - "traefik.http.routers.business.tls.certresolver=tls"
       - "traefik.http.services.business.loadbalancer.server.port=80"
-
-  # business_mysql:
-  #   image: mysql
-  #   restart: unless-stopped
-  #   env_file:
-  #     - data/secrets/business.env
-  #   networks:
-  #     - caddy
-  #     - wordpress
-  #   volumes:
-  #     - $BIND_MOUNTS/business_mysql:/var/lib/mysql
 
   oxivia:
     image: wordpress
@@ -796,13 +805,13 @@ services:
     networks:
       - caddy
       - nginx
-      - wordpress_arnaud
+      - wordpress
     env_file:
       - data/secrets/wordpress_arnaud.env
     volumes:
-      - $BIND_MOUNTS/wordpress_arnaud:/var/www/html
+      - wordpress_arnaud:/var/www/html
     depends_on:
-      - wordpress_mysql_arnaud
+      - wordpress_mysql
     labels:
       - "caddy=arnaud.wp.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams}}"
@@ -811,71 +820,6 @@ services:
       - "traefik.http.routers.wordpress_arnaud.entrypoints=websecure"
       - "traefik.http.routers.wordpress_arnaud.tls.certresolver=tls"
       - "traefik.http.services.wordpress_arnaud.loadbalancer.server.port=80"
-
-  wordpress_mysql_arnaud:
-    image: mysql
-    restart: unless-stopped
-    env_file:
-      - data/secrets/wordpress_arnaud.env
-    networks:
-      - caddy
-      - wordpress_arnaud
-    volumes:
-      - $BIND_MOUNTS/wordpress_mysql_arnaud:/var/lib/mysql
-
-  wordpress_anaelle:
-    image: wordpress
-    restart: unless-stopped
-    networks:
-      - caddy
-      - nginx
-      - wordpress_anaelle
-    env_file:
-      - data/secrets/wordpress_anaelle.env
-    volumes:
-      - $BIND_MOUNTS/wordpress_anaelle:/var/www/html
-    depends_on:
-      - wordpress_mysql_anaelle
-    labels:
-      - "caddy=anaelle.wp.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.wordpress_anaelle.rule=Host(`anaelle.wp.marcpartensky.com`)"
-      - "traefik.http.routers.wordpress_anaelle.entrypoints=websecure"
-      - "traefik.http.routers.wordpress_anaelle.tls.certresolver=tls"
-      - "traefik.http.services.wordpress_anaelle.loadbalancer.server.port=80"
-
-  wordpress_mysql_anaelle:
-    image: mysql
-    restart: unless-stopped
-    env_file:
-      - data/secrets/wordpress_anaelle.env
-    networks:
-      - caddy
-      - wordpress_anaelle
-    ports:
-      - "7036:3306"
-    volumes:
-      - $BIND_MOUNTS/wordpress_mysql_anaelle:/var/lib/mysql
-
-  wordpress_anaelle_phpmyadmin:
-    image: phpmyadmin
-    restart: unless-stopped
-    networks:
-      - wordpress_anaelle
-      - caddy
-    depends_on:
-      - wordpress_mysql_anaelle
-    env_file:
-      - data/secrets/wordpress_anaelle.env
-    labels:
-      - "caddy=phpmyadmin.anaelle.wp.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.wordpress_anaelle.rule=Host(`phpmyadmin.anaelle.wp.marcpartensky.com`)"
-      - "traefik.http.routers.wordpress_anaelle.entrypoints=websecure"
-      - "traefik.http.routers.wordpress_anaelle.tls.certresolver=tls"
-      - "traefik.http.services.wordpress_anaelle.loadbalancer.server.port=80"
 
   wordpress_alex:
     image: wordpress
@@ -931,48 +875,14 @@ services:
       - "traefik.http.routers.wordpress_alex.tls.certresolver=tls"
       - "traefik.http.services.wordpress_alex.loadbalancer.server.port=80"
 
-  wordpress_marc:
-    image: wordpress
-    restart: unless-stopped
-    networks:
-      - caddy
-      - nginx
-      - wordpress_marc
-    env_file:
-      - data/secrets/wordpress_marc.env
-    volumes:
-      - $BIND_MOUNTS/wordpress_marc:/var/www/html
-    depends_on:
-      - wordpress_mysql_marc
-    labels:
-      - "caddy=marc.wp.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.wordpress_marc.rule=Host(`marc.wp.marcpartensky.com`)"
-      - "traefik.http.routers.wordpress_marc.entrypoints=websecure"
-      - "traefik.http.routers.wordpress_marc.tls.certresolver=tls"
-      - "traefik.http.services.wordpress_marc.loadbalancer.server.port=80"
-
-  wordpress_mysql_marc:
-    image: mysql
-    restart: unless-stopped
-    env_file:
-      - data/secrets/wordpress_marc.env
-    networks:
-      - caddy
-      - wordpress_marc
-    volumes:
-      - $BIND_MOUNTS/wordpress_mysql_marc:/var/lib/mysql
-
-
   samba:
     image: dperson/samba
     restart: unless-stopped
     volumes:
       - /:/mount
     ports:
-      - "139:139"
-      - "445:445"
+      - "127.0.0.1:139:139"
+      - "127.0.0.1:445:445"
 
   plantuml:
     image: plantuml/plantuml-server:tomcat
@@ -1383,7 +1293,7 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
-      # - "80:80/tcp"
+      - "8053:80/tcp"
     environment:
       TZ: 'France/Paris'
       # WEBPASSWORD: 'set a secure password here or it will be random'
@@ -1673,6 +1583,24 @@ services:
       - $BIND_MOUNTS/gitlab/data:/var/opt/gitlab
 
 volumes:
+  caddy:
+  portainer:
+  website_media:
+  postgres:
+  registry:
+  registry_data:
+  registry_certs:
+  registry_auth:
+  pandoc:
+  minecraft_accross_the_time:
+  minecraft:
+  minecraft_v17:
+  mcmyadmin:
+  elasticsearch:
+  ialab:
+  wordpress_mysql:
+  wordpress:
+  wordpress_business:
   nextcloud:
   nextcloud_mariadb:
   mcvnc:
