@@ -560,8 +560,6 @@ services:
   notebook:
     image: jupyter/base-notebook
     restart: unless-stopped
-    ports:
-      - "8888:8888"
     environment:
     #   - GEN_CERT=yes
       - JUPYTER_ENABLE_LAB=yes
@@ -620,17 +618,23 @@ services:
     #     soft: -1
     #     hard: -1
 
-  # kibana:
-    # image: docker.elastic.co/kibana/kibana:latest
-    # image: kibana:latest
-    # ports:
-    #   - "5601:5601"
-    # env_file:
-    #   - ./data/secrets/kibana.env
-    # depends_on:
-    #   - elasticsearch
-    # networks:
-    #   - nginx
+  kibana:
+    image: docker.elastic.co/kibana/kibana:latest
+    env_file:
+      - ./data/secrets/kibana.env
+    depends_on:
+      - elasticsearch
+    networks:
+      - nginx
+      - caddy
+    labels:
+      - "caddy=kibana.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 5601}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.kibana.rule=Host(`kibana.marcpartensky.com`)"
+      - "traefik.http.routers.kibana.entrypoints=websecure"
+      - "traefik.http.routers.kibana.tls.certresolver=tls"
+      - "traefik.http.services.kibana.loadbalancer.server.port=5601"
 
   ialab:
     image: marcpartensky/ialab
@@ -993,8 +997,8 @@ services:
     env_file:
       - ./data/secrets/todolist.env
     environment:
-      - PORT=80
-      - POSTGRES_HOST=todolist_db
+      PORT: 80
+      POSTGRES_HOST: todolist_db
     depends_on:
       - todolist_db
     networks:
@@ -1014,7 +1018,7 @@ services:
     image: postgres
     restart: unless-stopped
     volumes:
-      - $BIND_MOUNTS/todolist/db:/var/lib/postgresql/data
+      - todolist_db:/var/lib/postgresql/data
     env_file:
       - ./data/secrets/todolist.env
     networks:
@@ -1029,7 +1033,7 @@ services:
     ports:
       - "1194:1194/udp"
     volumes:
-      - $BIND_MOUNTS/openvpn:/etc/openvpn
+      - openvpn:/etc/openvpn
     networks:
       - caddy
       - nginx
@@ -1051,14 +1055,14 @@ services:
     networks:
       - caddy
       - nginx
-    command: --interval 10 --http-api-metrics --http-api-token demotoken --debug docker_prometheus_1 docker_grafana_1
+    command: --interval 10 --http-api-metrics --http-api-token demotoken --debug grafana prometheus
 
   prometheus:
     image: prom/prometheus
     restart: unless-stopped
     volumes:
       - ./data/prometheus:/etc/prometheus
-      - $BIND_MOUNTS/prometheus:/prometheus
+      - prometheus:/prometheus
     # ports:
     #   - "9090:9090"
     user: root
@@ -1084,7 +1088,7 @@ services:
     user: root
     volumes:
       - ./data/grafana:/etc/grafana/provisioning
-      - $BIND_MOUNTS/grafana:/var/lib/grafana
+      - grafana:/var/lib/grafana
     networks:
       - caddy
       - nginx
@@ -1139,8 +1143,7 @@ services:
       - caddy
       - gitea
     volumes:
-      # - $BIND_MOUNTS/gitea_postgres:/var/lib/postgresql/data
-      - $BIND_MOUNTS/gitea_postgres:/var/lib/postgresql/data
+      - gitea_postgres:/var/lib/postgresql/data
 
   archlinux:
     image: archlinux
@@ -1149,7 +1152,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - $BIND_MOUNTS/archlinux:/root
+      - archlinux:/root
 
   poiret:
     image: poiret
@@ -1206,7 +1209,7 @@ services:
     ports:
       - "7201:3306"
     volumes:
-      - $BIND_MOUNTS/healingpath/db:/var/lib/mysql
+      - healingpath_db:/var/lib/mysql
     networks:
       - caddy
       - healingpath
@@ -1233,7 +1236,7 @@ services:
     #   - "8080:8080"
       - "50000:50000"
     volumes:
-      - $BIND_MOUNTS/jenkins:/var/jenkins_home
+      - jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
     networks:
@@ -1272,6 +1275,10 @@ services:
       - "./data/secrets/vnc.env"
     volumes:
       - $HOME:/root
+      - /usr:/usr
+      - /var:/var
+      - /etc:/etc
+      - /srv:/srv
       # - /usr/bin:/usr/bin
       # - /usr/local/bin:/usr/local/bin
     networks:
@@ -1397,7 +1404,7 @@ services:
     networks:
       - ldap
     volumes:
-      - $BIND_MOUNTS/openldap:/bitnami/openldap
+      - openldap:/bitnami/openldap
 
 
   mailserver:
@@ -1561,7 +1568,7 @@ services:
     # container_name: pritunldb
     hostname: pritunldb
     volumes:
-      - $BIND_MOUNTS/pritunl_mongo:/data/db
+      - pritunl_mongo:/data/db
     networks:
       - pritunl
 
@@ -1578,9 +1585,9 @@ services:
     #   - '8929:8929'
     #   - '2224:22'
     volumes:
-      - $BIND_MOUNTS/gitlab/config:/etc/gitlab
-      - $BIND_MOUNTS/gitlab/logs:/var/log/gitlab
-      - $BIND_MOUNTS/gitlab/data:/var/opt/gitlab
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
 
 volumes:
   caddy:
@@ -1597,12 +1604,19 @@ volumes:
   minecraft_v17:
   mcmyadmin:
   elasticsearch:
+  grafana:
   ialab:
   wordpress_mysql:
   wordpress:
   wordpress_business:
+  todolist_db:
+  openvpn:
   nextcloud:
   nextcloud_mariadb:
+  prometheus:
+  gitea_postgres:
+  archlinux:
+  healingpath_db:
   mcvnc:
   mcvnc_usr:
   novnc_home:
@@ -1611,6 +1625,12 @@ volumes:
   novnc_etc:
   novnc_root:
   novnc_opt:
+  jenkins:
+  openldap:
+  pritunl_mongo:
+  gitlab_data:
+  gitlab_config:
+  gitlab_logs:
 
 networks:
   caddy:
