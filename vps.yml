@@ -1159,21 +1159,123 @@ services:
   #     - "traefik.http.routers.jenkins.tls.certresolver=tls"
   #     - "traefik.http.services.jenkins.loadbalancer.server.port=8000"
 
-  tmate:
-    image: marcpartensky/tmate-ssh-server
+  # tmate:
+  #   image: marcpartensky/tmate-ssh-server
+  #   ports:
+  #     - "7023:7023"
+  #   volumes:
+  #     - ./data/tmate/keys:/keys
+  #   environment:
+  #     SSH_KEYS_PATH: /keys
+  #     SSH_HOSTNAME: marcpartensky.com
+  #     HAS_WEBSOCKET: 1
+  #     USE_PROXY_PROTOCOL: 1
+  #     SSH_PORT_LISTEN: 7023
+  #     SSH_PORT_ADVERTISE: 7023
+  #   cap_add:
+  #     - SYS_ADMIN
+
+  tmate-ssh-server:
+    image: tmate/tmate-ssh-server:latest
+    container_name: tmate-ssh-server
+    restart: unless-stopped
+    cap_add:
+    - SYS_ADMIN
     ports:
-      - "7023:7023"
-    volumes:
-      - ./data/tmate/keys:/keys
+    - "7023:22"
     environment:
+      HAS_WEBSOCKET: 1
+      WEBSOCKET_HOSTNAME: tmate-websocket
       SSH_KEYS_PATH: /keys
       SSH_HOSTNAME: marcpartensky.com
-      HAS_WEBSOCKET: 1
-      USE_PROXY_PROTOCOL: 1
-      SSH_PORT_LISTEN: 7023
+      SSH_PORT_LISTEN: 22
       SSH_PORT_ADVERTISE: 7023
-    cap_add:
-      - SYS_ADMIN
+    volumes:
+      - ./data/tmate/keys:/keys
+      - /tmp/tmate/sessions:/tmp/tmate/sessions
+    networks:
+      - tmate
+
+
+  tmate-websocket:
+    image: tmate/tmate-websocket:latest
+    container_name: tmate-websocket
+    restart: unless-stopped
+    environment:
+      VIRTUAL_HOST: tmate.marcpartensky.com
+      VIRTUAL_PORT: 4001
+      CERT_NAME: example.com
+      WEBSOCKET_BASE_URL: wss://tmate.marcpartensky.com/
+      MASTER_BASE_URL: https://tmate.marcpartensky.com/
+      USER_FACING_BASE_URL: https://tmate.marcpartensky.com/
+      ERL_NODE_NAME: tmate.marcpartensky.com
+      ERL_COOKIE: myerlcookie
+      DAEMON_HMAC_KEY: mydaemonhmackey
+      INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
+    volumes:
+    - /tmp/tmate/sessions:/tmp/tmate/sessions
+    networks:
+      - tmate
+      - nginx
+      - caddy
+    labels:
+      - "caddy=tmate.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 4001}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.tmate.rule=Host(`tmate.marcpartensky.com`)"
+      - "traefik.http.routers.tmate.entrypoints=websecure"
+      - "traefik.http.routers.tmate.tls.certresolver=tls"
+      - "traefik.http.services.tmate.loadbalancer.server.port=4001"
+
+  tmate-master:
+    image: tmate/tmate-master:latest
+    container_name: tmate-master
+    # https://github.com/tmate-io/tmate-master/issues/13#issuecomment-787470427
+    hostname: tmate-master
+    domainname: marcpartensky.com
+    restart: unless-stopped
+    ports:
+      - "7024:4000"
+    environment:
+      VIRTUAL_HOST: tmate-master.marcpartensky.com
+      VIRTUAL_PORT: 4000
+      CERT_NAME: marcpartensky.com
+      MASTER_BASE_URL: https://tmate-master.marcpartensky.com/
+      ERL_COOKIE: myerlcookie
+      # Must match <hostname>.<domainname>
+      ERL_NODE_NAME: tmate-master.marcpartensky.com
+      # ** (ArgumentError) cookie store expects conn.secret_key_base to be at least 64 bytes
+      SECRET_KEY_BASE: 0123456789abcdefghijklmnopqrstuvwxyz=0123456789abcdefghijklmnopqrstuvwxyz
+      INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
+      PG_URI: postgres://tmate:postgrespassword@tmate-db:5432/tmate
+      # Muste be >= 2
+      PG_POOLSIZE: 5
+    networks:
+      - tmate
+      - caddy
+      - nginx
+    labels:
+      - "caddy=tmate-master.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 4000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.tmate-master.rule=Host(`tmate-master.marcpartensky.com`)"
+      - "traefik.http.routers.tmate-master.entrypoints=websecure"
+      - "traefik.http.routers.tmate-master.tls.certresolver=tls"
+      - "traefik.http.services.tmate-master.loadbalancer.server.port=4000"
+
+
+  tmate-db:
+    image: postgres:12-alpine
+    container_name: tmate-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tmate
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: tmate
+    volumes:
+    - tmate_db:/var/lib/postgresql/data
+    networks:
+      - tmate
 
   # vnc:
   #   image: consol/centos-xfce-vnc
@@ -1593,6 +1695,7 @@ volumes:
   gitlab_log:
   gitlab_data:
   minecraft_ankharak:
+  tmate_db:
 
 networks:
   swarmpit:
@@ -1618,4 +1721,5 @@ networks:
   discord:
   oxivia:
   minecraft:
+  tmate:
   # traefik:

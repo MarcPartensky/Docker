@@ -1347,15 +1347,15 @@ services:
     networks:
       internal:
 
-volumes:
-  ssh-keys:
-  unix-sockets:
-  pgdata:
+# volumes:
+#   ssh-keys:
+#   unix-sockets:
+#   pgdata:
 
-networks:
-  bridge:
-  internal:
-    internal: true
+# networks:
+#   bridge:
+#   internal:
+#     internal: true
 
 
   vnc:
