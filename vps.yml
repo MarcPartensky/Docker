@@ -252,7 +252,7 @@ services:
   mongo_express:
     image: mongo-express
     restart: unless-stopped
-    environment:
+    # environment:
       # ME_CONFIG_MONGODB_SERVER: discord_bot_mongo:27017
       # ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       # ME_CONFIG_MONGODB_URL: mongodb://discord_bot_mongo:27017
