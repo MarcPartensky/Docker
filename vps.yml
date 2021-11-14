@@ -1169,7 +1169,7 @@ services:
       SSH_KEYS_PATH: /keys
       SSH_HOSTNAME: marcpartensky.com
       HAS_WEBSOCKET: 1
-      USE_PROXY_PROTOCOL: 0
+      USE_PROXY_PROTOCOL: 1
       SSH_PORT_LISTEN: 7023
       SSH_PORT_ADVERTISE: 7023
 
