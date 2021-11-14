@@ -254,6 +254,8 @@ services:
     restart: unless-stopped
     environment:
       ME_CONFIG_MONGODB_SERVER: discord_bot_mongo
+    env_file:
+      - ./data/secrets/mongo_express.env
     networks:
       - discord
       - caddy
