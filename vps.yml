@@ -1162,7 +1162,7 @@ services:
   tmate:
     image: tmate/tmate-ssh-server
     ports:
-      - "7023:7023"
+      - "7023:2200"
     volumes:
       - ./data/tmate/keys:/keys
     environment:
@@ -1170,7 +1170,7 @@ services:
       SSH_HOSTNAME: marcpartensky.com
       HAS_WEBSOCKET: 1
       USE_PROXY_PROTOCOL: 1
-      SSH_PORT_LISTEN: 7023
+      SSH_PORT_LISTEN: 2200
       SSH_PORT_ADVERTISE: 7023
     cap_add:
       - SYS_ADMIN
