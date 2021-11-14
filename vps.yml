@@ -12,13 +12,14 @@ services:
       # CADDY_DOCKER_CADDYFILE_PATH: /etc/Caddyfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - $BIND_MOUNTS/caddy:/data/caddy
+      - caddy:/data/caddy
       # - ./data/caddy/Caddyfile:/etc/Caddyfile
     networks:
       - nginx
       - box
       - caddy
     logging:
+      # syslog?
       options:
         max-size: 5m
         max-file: "10"
@@ -31,7 +32,7 @@ services:
       VIRTUAL_PORT: 9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - $BIND_MOUNTS/portainer:/data
+      - portainer:/data
     networks:
       - nginx
       - caddy
@@ -62,9 +63,9 @@ services:
   #     # REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
   #     # REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
   #   volumes:
-  #     - $BIND_MOUNTS/registry/data:/var/lib/registry
-  #     - $BIND_MOUNTS/registry/certs:/certs
-  #     - $BIND_MOUNTS/registry/auth:/auth
+  #     - registry_data:/var/lib/registry
+  #     - registry_certs:/certs
+  #     - registry_auth:/auth
   #   labels:
   #     - "caddy=registry.marcpartensky.com"
   #     - "caddy.reverse_proxy={{upstreams 80}}"
@@ -93,7 +94,7 @@ services:
   #     - redis
   #     - postgres
   #   volumes:
-  #     - $BIND_MOUNTS/website/media:/app/media
+  #     - website_media:/app/media
   #     - $HOME/git/website:/app
   #   networks:
   #     - website
@@ -128,12 +129,12 @@ services:
     env_file:
       - ./data/secrets/website.env
     environment:
-      - VIRTUAL_HOST=marcpartensky.com
-      - VIRTUAL_PORT=80
-      - DEBUG=true
-      # - SECURE_SSL_REDIRECT=false
-      # - KEY=/app/privkey.pem
-      # - CERT=/app/fullchain.pem
+      VIRTUAL_HOST: marcpartensky.com
+      VIRTUAL_PORT: 80
+      # DEBUG: true
+      # SECURE_SSL_REDIRECT: false
+      # KEY: /app/privkey.pem
+      # CERT: /app/fullchain.pem
     working_dir: /app
     tty: true
     entrypoint: >
@@ -146,7 +147,7 @@ services:
       - redis
       - postgres
     volumes:
-      - $BIND_MOUNTS/website/media:/app/media
+      - website_media:/app/media
     networks:
       - website
       - nginx
@@ -173,7 +174,7 @@ services:
     image: postgres
     restart: unless-stopped
     volumes:
-      - $BIND_MOUNTS/postgres/dump:$BIND_MOUNTS/postgresql/dump
+      - /srv/postgres:/var/lib/postgresql/data
     env_file:
       - data/secrets/postgres.env
     networks:
@@ -275,7 +276,7 @@ services:
       - ./data/secrets/pandoc.env
     entrypoint: "flask run --host pandoc --port 80"
     volumes:
-      - $BIND_MOUNTS/pandoc:/app/files
+      - pandoc:/app/files
       - /var/log/nginx:/var/log/nginx
     labels:
       - "caddy=pandoc.marcpartensky.com"
@@ -308,7 +309,7 @@ services:
   #   tty: true
   #   stdin_open: true
   #   volumes:
-  #     - $BIND_MOUNTS/minecraft/data_aventure:/data
+  #     - minecraft/data_aventure:/data
   #   ports:
   #     - "25567:25565"
   #   networks:
@@ -398,19 +399,19 @@ services:
     image: itzg/minecraft-server
     restart: unless-stopped
     environment:
-      - TZ=Europe/Paris
-      - EULA=TRUE
-      - OPS=MazexRedstone
-      - ENABLE_COMMAND_BLOCK=TRUE
-      - MEMORY=500M
-      - VERSION=1.12.2
-      - ICON=https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
-      - MOTD=Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
-      - ANNOUNCE_PLAYER_ACHIEVEMENTS=TRUE
-      - LEVEL=Server
-      - ONLINE_MODE=FALSE # no need for an account
-      - DIFFICULTY=hard
-      - VIEW_DISTANCE=16
+      TZ: Europe/Paris
+      EULA: TRUE
+      OPS: MazexRedstone
+      ENABLE_COMMAND_BLOCK: TRUE
+      MEMORY: 500M
+      VERSION: 1.12.2
+      ICON: https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
+      MOTD: Venez jouer sur le serveur de Marc Partensky. Venez! On est bien!
+      ANNOUNCE_PLAYER_ACHIEVEMENTS: TRUE
+      LEVEL: Server
+      ONLINE_MODE: FALSE # no need for an account
+      DIFFICULTY: hard
+      VIEW_DISTANCE: 16
     volumes:
       - minecraft_ankharak:/data
     ports:
@@ -444,12 +445,10 @@ services:
   notebook:
     image: jupyter/base-notebook
     restart: unless-stopped
-    ports:
-      - "8888:8888"
     environment:
     #   - GEN_CERT=yes
-      - JUPYTER_ENABLE_LAB=yes
-      - GRANT_SUDO=yes
+      JUPYTER_ENABLE_LAB: yes
+      GRANT_SUDO: yes
     entrypoint: start.sh jupyter lab --user root
     networks:
       - caddy
@@ -469,18 +468,6 @@ services:
     #   - /etc/letsencrypt/keys:/home/jovyan/work/key
     #   - /etc/letsencrypt/csr:/home/jovyan/work/cert
     #   - /etc/letsencrypt:/etc/letsencrypt
-
-# env:
-  #   image: marcpartensky/env
-  #   build:
-  #     context: $HOME/git/dotfiles
-  #     dockerfile: $HOME/git/dotfiles/Dockerfile
-  #     args:
-  #       env_file: $HOME/git/dotfiles/.env
-  #   ports:
-  #     - "22:7020"
-  #     - "8022:7021"
-  #     volumes:
 
   # elasticsearch:
     # image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
@@ -554,8 +541,8 @@ services:
       context: $HOME/fork/open-web-calendar
       dockerfile: $HOME/fork/open-web-calendar/Dockerfile
     environment:
-      - HOST=open_web_calendar
-      - PORT=80
+      HOST: open_web_calendar
+      PORT: 80
     networks:
       - caddy
       - nginx
@@ -964,17 +951,6 @@ services:
   #     - todolist_api
   #     - discord
 
-  watchtower:
-    image: containrrr/watchtower
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - $HOME/.docker/config.json:/config.json
-    networks:
-      - caddy
-      - nginx
-    command: --interval 10 --http-api-metrics --http-api-token demotoken --debug docker_prometheus_1 docker_grafana_1
-
   # prometheus:
   #   image: prom/prometheus
   #   restart: unless-stopped
@@ -1073,23 +1049,6 @@ services:
   #   volumes:
   #     - $BIND_MOUNTS/archlinux:/root
 
-  # poiret:
-  #   image: poiret
-  #   restart: unless-stopped
-  #   build:
-  #     context: $HOME/git/poiret
-  #   networks:
-  #     - caddy
-  #     - nginx
-  #   labels:
-  #     - "caddy=poiret.marcpartensky.com"
-  #     - "caddy.reverse_proxy={{upstreams http 8000}}"
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.poiret.rule=Host(`poiret.marcpartensky.com`)"
-  #     - "traefik.http.routers.poiret.entrypoints=websecure"
-  #     - "traefik.http.routers.poiret.tls.certresolver=tls"
-  #     - "traefik.http.services.poiret.loadbalancer.server.port=8000"
-
   # windows:
   #   image: mcr.microsoft.com/windows:1903
   #   restart: unless-stopped
@@ -1173,7 +1132,7 @@ services:
   tmate:
     image: tmate/tmate-ssh-server
     ports:
-      - "7027:22"
+      - "7023:22"
     volumes:
       - $HOME/.ssh:/root/.ssh
     environment:
@@ -1321,7 +1280,6 @@ services:
   #   volumes:
   #     - $BIND_MOUNTS/openldap:/bitnami/openldap
 
-
   # mailserver:
   #   image: docker.io/mailserver/docker-mailserver:latest
   #   hostname: mail
@@ -1370,24 +1328,6 @@ services:
   #     - NET_ADMIN
   #     - SYS_PTRACE
 
-  # facebook:
-  #   image: sebp/lighttpd
-  #   restart: unless-stopped
-  #   volumes:
-  #     - $HOME/git/facebook:/var/www/localhost/htdocs
-  #   tty: true
-  #   networks:
-  #     - caddy
-  #     - nginx
-  #   labels:
-  #     - "caddy=facebook.marcpartensky.com"
-  #     - "caddy.reverse_proxy={{upstreams http 80}}"
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.facebook.rule=Host(`facebook.marcpartensky.com`)"
-  #     - "traefik.http.routers.facebook.entrypoints=websecure"
-  #     - "traefik.http.routers.facebook.tls.certresolver=tls"
-  #     - "traefik.http.services.facebook.loadbalancer.server.port=80"
-
   # thaiwara:
   #   image: sebp/lighttpd
   #   restart: unless-stopped
@@ -1415,7 +1355,7 @@ services:
       - "22:2022"
     volumes:
       - /var/log/ssh-honeypot.log:/home/honeycomb/log
-      - $BIND_MOUNTS/ssh_honeypot:/home/honeycomb/rsa
+      - ssh_honeypot:/home/honeycomb/rsa
 
   # valentin:
   #   image: sebp/lighttpd
@@ -1484,7 +1424,6 @@ services:
     networks:
       - pritunl
 
-
   # gitlab:
   #   image: gitlab/gitlab-ee:latest
   #   restart: unless-stopped
@@ -1513,7 +1452,6 @@ services:
   #     - "traefik.http.routers.gitlab.entrypoints=websecure"
   #     - "traefik.http.routers.gitlab.tls.certresolver=tls"
   #     - "traefik.http.services.gitlab.loadbalancer.server.port=80"
-
 
   swarmpit:
     image: swarmpit/swarmpit:latest
@@ -1550,7 +1488,6 @@ services:
       - "traefik.http.routers.swarmpit.entrypoints=websecure"
       - "traefik.http.routers.swarmpit.tls.certresolver=tls"
       - "traefik.http.services.swarmpit.loadbalancer.server.port=9700"
-
 
   swarmpit-db:
     image: couchdb:2.3.0
@@ -1603,6 +1540,14 @@ services:
         #   memory: 32M
 
 volumes:
+  caddy:
+  portainer:
+  registry_data:
+  registry_certs:
+  registry_auth:
+  website_media:
+  pandoc:
+  ssh_honeypot:
   swarmpit-data:
     driver: local
   swarmpit-influx-data:
