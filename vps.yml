@@ -867,8 +867,6 @@ services:
     image: mariadb
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    ports:
-      - "7200:3306"
     volumes:
       - nextcloud_mariadb:/var/lib/mysql
       # - /mnt/dav/users/marcpartensky/bind_mounts/nextcloud_mariadb:/var/www/html
