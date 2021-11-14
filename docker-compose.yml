@@ -1249,22 +1249,114 @@ services:
       - "traefik.http.routers.jenkins.tls.certresolver=tls"
       - "traefik.http.services.jenkins.loadbalancer.server.port=8000"
 
-  tmate:
-    image: marcpartensky/tmate-ssh-server
+  # tmate:
+  #   image: marcpartensky/tmate-ssh-server
+  #   ports:
+  #     - "7023:7023"
+  #   volumes:
+  #     - ./data/tmate/keys:/keys
+  #   environment:
+  #     SSH_KEYS_PATH: /keys
+  #     SSH_HOSTNAME: marcpartensky.com
+  #     # HAS_WEBSOCKET: 1
+  #     HAS_WEBSOCKET: 0
+  #     USE_PROXY_PROTOCOL: 0
+  #     SSH_PORT_LISTEN: 7023
+  #     SSH_PORT_ADVERTISE: 7023
+  #   cap_add:
+  #     - SYS_ADMIN
+
+  tmate-ssh-server:
+    image: tmate/tmate-ssh-server:latest
+    container_name: tmate-ssh-server
+    restart: unless-stopped
+    cap_add:
+    - SYS_ADMIN
     ports:
-      - "7023:7023"
+    - "2200:22"
+    environment:
+      HAS_WEBSOCKET: 1
+      WEBSOCKET_HOSTNAME: tmate-websocket
+      SSH_KEYS_PATH: /keys
+      SSH_HOSTNAME: tmate.example.com
+      SSH_PORT_LISTEN: 22
+      SSH_PORT_ADVERTISE: 2200
     volumes:
       - ./data/tmate/keys:/keys
+      - ./tmp/tmate/sessions:/tmp/tmate/sessions
+    networks:
+      bridge:
+
+  tmate-websocket:
+    image: tmate/tmate-websocket:latest
+    container_name: tmate-websocket
+    restart: unless-stopped
     environment:
-      SSH_KEYS_PATH: /keys
-      SSH_HOSTNAME: marcpartensky.com
-      # HAS_WEBSOCKET: 1
-      HAS_WEBSOCKET: 0
-      USE_PROXY_PROTOCOL: 0
-      SSH_PORT_LISTEN: 7023
-      SSH_PORT_ADVERTISE: 7023
-    cap_add:
-      - SYS_ADMIN
+      # VIRTUAL_HOST: tmate-ws.example.com
+      # VIRTUAL_PORT: 4001
+      CERT_NAME: example.com
+      WEBSOCKET_BASE_URL: wss://tmate-ws.example.com/
+      MASTER_BASE_URL: https://tmate.example.com/
+      USER_FACING_BASE_URL: https://tmate.example.com/
+      ERL_NODE_NAME: tmate.example.com
+      ERL_COOKIE: myerlcookie
+      DAEMON_HMAC_KEY: mydaemonhmackey
+      INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
+    volumes:
+    - unix-sockets:/tmp/tmate/sessions
+    networks:
+      bridge:
+
+  tmate-master:
+    image: tmate/tmate-master:latest
+    container_name: tmate-master
+    # https://github.com/tmate-io/tmate-master/issues/13#issuecomment-787470427
+    hostname: tmate-1
+    domainname: example.com
+    restart: unless-stopped
+    expose:
+    - 4000
+    environment:
+      VIRTUAL_HOST: tmate.example.com
+      VIRTUAL_PORT: 4000
+      CERT_NAME: example.com
+      MASTER_BASE_URL: https://tmate.example.com/
+      ERL_COOKIE: myerlcookie
+      # Must match <hostname>.<domainname>
+      ERL_NODE_NAME: tmate-1.example.com
+      # ** (ArgumentError) cookie store expects conn.secret_key_base to be at least 64 bytes
+      SECRET_KEY_BASE: 0123456789abcdefghijklmnopqrstuvwxyz=0123456789abcdefghijklmnopqrstuvwxyz
+      INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
+      PG_URI: postgres://tmate:postgrespassword@tmate-db:5432/tmate
+      # Muste be >= 2
+      PG_POOLSIZE: 5
+    networks:
+      bridge:
+      internal:
+
+  tmate-db:
+    image: postgres:12-alpine
+    container_name: tmate-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tmate
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: tmate
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+    networks:
+      internal:
+
+volumes:
+  ssh-keys:
+  unix-sockets:
+  pgdata:
+
+networks:
+  bridge:
+  internal:
+    internal: true
+
 
   vnc:
     image: consol/centos-xfce-vnc
