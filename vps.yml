@@ -139,10 +139,12 @@ services:
     tty: true
     # entrypoint: >
     #   sh -c "./manage.py migrate;
+    #          ./manage.py collectstatic --noinput;
     #          ./manage.py createsuperuser --noinput;
     #          daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
     # entrypoint: "daphne -e ssl:443:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
+    command: "80 website"
     links:
       - redis
       - postgres
