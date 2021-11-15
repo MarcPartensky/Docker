@@ -1285,45 +1285,45 @@ services:
       - ./data/tmate/keys:/keys
       - ./tmp/tmate/sessions:/tmp/tmate/sessions
     networks:
-      bridge:
+      - tmate
 
   tmate-websocket:
     image: tmate/tmate-websocket:latest
     container_name: tmate-websocket
     restart: unless-stopped
     environment:
-      # VIRTUAL_HOST: tmate-ws.example.com
+      # VIRTUAL_HOST: tmate-ws.marcpartensky.com
       # VIRTUAL_PORT: 4001
-      CERT_NAME: example.com
-      WEBSOCKET_BASE_URL: wss://tmate-ws.example.com/
-      MASTER_BASE_URL: https://tmate.example.com/
-      USER_FACING_BASE_URL: https://tmate.example.com/
-      ERL_NODE_NAME: tmate.example.com
+      CERT_NAME: marcpartensky.com
+      WEBSOCKET_BASE_URL: wss://tmate-ws.marcpartensky.com/
+      MASTER_BASE_URL: https://tmate.marcpartensky.com/
+      USER_FACING_BASE_URL: https://tmate.marcpartensky.com/
+      ERL_NODE_NAME: tmate.marcpartensky.com
       ERL_COOKIE: myerlcookie
       DAEMON_HMAC_KEY: mydaemonhmackey
       INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
     volumes:
     - unix-sockets:/tmp/tmate/sessions
     networks:
-      bridge:
+      - tmate
 
   tmate-master:
     image: tmate/tmate-master:latest
     container_name: tmate-master
     # https://github.com/tmate-io/tmate-master/issues/13#issuecomment-787470427
     hostname: tmate-1
-    domainname: example.com
+    domainname: marcpartensky.com
     restart: unless-stopped
-    expose:
-    - 4000
+    ports:
+      - "7004:4000"
     environment:
-      VIRTUAL_HOST: tmate.example.com
+      VIRTUAL_HOST: tmate.marcpartensky.com
       VIRTUAL_PORT: 4000
-      CERT_NAME: example.com
-      MASTER_BASE_URL: https://tmate.example.com/
+      CERT_NAME: marcpartensky.com
+      MASTER_BASE_URL: https://tmate.marcpartensky.com/
       ERL_COOKIE: myerlcookie
       # Must match <hostname>.<domainname>
-      ERL_NODE_NAME: tmate-1.example.com
+      ERL_NODE_NAME: tmate-1.marcpartensky.com
       # ** (ArgumentError) cookie store expects conn.secret_key_base to be at least 64 bytes
       SECRET_KEY_BASE: 0123456789abcdefghijklmnopqrstuvwxyz=0123456789abcdefghijklmnopqrstuvwxyz
       INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
@@ -1331,8 +1331,9 @@ services:
       # Muste be >= 2
       PG_POOLSIZE: 5
     networks:
-      bridge:
-      internal:
+      - tmate
+      - nginx
+      - caddy
 
   tmate-db:
     image: postgres:12-alpine
@@ -1343,9 +1344,9 @@ services:
       POSTGRES_PASSWORD: postgrespassword
       POSTGRES_DB: tmate
     volumes:
-    - pgdata:/var/lib/postgresql/data
+    - tmate_db:/var/lib/postgresql/data
     networks:
-      internal:
+      tmate:
 
 # volumes:
 #   ssh-keys:
