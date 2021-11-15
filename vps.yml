@@ -39,6 +39,8 @@ services:
     command:
       - --logo
       - https://marcpartensky.com/static/home/assets/img/white-orchid.svg
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000"]
     labels:
       - "caddy=docker.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams 9000}}"
@@ -144,7 +146,9 @@ services:
     #          daphne django_project.asgi:application --port 80 --bind 0.0.0.0 -v2"
     # entrypoint: "daphne -e ssl:443:privateKey=$$KEY:certKey=$$CERT django_project.asgi:application"
     # entrypoint: daphne -b website -e ssl:443:privateKey=/app/privkey.pem:certKey=/app/fullchain.pem django_project.asgi:application
-    command: "80 0.0.0.0"
+    command:
+      - "80"
+      - "0.0.0.0"
     links:
       - redis
       - postgres
