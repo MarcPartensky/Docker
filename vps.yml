@@ -1529,7 +1529,9 @@ services:
       TZ: Europe/Paris
       MONGODB_URI: mongodb://pritunldb:27017/pritunl
     network_mode: bridge
-    privileged: true
+    # privileged: true
+    cap_add:
+      - SYS_ADMIN
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv4.ip_forward=1
