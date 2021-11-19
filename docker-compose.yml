@@ -1726,6 +1726,7 @@ volumes:
   gitlab_data:
   gitlab_config:
   gitlab_logs:
+  tmate_db:
 
 networks:
   caddy:
