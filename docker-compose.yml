@@ -1748,4 +1748,5 @@ networks:
   discord:
   oxivia:
   minecraft:
+  tmate:
   # traefik:
