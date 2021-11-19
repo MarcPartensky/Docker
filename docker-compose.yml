@@ -1621,6 +1621,7 @@ services:
     ports:
       - "1194:1194/udp"
       - "1194:1194/tcp"
+      - "1195:1195/udp"
       # - "1080:80/tcp"
       # - "1443:443/tcp"
     depends_on:
@@ -1630,6 +1631,9 @@ services:
     environment:
       REVERSE_PROXY: "true"
       TZ: Europe/Paris
+      MONGODB_URI: mongodb://pritunldb:27017
+    cap_add:
+      - SYS_ADMIN
     # volumes:
     #   - /etc/localtime:/etc/localtime:ro
     networks:
@@ -1639,15 +1643,11 @@ services:
     labels:
       - "caddy=vpn.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams http 9700}}"
-      # - "caddy.reverse_proxy={{upstreams http 80}}"
-      # - "caddy.reverse_proxy={{upstreams https 443}}"
       - "traefik.enable=true"
       - "traefik.http.routers.pritunl.rule=Host(`vpn.marcpartensky.com`)"
       - "traefik.http.routers.pritunl.entrypoints=websecure"
       - "traefik.http.routers.pritunl.tls.certresolver=tls"
       - "traefik.http.services.pritunl.loadbalancer.server.port=9700"
-      # - "traefik.http.services.pritunl.loadbalancer.server.port=80"
-      # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
 
   pritunl_zero:
     image: pritunl/pritunl-zero
