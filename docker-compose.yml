@@ -1683,6 +1683,11 @@ services:
       - gitlab_logs:/var/log/gitlab
       - gitlab_data:/var/opt/gitlab
 
+  apt-repo-server:
+    image: dorowu/apt-repo-server
+    restart: unless-stopped
+
+
 volumes:
   caddy:
   portainer:
