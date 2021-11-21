@@ -1687,7 +1687,6 @@ services:
     image: dorowu/apt-repo-server
     restart: unless-stopped
 
-
 volumes:
   caddy:
   portainer:
