@@ -1733,12 +1733,12 @@ services:
       - caddy
     labels:
       - "caddy=notion.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams http 80}}"
+      - "caddy.reverse_proxy={{upstreams http 8000}}"
       - "traefik.enable=true"
       - "traefik.http.routers.focalboard.rule=Host(`notion.marcpartensky.com`)"
       - "traefik.http.routers.focalboard.entrypoints=websecure"
       - "traefik.http.routers.focalboard.tls.certresolver=tls"
-      - "traefik.http.services.focalboard.loadbalancer.server.port=80"
+      - "traefik.http.services.focalboard.loadbalancer.server.port=8000"
 
 volumes:
   caddy:
