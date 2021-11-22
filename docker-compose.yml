@@ -1685,7 +1685,10 @@ services:
 
   apt-repo-server:
     image: dorowu/apt-repo-server
-    restart: unless-stopped
+
+  freeboard:
+      image: freeboard
+      build: .   restart: unless-stopped
 
 volumes:
   caddy:
