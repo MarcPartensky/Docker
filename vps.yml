@@ -1556,7 +1556,7 @@ services:
   #     # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
   #
   pritunl:
-    image: jippi/docker-pritunl
+    image: jippi/pritunl
     restart: unless-stopped
     ports:
       - "1194:1194/udp"
