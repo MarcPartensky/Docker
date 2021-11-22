@@ -1679,6 +1679,13 @@ services:
         #   cpus: '0.05'
         #   memory: 32M
 
+  apt-repo-server:
+    image: dorowu/apt-repo-server
+
+  focalboard:
+      image: mattermost/focalboard
+      restart: unless-stopped
+
 volumes:
   caddy:
   portainer:
