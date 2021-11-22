@@ -1181,7 +1181,7 @@ services:
 
   tmate-ssh-server:
     image: tmate/tmate-ssh-server:latest
-    container_name: tmate-ssh-server
+    # container_name: tmate-ssh-server
     restart: unless-stopped
     cap_add:
     - SYS_ADMIN
@@ -1203,7 +1203,7 @@ services:
 
   tmate-websocket:
     image: tmate/tmate-websocket:latest
-    container_name: tmate-websocket
+    # container_name: tmate-websocket
     restart: unless-stopped
     environment:
       VIRTUAL_HOST: tmate.marcpartensky.com
@@ -1233,7 +1233,7 @@ services:
 
   tmate-master:
     image: tmate/tmate-master:latest
-    container_name: tmate-master
+    # container_name: tmate-master
     # https://github.com/tmate-io/tmate-master/issues/13#issuecomment-787470427
     hostname: tmate-master
     domainname: marcpartensky.com
@@ -1270,7 +1270,7 @@ services:
 
   tmate-db:
     image: postgres:12-alpine
-    container_name: tmate-db
+    # container_name: tmate-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: tmate
@@ -1587,7 +1587,6 @@ services:
 
   pritunldb:
     image: mongo:latest
-    container_name: pritunldb
     hostname: pritunldb
     volumes:
       - $BIND_MOUNTS/pritunl_mongo:/data/db
