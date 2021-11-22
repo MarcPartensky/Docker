@@ -1686,9 +1686,9 @@ services:
   apt-repo-server:
     image: dorowu/apt-repo-server
 
-  freeboard:
-      image: freeboard
-      build: .   restart: unless-stopped
+  focalboard:
+      image: mattermost/focalboard
+      restart: unless-stopped
 
 volumes:
   caddy:
