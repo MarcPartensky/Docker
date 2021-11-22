@@ -1513,45 +1513,75 @@ services:
   #     - "traefik.http.routers.valentin.tls.certresolver=tls"
   #     - "traefik.http.services.valentin.loadbalancer.server.port=80"
 
+  # pritunl:
+  #   # image: jippi/pritunl
+  #   image: goofball222/pritunl
+  #   restart: unless-stopped
+  #   ports:
+  #     - "1194:1194/tcp"
+  #     - "1194:1194/udp"
+  #     - "1195:1195/udp"
+  #     # - "1080:80/tcp"
+  #     # - "1443:443/tcp"
+  #   depends_on:
+  #     - pritunldb
+  #   environment:
+  #     REVERSE_PROXY: "true"
+  #     TZ: Europe/Paris
+  #     MONGODB_URI: mongodb://pritunldb:27017/pritunl
+  #   network_mode: bridge
+  #   # privileged: true
+  #   cap_add:
+  #     - SYS_ADMIN
+  #   sysctls:
+  #     - net.ipv6.conf.all.disable_ipv6=0
+  #     - net.ipv4.ip_forward=1
+  #   # volumes:
+  #   #   - /etc/localtime:/etc/localtime:ro
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - pritunl
+  #   labels:
+  #     - "caddy=vpn.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 9700}}"
+  #     # - "caddy.reverse_proxy={{upstreams http 80}}"
+  #     # - "caddy.reverse_proxy={{upstreams https 443}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.pritunl.rule=Host(`vpn.marcpartensky.com`)"
+  #     - "traefik.http.routers.pritunl.entrypoints=websecure"
+  #     - "traefik.http.routers.pritunl.tls.certresolver=tls"
+  #     - "traefik.http.services.pritunl.loadbalancer.server.port=9700"
+  #     # - "traefik.http.services.pritunl.loadbalancer.server.port=80"
+  #     # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
+  #
   pritunl:
-    # image: jippi/pritunl
-    image: goofball222/pritunl
+    image: jippi/docker-pritunl
     restart: unless-stopped
     ports:
-      - "1194:1194/tcp"
       - "1194:1194/udp"
-      - "1195:1195/udp"
-      # - "1080:80/tcp"
-      # - "1443:443/tcp"
-    depends_on:
-      - pritunldb
+      - "1194:1194/tcp"
     environment:
-      REVERSE_PROXY: "true"
-      TZ: Europe/Paris
-      MONGODB_URI: mongodb://pritunldb:27017/pritunl
-    network_mode: bridge
-    # privileged: true
-    cap_add:
-      - SYS_ADMIN
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-      - net.ipv4.ip_forward=1
-    # volumes:
-    #   - /etc/localtime:/etc/localtime:ro
+      PRITUNL_MONGODB_URI: mongodb://pritunldb:27017/pritunl
+      PRITUNL_BIND_ADDR: 0.0.0.0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - pritunl:/var/lib/pritunl
+      - ./data/pritunl/pritunl.conf:/etc/pritunl.conf
     networks:
       - caddy
       - nginx
       - pritunl
     labels:
       - "caddy=vpn.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams http 9700}}"
+      - "caddy.reverse_proxy={{upstreams http 80}}"
       # - "caddy.reverse_proxy={{upstreams http 80}}"
       # - "caddy.reverse_proxy={{upstreams https 443}}"
       - "traefik.enable=true"
       - "traefik.http.routers.pritunl.rule=Host(`vpn.marcpartensky.com`)"
       - "traefik.http.routers.pritunl.entrypoints=websecure"
       - "traefik.http.routers.pritunl.tls.certresolver=tls"
-      - "traefik.http.services.pritunl.loadbalancer.server.port=9700"
+      - "traefik.http.services.pritunl.loadbalancer.server.port=80"
       # - "traefik.http.services.pritunl.loadbalancer.server.port=80"
       # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
 
@@ -1709,6 +1739,7 @@ volumes:
   gitlab_data:
   minecraft_ankharak:
   tmate_db:
+  pritunl:
 
 networks:
   swarmpit:
