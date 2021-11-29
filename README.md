@@ -14,13 +14,11 @@
 - https://gitlab.marcpartensky.com
 - https://todolist.marcpartensky.com
 - https://api.todolist.marcpartensky.com
-- https://marc.wp.marcpartensky.com
-- https://alex.wp.marcpartensky.com
 - https://uml.marcpartensky.com
 - https://grafana.marcpartensky.com
 - https://prometheus.marcpartensky.com
-- https://dns.marcpartensky.com
-- https://dev.marcpartensky.com
+- https://swarm.marcpartensky.com
+<!-- - https://dns.marcpartensky.com -->
 <!-- - https://glou.marcpartensky.com -->
 <!-- - https://minecraft.marcpartensky.com -->
 
