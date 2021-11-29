@@ -1822,6 +1822,7 @@ networks:
     driver: overlay
   caddy:
     external: true
+    # attachable: true
   pritunl:
   healingpath:
   nextcloud:
