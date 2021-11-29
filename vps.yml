@@ -1485,7 +1485,7 @@ services:
   #     - "traefik.http.services.thaiwara.loadbalancer.server.port=80"
 
   ssh_honeypot:
-    image: local/ssh-honeypot
+    image: marcpartensky/ssh-honeypot
     restart: unless-stopped
     build: $HOME/fork/ssh-honeypot/docker
     ports:
