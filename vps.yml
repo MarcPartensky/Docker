@@ -3,7 +3,7 @@ services:
 
 configs:
   caddy-basic-content:
-    file: ./Caddyfile
+    file: /data/caddy/Caddyfile
     labels:
       caddy:
 
