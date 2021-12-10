@@ -1,5 +1,11 @@
-version: "3"
+version: "3.9"
 services:
+
+configs:
+  caddy-basic-content:
+    file: ./Caddyfile
+    labels:
+      caddy:
 
   caddy:
     image: lucaslorentz/caddy-docker-proxy:ci-alpine
@@ -1194,7 +1200,7 @@ services:
       SSH_PORT_LISTEN: 22
       SSH_PORT_ADVERTISE: 7023
     volumes:
-      - ./data/tmate/keys:/keys
+      - tmate_keys:/keys
       - /tmp/tmate/sessions:/tmp/tmate/sessions
     networks:
       - tmate
@@ -1815,6 +1821,7 @@ volumes:
   gitlab_data:
   minecraft_ankharak:
   tmate_db:
+  tmate_keys:
   pritunl:
 
 networks:

@@ -5,5 +5,5 @@ data/traefik
 data/searx
 data/caddy
 data/jenkins
-data/tmate
+data/tmate/keys
 data.tar.gz

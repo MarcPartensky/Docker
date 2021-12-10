@@ -1282,7 +1282,7 @@ services:
       SSH_PORT_LISTEN: 22
       SSH_PORT_ADVERTISE: 2200
     volumes:
-      - ./data/tmate/keys:/keys
+      - .tmate_keys:/keys
       - ./tmp/tmate/sessions:/tmp/tmate/sessions
     networks:
       - tmate
@@ -1734,6 +1734,7 @@ volumes:
   gitlab_config:
   gitlab_logs:
   tmate_db:
+  tmate_keys:
 
 networks:
   caddy:
