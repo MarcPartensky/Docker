@@ -1,12 +1,12 @@
 version: "3.9"
-services:
 
 configs:
   caddy-basic-content:
-    file: /data/caddy/Caddyfile
+    file: ./data/caddy/Caddyfile
     labels:
       caddy:
 
+services:
   caddy:
     image: lucaslorentz/caddy-docker-proxy:ci-alpine
     restart: unless-stopped
