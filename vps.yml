@@ -1681,122 +1681,122 @@ configs:
   #     - "traefik.http.routers.gitlab.tls.certresolver=tls"
   #     - "traefik.http.services.gitlab.loadbalancer.server.port=80"
 
-  swarmpit:
-    image: swarmpit/swarmpit:latest
-    environment:
-      SWARMPIT_DB: http://swarmpit-db:5984
-      SWARMPIT_INFLUXDB: http://swarmpit-influxdb:8086
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 60s
-      timeout: 10s
-      retries: 3
-    networks:
-      - swarmpit
-      - caddy
-      - nginx
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 1024M
-        # reservations:
-        #   cpus: '0.25'
-        #   memory: 512M
-      # placement:
-      #   constraints:
-      #     - node.role == manager
-    labels:
-      - "caddy=swarm.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams http 8080}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.swarmpit.rule=Host(`swarm.marcpartensky.com`)"
-      - "traefik.http.routers.swarmpit.entrypoints=websecure"
-      - "traefik.http.routers.swarmpit.tls.certresolver=tls"
-      - "traefik.http.services.swarmpit.loadbalancer.server.port=8080"
+  # swarmpit:
+  #   image: swarmpit/swarmpit:latest
+  #   environment:
+  #     SWARMPIT_DB: http://swarmpit-db:5984
+  #     SWARMPIT_INFLUXDB: http://swarmpit-influxdb:8086
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8080"]
+  #     interval: 60s
+  #     timeout: 10s
+  #     retries: 3
+  #   networks:
+  #     - swarmpit
+  #     - caddy
+  #     - nginx
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.50'
+  #         memory: 1024M
+  #       # reservations:
+  #       #   cpus: '0.25'
+  #       #   memory: 512M
+  #     # placement:
+  #     #   constraints:
+  #     #     - node.role == manager
+  #   labels:
+  #     - "caddy=swarm.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 8080}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.swarmpit.rule=Host(`swarm.marcpartensky.com`)"
+  #     - "traefik.http.routers.swarmpit.entrypoints=websecure"
+  #     - "traefik.http.routers.swarmpit.tls.certresolver=tls"
+  #     - "traefik.http.services.swarmpit.loadbalancer.server.port=8080"
 
-  swarmpit-db:
-    image: couchdb:2.3.0
-    volumes:
-      - swarmpit-data:/opt/couchdb/data
-    networks:
-      - swarmpit
-    deploy:
-      resources:
-        limits:
-          cpus: '0.30'
-          memory: 256M
-        # reservations:
-        #   cpus: '0.15'
-        #   memory: 128M
+  # swarmpit-db:
+  #   image: couchdb:2.3.0
+  #   volumes:
+  #     - swarmpit-data:/opt/couchdb/data
+  #   networks:
+  #     - swarmpit
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.30'
+  #         memory: 256M
+  #       # reservations:
+  #       #   cpus: '0.15'
+  #       #   memory: 128M
 
-  swarmpit-influxdb:
-    image: influxdb:1.7
-    volumes:
-      - swarmpit-influx-data:/var/lib/influxdb
-    networks:
-      - swarmpit
-    deploy:
-      resources:
-        limits:
-          cpus: '0.60'
-          memory: 512M
-        # reservations:
-        #   cpus: '0.30'
-        #   memory: 128M
+  # swarmpit-influxdb:
+  #   image: influxdb:1.7
+  #   volumes:
+  #     - swarmpit-influx-data:/var/lib/influxdb
+  #   networks:
+  #     - swarmpit
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.60'
+  #         memory: 512M
+  #       # reservations:
+  #       #   cpus: '0.30'
+  #       #   memory: 128M
 
-  swarmpit-agent:
-    image: swarmpit/agent:latest
-    environment:
-      - DOCKER_API_VERSION=1.35
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - swarmpit
-    deploy:
-      mode: global
-      labels:
-        swarmpit.agent: 'true'
-      resources:
-        limits:
-          cpus: '0.10'
-          memory: 64M
-        # reservations:
-        #   cpus: '0.05'
-        #   memory: 32M
+  # swarmpit-agent:
+  #   image: swarmpit/agent:latest
+  #   environment:
+  #     - DOCKER_API_VERSION=1.35
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   networks:
+  #     - swarmpit
+  #   deploy:
+  #     mode: global
+  #     labels:
+  #       swarmpit.agent: 'true'
+  #     resources:
+  #       limits:
+  #         cpus: '0.10'
+  #         memory: 64M
+  #       # reservations:
+  #       #   cpus: '0.05'
+  #       #   memory: 32M
 
-  apt:
-    image: dorowu/apt-repo-server
-    restart: unless-stopped
-    networks:
-      - nginx
-      - caddy
-    labels:
-      - "caddy=apt.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams http 80}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.apt.rule=Host(`apt.marcpartensky.com`)"
-      - "traefik.http.routers.apt.entrypoints=websecure"
-      - "traefik.http.routers.apt.tls.certresolver=tls"
-      - "traefik.http.services.apt.loadbalancer.server.port=80"
+  # apt:
+  #   image: dorowu/apt-repo-server
+  #   restart: unless-stopped
+  #   networks:
+  #     - nginx
+  #     - caddy
+  #   labels:
+  #     - "caddy=apt.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 80}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.apt.rule=Host(`apt.marcpartensky.com`)"
+  #     - "traefik.http.routers.apt.entrypoints=websecure"
+  #     - "traefik.http.routers.apt.tls.certresolver=tls"
+  #     - "traefik.http.services.apt.loadbalancer.server.port=80"
 
 
-  focalboard:
-    image: mattermost/focalboard
-    restart: unless-stopped
-    networks:
-      - nginx
-      - caddy
-    labels:
-      - "caddy=notion.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams http 8000}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.focalboard.rule=Host(`notion.marcpartensky.com`)"
-      - "traefik.http.routers.focalboard.entrypoints=websecure"
-      - "traefik.http.routers.focalboard.tls.certresolver=tls"
-      - "traefik.http.services.focalboard.loadbalancer.server.port=8000"
+  # focalboard:
+  #   image: mattermost/focalboard
+  #   restart: unless-stopped
+  #   networks:
+  #     - nginx
+  #     - caddy
+  #   labels:
+  #     - "caddy=notion.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 8000}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.focalboard.rule=Host(`notion.marcpartensky.com`)"
+  #     - "traefik.http.routers.focalboard.entrypoints=websecure"
+  #     - "traefik.http.routers.focalboard.tls.certresolver=tls"
+  #     - "traefik.http.services.focalboard.loadbalancer.server.port=8000"
 
 volumes:
   caddy:
