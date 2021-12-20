@@ -29,6 +29,8 @@ services:
       options:
         max-size: 5m
         max-file: "10"
+    security_opt:
+      - no-new-privileges:true
 
   portainer:
     image: portainer/portainer-ce
