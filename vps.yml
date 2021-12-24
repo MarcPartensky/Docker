@@ -213,8 +213,9 @@ services:
     build:
       context: $HOME/git/discord-bot
       dockerfile: $HOME/git/discord-bot/Dockerfile
-      args:
-        env_file: $HOME/git/discord-bot/.env
+    # env_file:
+    #   args:
+    #     env_file: $HOME/git/discord-bot/.env
     networks:
       - discord
     links:
