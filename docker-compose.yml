@@ -1303,7 +1303,7 @@ services:
       DAEMON_HMAC_KEY: mydaemonhmackey
       INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
     volumes:
-    - unix-sockets:/tmp/tmate/sessions
+    - /var/run/tmate.sock:/tmp/tmate/sessions
     networks:
       - tmate
 
