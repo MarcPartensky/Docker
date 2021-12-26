@@ -210,9 +210,8 @@ services:
   esclave:
     image: marcpartensky/discord-bot
     restart: unless-stopped
-    build:
-      context: $HOME/git/discord-bot
-      dockerfile: $HOME/git/discord-bot/Dockerfile
+    ports:
+        - "7010:8000"
     # env_file:
     #   args:
     #     env_file: $HOME/git/discord-bot/.env
