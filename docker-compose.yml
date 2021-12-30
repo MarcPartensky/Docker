@@ -1740,6 +1740,9 @@ networks:
   caddy:
     external: true
   pritunl:
+    ipam:
+      config:
+        - subnet: 172.177.0.0/16
   healingpath:
   nextcloud:
   website:
