@@ -1530,57 +1530,57 @@ services:
   #     - "traefik.http.routers.valentin.tls.certresolver=tls"
   #     - "traefik.http.services.valentin.loadbalancer.server.port=80"
 
-  pritunl:
-    # image: jippi/pritunl
-    image: goofball222/pritunl
-    restart: unless-stopped
-    user: root
-    ports:
-      - "1194:1194/tcp"
-      - "1194:1194/udp"
-      - "1195:1195/udp"
-    depends_on:
-      - pritunldb
-    network_mode: bridge
-    environment:
-      REVERSE_PROXY: "true"
-      WIREGUARD: "false"
-      TZ: Europe/Paris
-      MONGODB_URI: mongodb://pritunldb:27017/pritunl
-    privileged: true
-    cap_add:
-      - SYS_ADMIN
-      - NET_ADMIN
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-      # - net.ipv4.ip_forward=1
-    # volumes:
-    #   - /etc/localtime:/etc/localtime:ro
-    networks:
-      - caddy
-      - nginx
-      - pritunl
-    labels:
-      - "caddy=vpn.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams http 9700}}"
-      # - "caddy.reverse_proxy={{upstreams http 80}}"
-      # - "caddy.reverse_proxy={{upstreams https 443}}"
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.pritunl.rule=Host(`vpn.marcpartensky.com`)"
-  #     - "traefik.http.routers.pritunl.entrypoints=websecure"
-  #     - "traefik.http.routers.pritunl.tls.certresolver=tls"
-  #     - "traefik.http.services.pritunl.loadbalancer.server.port=9700"
-  #     # - "traefik.http.services.pritunl.loadbalancer.server.port=80"
-  #     # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
-    deploy:
-      mode: global
-      update_config:
-        parallelism: 1
-        delay: 5s
-        order: start-first
-        failure_action: rollback
-      rollback_config:
-        order: start-first
+  # pritunl:
+  #   # image: jippi/pritunl
+  #   image: goofball222/pritunl
+  #   restart: unless-stopped
+  #   user: root
+  #   ports:
+  #     - "1194:1194/tcp"
+  #     - "1194:1194/udp"
+  #     - "1195:1195/udp"
+  #   depends_on:
+  #     - pritunldb
+  #   network_mode: bridge
+  #   environment:
+  #     REVERSE_PROXY: "true"
+  #     WIREGUARD: "false"
+  #     TZ: Europe/Paris
+  #     MONGODB_URI: mongodb://pritunldb:27017/pritunl
+  #   privileged: true
+  #   cap_add:
+  #     - SYS_ADMIN
+  #     - NET_ADMIN
+  #   sysctls:
+  #     - net.ipv6.conf.all.disable_ipv6=0
+  #     # - net.ipv4.ip_forward=1
+  #   # volumes:
+  #   #   - /etc/localtime:/etc/localtime:ro
+  #   networks:
+  #     - caddy
+  #     - nginx
+  #     - pritunl
+  #   labels:
+  #     - "caddy=vpn.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams http 9700}}"
+  #     # - "caddy.reverse_proxy={{upstreams http 80}}"
+  #     # - "caddy.reverse_proxy={{upstreams https 443}}"
+  # #     - "traefik.enable=true"
+  # #     - "traefik.http.routers.pritunl.rule=Host(`vpn.marcpartensky.com`)"
+  # #     - "traefik.http.routers.pritunl.entrypoints=websecure"
+  # #     - "traefik.http.routers.pritunl.tls.certresolver=tls"
+  # #     - "traefik.http.services.pritunl.loadbalancer.server.port=9700"
+  # #     # - "traefik.http.services.pritunl.loadbalancer.server.port=80"
+  # #     # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
+  #   deploy:
+  #     mode: global
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 5s
+  #       order: start-first
+  #       failure_action: rollback
+  #     rollback_config:
+  #       order: start-first
   #
   # pritunl:
   #   image: jippi/pritunl
@@ -1689,16 +1689,16 @@ services:
   #     - "traefik.http.services.pritunl.loadbalancer.server.port=80"
   #     # - "traefik.http.services.pritunl.loadbalancer.server.port=443"
 
-  pritunldb:
-    image: mongo:latest
-    restart: unless-stopped
-    hostname: pritunldb
-    volumes:
-      - pritunldb:/data/db
-    # env_file:
-    #   - ./data/secrets/pritunldb.env
-    networks:
-      - pritunl
+  # pritunldb:
+  #   image: mongo:latest
+  #   restart: unless-stopped
+  #   hostname: pritunldb
+  #   volumes:
+  #     - pritunldb:/data/db
+  #   # env_file:
+  #   #   - ./data/secrets/pritunldb.env
+  #   networks:
+  #     - pritunl
 
   # gitlab:
   #   image: gitlab/gitlab-ee:latest
