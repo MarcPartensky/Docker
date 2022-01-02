@@ -9,7 +9,6 @@ configs:
 services:
   caddy:
     image: lucaslorentz/caddy-docker-proxy:ci-alpine
-    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -18,7 +17,8 @@ services:
       # CADDY_DOCKER_CADDYFILE_PATH: /etc/Caddyfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - caddy:/data/caddy
+      # - caddy:/data/caddy
+      - caddy_data:/data
       # - ./data/caddy/Caddyfile:/etc/Caddyfile
     networks:
       - nginx
@@ -31,6 +31,14 @@ services:
         max-file: "10"
     security_opt:
       - no-new-privileges:true
+    deploy:
+      labels: # Global options
+        caddy.email: marc.partensky@gmail.com
+      placement:
+        constraints:
+          - node.role == manager
+        # restart_policy:
+        #     condition: any
 
   portainer:
     image: portainer/portainer-ce
@@ -176,13 +184,14 @@ services:
         retries: 3
         # start_period: 40s
     labels:
-      - "caddy=marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 80}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.website.rule=Host(`marcpartensky.com`)"
-      - "traefik.http.routers.website.entrypoints=websecure"
-      - "traefik.http.routers.website.tls.certresolver=tls"
-      - "traefik.http.services.website.loadbalancer.server.port=80"
+      caddy: marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
+      # caddy.tls: "internal"
+      traefik.enable: "true"
+      traefik.http.routers.website.rule: "Host(`marcpartensky.com`)"
+      traefik.http.routers.website.entrypoints: "websecure"
+      traefik.http.routers.website.tls.certresolver: "tls"
+      traefik.http.services.website.loadbalancer.server.port: "80"
     deploy:
       # mode: global
       update_config:
@@ -1847,7 +1856,8 @@ services:
   #     - "traefik.http.services.focalboard.loadbalancer.server.port=8000"
 
 volumes:
-  caddy:
+    # caddy:
+  caddy_data:
   portainer:
   registry_data:
   registry_certs:

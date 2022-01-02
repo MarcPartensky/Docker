@@ -1,0 +1,5 @@
+# first caddyfile
+
+test.marcpartensky.com {
+    redir https://caddyserver.com/docs/caddyfile/patterns
+}

@@ -3,7 +3,6 @@ data/secrets
 data/certbot
 data/traefik
 data/searx
-data/caddy
 data/jenkins
 data/tmate/keys
 data.tar.gz
