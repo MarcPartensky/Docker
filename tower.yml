@@ -1396,7 +1396,6 @@ services:
       - "30000:30000"
       - "31920:31920"
     privileged: true
-    interactive: true
     tty: true
 
   rancher:
