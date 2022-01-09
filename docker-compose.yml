@@ -162,7 +162,7 @@ services:
         - caddy
     labels:
       - "caddy=rancher.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 80}}"
+      - "caddy.reverse_proxy={{upstreams 8080}}"
     privileged: true
   # registry:
   #   restart: unless-stopped
