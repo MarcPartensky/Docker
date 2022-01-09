@@ -153,6 +153,17 @@ services:
       - "traefik.http.routers.portainer.tls.certresolver=tls"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
+  rancher:
+    image: rancher/rancher
+    restart: unless-stopped
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+        - caddy
+    labels:
+      - "caddy=rancher.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 80}}"
+    privileged: true
   # registry:
   #   restart: unless-stopped
   #   image: registry:latest
