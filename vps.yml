@@ -221,6 +221,8 @@ services:
       - caddy
     depends_on:
       - postgres
+    healthcheck:
+      test: ["CMD", "wget", "-q", "localhost:8081", "-O", "/dev/null"]
     labels:
       caddy: db.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8081}}"
@@ -300,6 +302,8 @@ services:
       - docker_api
     env_file:
       - ./data/secrets/discord_bot_mongo.env
+    healthcheck:
+      test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
 
   mongo_express:
     image: mongo-express
@@ -674,6 +678,8 @@ services:
       - wordpress
     volumes:
       - $BIND_MOUNTS/wordpress_mysql:/var/lib/mysql
+    healthcheck:
+      test: CMD /bin/sh -c 'mysqladmin ping --user=$MYSQL_USER --password=$MYSQL_PASSWORD'
 
   # business:
   #   image: wordpress

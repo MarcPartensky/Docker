@@ -1630,9 +1630,7 @@ services:
     image: goofball222/pritunl
     restart: unless-stopped
     ports:
-      - "1194:1194/udp"
-      - "1194:1194/tcp"
-      - "1195:1195/udp"
+      - "1194-1195:1194-1195/udp"
       # - "1080:80/tcp"
       # - "1443:443/tcp"
     depends_on:
@@ -1645,6 +1643,8 @@ services:
       MONGODB_URI: mongodb://pritunldb:27017
     cap_add:
       - SYS_ADMIN
+        # healthcheck:
+        #   test: ["CMD", "wget", "-q", "localhost:80", "-O", "/dev/null"]
     # volumes:
     #   - /etc/localtime:/etc/localtime:ro
     networks:
