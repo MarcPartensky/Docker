@@ -3,3 +3,8 @@
 test.marcpartensky.com {
     redir https://caddyserver.com/docs/caddyfile/patterns
 }
+
+# healthcheck
+# :8080 {
+#     status 200 /
+# }

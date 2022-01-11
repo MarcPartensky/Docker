@@ -14,10 +14,8 @@ services:
       - "443:443"
     environment:
       CADDY_INGRESS_NETWORKS: caddy
-      # CADDY_DOCKER_CADDYFILE_PATH: /etc/Caddyfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      # - caddy:/data/caddy
       - caddy_data:/data
       # - ./data/caddy/Caddyfile:/etc/Caddyfile
     networks:
@@ -29,8 +27,8 @@ services:
       options:
         max-size: 5m
         max-file: "10"
-    security_opt:
-      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:80"]
     deploy:
       labels: # Global options
         caddy.email: marc.partensky@gmail.com
@@ -55,8 +53,9 @@ services:
     command:
       - --logo
       - https://marcpartensky.com/static/home/assets/img/white-orchid.svg
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000"]
+        # healthcheck:
+        # test: ["CMD", "curl", "-f", "http://localhost:9000"]
+        # test: ["CMD", "portainer", "--healthcheck"]
     labels:
       - "caddy=docker.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams 9000}}"
@@ -176,11 +175,11 @@ services:
     depends_on:
       - redis
       - postgres
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost/robots.txt"]
-        interval: 1m30s
-        timeout: 10s
-        retries: 3
+    # healthcheck:
+    #     test: ["CMD", "curl", "-f", "http://localhost/robots.txt"]
+    #     interval: 1m30s
+    #     timeout: 10s
+    #     retries: 3
         # start_period: 40s
     labels:
       caddy: marcpartensky.com
@@ -243,6 +242,8 @@ services:
     restart: unless-stopped
     networks:
       - website
+    healthcheck:
+       test: ["CMD", "redis-cli","ping"]
 
   esclave:
     image: marcpartensky/discord-bot
@@ -721,6 +722,8 @@ services:
       - oxivia
     depends_on:
       - oxivia_mysql
+    healthcheck:
+      - ["CMD", "curl", "-f", "localhost:80"]
     labels:
       - "caddy=oxivia.business.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams}}"
@@ -862,16 +865,6 @@ services:
   #     - wordpress_marc
   #   volumes:
   #     - $BIND_MOUNTS/wordpress_mysql_marc:/var/lib/mysql
-
-
-  # samba:
-  #   image: dperson/samba
-  #   restart: unless-stopped
-  #   volumes:
-  #     - /:/mount
-  #   ports:
-  #     - "139:139"
-  #     - "445:445"
 
   # plantuml:
   #   image: plantuml/plantuml-server:tomcat
@@ -1223,107 +1216,107 @@ services:
   #   cap_add:
   #     - SYS_ADMIN
 
-  tmate-ssh-server:
-    image: tmate/tmate-ssh-server:latest
-    # container_name: tmate-ssh-server
-    restart: unless-stopped
-    cap_add:
-    - SYS_ADMIN
-    ports:
-    - "7023:22"
-    environment:
-      HAS_WEBSOCKET: 1
-      WEBSOCKET_HOSTNAME: tmate-websocket
-      SSH_KEYS_PATH: /keys
-      SSH_HOSTNAME: marcpartensky.com
-      SSH_PORT_LISTEN: 22
-      SSH_PORT_ADVERTISE: 7023
-    volumes:
-      - tmate_keys:/keys
-      - /tmp/tmate/sessions:/tmp/tmate/sessions
-    networks:
-      - tmate
+  # tmate-ssh-server:
+  #   image: tmate/tmate-ssh-server:latest
+  #   # container_name: tmate-ssh-server
+  #   restart: unless-stopped
+  #   cap_add:
+  #   - SYS_ADMIN
+  #   ports:
+  #   - "7023:22"
+  #   environment:
+  #     HAS_WEBSOCKET: 1
+  #     WEBSOCKET_HOSTNAME: tmate-websocket
+  #     SSH_KEYS_PATH: /keys
+  #     SSH_HOSTNAME: marcpartensky.com
+  #     SSH_PORT_LISTEN: 22
+  #     SSH_PORT_ADVERTISE: 7023
+  #   volumes:
+  #     - tmate_keys:/keys
+  #     - /tmp/tmate/sessions:/tmp/tmate/sessions
+  #   networks:
+  #     - tmate
 
 
-  tmate-websocket:
-    image: tmate/tmate-websocket:latest
-    # container_name: tmate-websocket
-    restart: unless-stopped
-    environment:
-      VIRTUAL_HOST: tmate.marcpartensky.com
-      VIRTUAL_PORT: 4001
-      CERT_NAME: example.com
-      WEBSOCKET_BASE_URL: wss://tmate.marcpartensky.com/
-      MASTER_BASE_URL: https://tmate.marcpartensky.com/
-      USER_FACING_BASE_URL: https://tmate.marcpartensky.com/
-      ERL_NODE_NAME: tmate.marcpartensky.com
-      ERL_COOKIE: myerlcookie
-      DAEMON_HMAC_KEY: mydaemonhmackey
-      INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
-    volumes:
-    - /tmp/tmate/sessions:/tmp/tmate/sessions
-    networks:
-      - tmate
-      - nginx
-      - caddy
-    labels:
-      - "caddy=tmate.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 4001}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.tmate.rule=Host(`tmate.marcpartensky.com`)"
-      - "traefik.http.routers.tmate.entrypoints=websecure"
-      - "traefik.http.routers.tmate.tls.certresolver=tls"
-      - "traefik.http.services.tmate.loadbalancer.server.port=4001"
+  # tmate-websocket:
+  #   image: tmate/tmate-websocket:latest
+  #   # container_name: tmate-websocket
+  #   restart: unless-stopped
+  #   environment:
+  #     VIRTUAL_HOST: tmate.marcpartensky.com
+  #     VIRTUAL_PORT: 4001
+  #     CERT_NAME: example.com
+  #     WEBSOCKET_BASE_URL: wss://tmate.marcpartensky.com/
+  #     MASTER_BASE_URL: https://tmate.marcpartensky.com/
+  #     USER_FACING_BASE_URL: https://tmate.marcpartensky.com/
+  #     ERL_NODE_NAME: tmate.marcpartensky.com
+  #     ERL_COOKIE: myerlcookie
+  #     DAEMON_HMAC_KEY: mydaemonhmackey
+  #     INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
+  #   volumes:
+  #   - /tmp/tmate/sessions:/tmp/tmate/sessions
+  #   networks:
+  #     - tmate
+  #     - nginx
+  #     - caddy
+  #   labels:
+  #     - "caddy=tmate.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 4001}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.tmate.rule=Host(`tmate.marcpartensky.com`)"
+  #     - "traefik.http.routers.tmate.entrypoints=websecure"
+  #     - "traefik.http.routers.tmate.tls.certresolver=tls"
+  #     - "traefik.http.services.tmate.loadbalancer.server.port=4001"
 
-  tmate-master:
-    image: tmate/tmate-master:latest
-    # container_name: tmate-master
-    # https://github.com/tmate-io/tmate-master/issues/13#issuecomment-787470427
-    hostname: tmate-master
-    domainname: marcpartensky.com
-    restart: unless-stopped
-    ports:
-      - "7024:4000"
-    environment:
-      VIRTUAL_HOST: tmate-master.marcpartensky.com
-      VIRTUAL_PORT: 4000
-      CERT_NAME: marcpartensky.com
-      MASTER_BASE_URL: https://tmate-master.marcpartensky.com/
-      ERL_COOKIE: myerlcookie
-      # Must match <hostname>.<domainname>
-      ERL_NODE_NAME: tmate-master.marcpartensky.com
-      # ** (ArgumentError) cookie store expects conn.secret_key_base to be at least 64 bytes
-      SECRET_KEY_BASE: 0123456789abcdefghijklmnopqrstuvwxyz=0123456789abcdefghijklmnopqrstuvwxyz
-      INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
-      PG_URI: postgres://tmate:postgrespassword@tmate-db:5432/tmate
-      # Muste be >= 2
-      PG_POOLSIZE: 5
-    networks:
-      - tmate
-      - caddy
-      - nginx
-    labels:
-      - "caddy=tmate-master.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 4000}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.tmate-master.rule=Host(`tmate-master.marcpartensky.com`)"
-      - "traefik.http.routers.tmate-master.entrypoints=websecure"
-      - "traefik.http.routers.tmate-master.tls.certresolver=tls"
-      - "traefik.http.services.tmate-master.loadbalancer.server.port=4000"
+  # tmate-master:
+  #   image: tmate/tmate-master:latest
+  #   # container_name: tmate-master
+  #   # https://github.com/tmate-io/tmate-master/issues/13#issuecomment-787470427
+  #   hostname: tmate-master
+  #   domainname: marcpartensky.com
+  #   restart: unless-stopped
+  #   ports:
+  #     - "7024:4000"
+  #   environment:
+  #     VIRTUAL_HOST: tmate-master.marcpartensky.com
+  #     VIRTUAL_PORT: 4000
+  #     CERT_NAME: marcpartensky.com
+  #     MASTER_BASE_URL: https://tmate-master.marcpartensky.com/
+  #     ERL_COOKIE: myerlcookie
+  #     # Must match <hostname>.<domainname>
+  #     ERL_NODE_NAME: tmate-master.marcpartensky.com
+  #     # ** (ArgumentError) cookie store expects conn.secret_key_base to be at least 64 bytes
+  #     SECRET_KEY_BASE: 0123456789abcdefghijklmnopqrstuvwxyz=0123456789abcdefghijklmnopqrstuvwxyz
+  #     INTERNAL_API_AUTH_TOKEN: myinternalapiauthtoken
+  #     PG_URI: postgres://tmate:postgrespassword@tmate-db:5432/tmate
+  #     # Muste be >= 2
+  #     PG_POOLSIZE: 5
+  #   networks:
+  #     - tmate
+  #     - caddy
+  #     - nginx
+  #   labels:
+  #     - "caddy=tmate-master.marcpartensky.com"
+  #     - "caddy.reverse_proxy={{upstreams 4000}}"
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.tmate-master.rule=Host(`tmate-master.marcpartensky.com`)"
+  #     - "traefik.http.routers.tmate-master.entrypoints=websecure"
+  #     - "traefik.http.routers.tmate-master.tls.certresolver=tls"
+  #     - "traefik.http.services.tmate-master.loadbalancer.server.port=4000"
 
 
-  tmate-db:
-    image: postgres:12-alpine
-    # container_name: tmate-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: tmate
-      POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: tmate
-    volumes:
-    - tmate_db:/var/lib/postgresql/data
-    networks:
-      - tmate
+  # tmate-db:
+  #   image: postgres:12-alpine
+  #   # container_name: tmate-db
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_USER: tmate
+  #     POSTGRES_PASSWORD: postgrespassword
+  #     POSTGRES_DB: tmate
+  #   volumes:
+  #   - tmate_db:/var/lib/postgresql/data
+  #   networks:
+  #     - tmate
 
   # vnc:
   #   image: consol/centos-xfce-vnc
@@ -1921,9 +1914,6 @@ networks:
   wordpress:
   # business:
   wordpress_alex:
-  wordpress_anaelle:
-  wordpress_marc:
-  wordpress_arnaud:
   gitea:
   elk:
   box:
