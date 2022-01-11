@@ -723,7 +723,7 @@ services:
     depends_on:
       - oxivia_mysql
     healthcheck:
-      - ["CMD", "curl", "-f", "localhost:80"]
+      test: ["CMD", "curl", "-f", "localhost:80"]
     labels:
       - "caddy=oxivia.business.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams}}"
