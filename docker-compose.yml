@@ -1418,7 +1418,7 @@ services:
     cap_add:
       - NET_ADMIN
     # networks:
-      - caddy
+      # - caddy
     labels:
       - "caddy=dns.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams}}"
