@@ -176,11 +176,11 @@ services:
       - redis
       - postgres
     # healthcheck:
-    #     test: ["CMD", "curl", "-f", "http://localhost/robots.txt"]
-    #     interval: 1m30s
+    #     test: ["CMD", "curl", "-f", "http://localhost:80/live"]
+    #     interval: 30s
     #     timeout: 10s
     #     retries: 3
-        # start_period: 40s
+    #     start_period: 1m
     labels:
       caddy: marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
