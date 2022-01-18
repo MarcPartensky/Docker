@@ -227,6 +227,7 @@ services:
     volumes:
       - $BIND_MOUNTS/mcmyadmin/mcmyadmin:/data
     ports:
+      - "8008:8080"
       - "25568:25565"
     networks:
       - minecraft
