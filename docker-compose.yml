@@ -1631,8 +1631,6 @@ services:
     restart: unless-stopped
     ports:
       - "1194-1195:1194-1195/udp"
-      # - "1080:80/tcp"
-      # - "1443:443/tcp"
     depends_on:
         - pritunl_mongo
     # depends_on:
@@ -1640,9 +1638,15 @@ services:
     environment:
       REVERSE_PROXY: "true"
       TZ: Europe/Paris
-      MONGODB_URI: mongodb://pritunldb:27017
+      MONGODB_URI: mongodb://pritunldb:27017/pritunl
+      PRITUNL_DEBUG: "true"
+    privileged: true
     cap_add:
       - SYS_ADMIN
+      - NET_ADMIN
+    sysctls:
+        - net.ipv6.conf.all.disable_ipv6=0
+        - net.ipv4.ip_forward=1
         # healthcheck:
         #   test: ["CMD", "wget", "-q", "localhost:80", "-O", "/dev/null"]
     # volumes:
