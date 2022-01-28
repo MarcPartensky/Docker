@@ -182,7 +182,7 @@ services:
     #     retries: 3
     #     start_period: 1m
     labels:
-      caddy: marcpartensky.com
+      caddy: marcpartensky.com, marc.wf, marc.tf
       caddy.reverse_proxy: "{{upstreams 80}}"
       # caddy.tls: "internal"
       traefik.enable: "true"
