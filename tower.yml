@@ -1413,6 +1413,21 @@ services:
       - "caddy.reverse_proxy={{upstreams 8080}}"
     privileged: true
 
+  duplicati:
+    image: ghcr.io/linuxserver/duplicati
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - CLI_ARGS= #optional
+    volumes:
+      - $BIND_MOUNTS/duplicati/config:/config
+      - $BIND_MOUNTS/duplicati/backups:/backups
+      - $BIND_MOUNTS/duplicati/source:/source
+    ports:
+      - 8200:8200
+
 volumes:
   nextcloud:
   nextcloud_mariadb:
