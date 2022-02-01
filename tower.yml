@@ -274,7 +274,7 @@ services:
       - novnc_usr:/usr
     ports:
       - 8066:80
-      - 5903:5900
+      - 5900:5900
     environment:
       USER: marc
       PASSWORD: test
