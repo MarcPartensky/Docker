@@ -272,9 +272,11 @@ services:
       - /dev/shm:/dev/shm
       - novnc:/home/marc
       - novnc_usr:/usr
+      - novnc_var:/var
     ports:
       - 8066:80
       - 5900:5900
+        # user: "${UID}:${GID}"
     environment:
       USER: marc
       PASSWORD: test
@@ -1435,6 +1437,7 @@ volumes:
   mcvnc_usr:
   novnc:
   novnc_usr:
+  novnc_var:
 
 networks:
   caddy:
