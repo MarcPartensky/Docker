@@ -269,6 +269,7 @@ services:
   novnc:
     image: dorowu/ubuntu-desktop-lxde-vnc
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - /dev/shm:/dev/shm
       - novnc:/home/marc
       - novnc_usr:/usr
