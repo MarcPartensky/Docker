@@ -275,7 +275,7 @@ services:
       - novnc_var:/var
     ports:
       - 8066:80
-      - 5900:5900
+      - 5910:5900
         # user: "${UID}:${GID}"
     environment:
       USER: marc
