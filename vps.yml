@@ -1916,6 +1916,19 @@ services:
       - "traefik.http.routers.nextcloud.tls.certresolver=tls"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
 
+  fail2ban:
+    image: crazymax/fail2ban:latest
+    restart: unless-stopped
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - fail2ban:/data
+      - /var/log:/var/log:ro
+    env_file:
+      - ./data/secrets/fail2ban.env
+
 volumes:
     # caddy:
   caddy_data:
@@ -1945,6 +1958,7 @@ volumes:
   pritunldb:
   seafile:
   seafile_mysql:
+  fail2ban:
 
 networks:
   swarmpit:
