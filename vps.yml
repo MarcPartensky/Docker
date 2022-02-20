@@ -1879,7 +1879,7 @@ services:
       - MYSQL_ROOT_PASSWORD=db_dev  # Requested, set the root's password of MySQL service.
       - MYSQL_LOG_CONSOLE=true
     volumes:
-      - seafile-mysql:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
+      - seafile_mysql:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
     networks:
       - seafile-net
 
@@ -1944,6 +1944,7 @@ volumes:
   tmate_keys:
   pritunl:
   pritunldb:
+  seafile_mysql:
 
 networks:
   swarmpit:
