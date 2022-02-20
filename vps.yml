@@ -1872,7 +1872,7 @@ services:
   #     - "traefik.http.routers.focalboard.tls.certresolver=tls"
   #     - "traefik.http.services.focalboard.loadbalancer.server.port=8000"
 
-  seafile_mysql:
+  seafile_mariadb:
     image: mariadb:10.5
     environment:
       - MYSQL_ROOT_PASSWORD=db_dev  # Requested, set the root's password of MySQL service.
@@ -1884,18 +1884,16 @@ services:
 
   seafile-memcached:
     image: memcached:1.5.6
-    container_name: seafile-memcached
     entrypoint: memcached -m 256
     networks:
       - seafile_net
 
   seafile:
     image: seafileltd/seafile-mc:latest
-    container_name: seafile
     volumes:
-      - /opt/seafile-data:/shared   # Requested, specifies the path to Seafile data persistent store.
+      - seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
     environment:
-      - DB_HOST=seafile_mysql
+      - DB_HOST=seafile_mariadb
       - DB_ROOT_PASSWD=db_dev  # Requested, the value shuold be root's password of MySQL service.
       - TIME_ZONE=Etc/UTC  # Optional, default is UTC. Should be uncomment and set to your local time zone.
       - SEAFILE_ADMIN_EMAIL=marc.partensky@gmail.com # Specifies Seafile admin user, default is 'me@example.com'.
@@ -1945,6 +1943,7 @@ volumes:
   tmate_keys:
   pritunl:
   pritunldb:
+  seafile:
   seafile_mysql:
 
 networks:
