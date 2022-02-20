@@ -1893,24 +1893,29 @@ services:
   seafile:
     image: seafileltd/seafile-mc:latest
     container_name: seafile
-    ports:
-      - "80:80"
-#     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
       - /opt/seafile-data:/shared   # Requested, specifies the path to Seafile data persistent store.
     environment:
       - DB_HOST=db
       - DB_ROOT_PASSWD=db_dev  # Requested, the value shuold be root's password of MySQL service.
       - TIME_ZONE=Etc/UTC  # Optional, default is UTC. Should be uncomment and set to your local time zone.
-      - SEAFILE_ADMIN_EMAIL=me@example.com # Specifies Seafile admin user, default is 'me@example.com'.
+      - SEAFILE_ADMIN_EMAIL=marc.partensky@gmail.com # Specifies Seafile admin user, default is 'me@example.com'.
       - SEAFILE_ADMIN_PASSWORD=asecret     # Specifies Seafile admin password, default is 'asecret'.
       - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
-      - SEAFILE_SERVER_HOSTNAME=docs.seafile.com # Specifies your host name if https is enabled.
+      - SEAFILE_SERVER_HOSTNAME=seafile.marcpartensky.com # Specifies your host name if https is enabled.
     depends_on:
       - db
       - memcached
     networks:
       - seafile-net
+    labels:
+      - "caddy=seafile.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=Host(`seafile.marcpartensky.com`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=tls"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
 
 volumes:
     # caddy:
