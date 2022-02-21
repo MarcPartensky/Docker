@@ -1442,7 +1442,8 @@ services:
 
 
   novnc-arch-i3:
-    image: arch-i3-novnc:latest supervisord
+    image: arch-i3-novnc:latest
+    entrypoint: supervisord
     ports:
       - "8084:8083"
     environment:
