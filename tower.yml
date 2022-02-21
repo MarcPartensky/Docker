@@ -1431,6 +1431,15 @@ services:
     ports:
       - 8200:8200
 
+
+
+  novnc-arch:
+    image: ponsfrilus/arch-novnc:latest
+    ports:
+      - "8083:8083"
+    environment:
+      DISPLAY: ":0.0"
+
 volumes:
   nextcloud:
   nextcloud_mariadb:
