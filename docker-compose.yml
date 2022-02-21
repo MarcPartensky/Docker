@@ -1706,7 +1706,7 @@ services:
       restart: unless-stopped
 
   teleport:
-    image: quay.io/gravitational/teleport
+    image: quay.io/gravitational/teleport:8
     restart: unless-stopped
     volumes:
       - ./data/teleport:/etc/teleport
