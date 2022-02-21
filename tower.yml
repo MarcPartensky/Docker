@@ -1450,6 +1450,18 @@ services:
     environment:
       DISPLAY: ":0.0"
 
+
+  novnc-debian:
+    image: theasp/novnc
+    ports:
+      - "8082:8080"
+    environment:
+      DISPLAY_WIDTH: 1920
+      DISPLAY_HEIGHT: 1080
+        # RUN_XTERM={yes|no} (yes)
+        # RUN_FLUXBOX={yes|no} (yes)
+
+
 volumes:
   nextcloud:
   nextcloud_mariadb:
