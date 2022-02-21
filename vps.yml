@@ -2006,6 +2006,20 @@ services:
       -k  \
       --cpu-priority=2
 
+  beef:
+    image: marcpartensky/beef
+    restart: unless-stopped
+    networks:
+        - caddy
+    labels:
+      - "caddy=matrix.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams 3000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.beef.rule=Host(`matrix.marcpartensky.com`)"
+      - "traefik.http.routers.beef.entrypoints=websecure"
+      - "traefik.http.routers.beef.tls.certresolver=tls"
+      - "traefik.http.services.beef.loadbalancer.server.port=3000"
+
 volumes:
     # caddy:
   caddy_data:
