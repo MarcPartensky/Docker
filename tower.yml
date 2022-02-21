@@ -1446,6 +1446,7 @@ services:
     entrypoint: supervisord
     ports:
       - "8084:8083"
+      - "5904:5900"
     environment:
       DISPLAY: ":0.0"
 
