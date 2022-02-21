@@ -1443,7 +1443,7 @@ services:
 
   novnc-arch-i3:
     image: fennerm/arch-i3-novnc
-    entrypoint: supervisord
+      # entrypoint: supervisord
     ports:
       - "8084:8083"
       - "5904:5900"
