@@ -68,13 +68,13 @@ services:
         # test: ["CMD", "curl", "-f", "http://localhost:9000"]
         # test: ["CMD", "portainer", "--healthcheck"]
     labels:
-      - "caddy=docker.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 9000}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`docker.marcpartensky.com`)"
-      - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls.certresolver=tls"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      caddy: docker.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 9000}}"
+      traefik.enable: "true"
+      traefik.http.routers.portainer.rule: Host(`docker.marcpartensky.com`)"
+      traefik.http.routers.portainer.entrypoints: websecure
+      traefik.http.routers.portainer.tls.certresolver: tls
+      traefik.http.services.portainer.loadbalancer.server.port: 9000
 
 
   # registry:
