@@ -2034,6 +2034,8 @@ services:
         LDAP_RFC2307BIS_SCHEMA: "true"
         LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
         LDAP_TLS_VERIFY_CLIENT: never
+      networks:
+        - ldap
       volumes:
         - ldap:/var/lib/ldap
         - ldap_slapd.d:/etc/ldap/slapd.d
@@ -2052,6 +2054,9 @@ services:
         LDAP_ADMIN_BIND_DN: cn=admin,dc=admin,dc=org
         LDAP_ADMIN_BIND_PWD: change_me
         LDAP_IGNORE_CERT_ERRORS: true
+      networks:
+        - ldap
+        - caddy
       labels:
         caddy: auth.marcpartensky.com
         caddy.reverse_proxy: "{{upstreams 80}}"
@@ -2089,6 +2094,8 @@ volumes:
   synapse:
   xmrchain:
   beef:
+  ldap:
+  ldap_slapd:
 
 networks:
   swarmpit:
@@ -2120,3 +2127,4 @@ networks:
   tmate:
   # traefik:
   seafile_net:
+  ldap:
