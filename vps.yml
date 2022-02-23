@@ -2034,7 +2034,7 @@ services:
       caddy.reverse_proxy: "{{upstreams 3000}}"
       caddy.@ws.0_header: "Connection *Upgrade*"
       caddy.@ws.1_header: "Upgrade websocket"
-      caddy.0_reverse_proxy: "@ws {{upstreams}}"
+      caddy.0_reverse_proxy: "@ws {{upstreams 61985}}"
       traefik.enable: true
       traefik.http.routers.beef.rule: Host(`beef.marcpartensky.com`)
       traefik.http.routers.beef.entrypoints: websecure
