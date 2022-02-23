@@ -2023,8 +2023,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
-          memory: 5000M
+          cpus: '2'
+          memory: 2000M
 
   ldap:
     image: osixia/openldap
