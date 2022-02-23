@@ -2021,10 +2021,13 @@ services:
       --cpu-priority=2
 
   beef:
-    image: marcpartensky/beef
+    image: phocean/beef
     restart: unless-stopped
     networks:
         - caddy
+    volumes:
+      - beef:/root/.ms4f
+      - /tmp/beef:/tmp/data
     labels:
       - "caddy=matrix.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams 3000}}"
@@ -2048,6 +2051,7 @@ services:
         limits:
           cpus: '2'
           memory: 1000M
+
 
 
 volumes:
