@@ -2029,6 +2029,12 @@ services:
     ports:
       - "18080:18080"
       - "18081:18081"
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1000M
+
 
 volumes:
     # caddy:
