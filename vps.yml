@@ -2021,7 +2021,7 @@ services:
       --cpu-priority=2
 
   beef:
-    image: phocean/beef
+    image: marcpartensky/beef
     restart: unless-stopped
     networks:
       - caddy
@@ -2030,13 +2030,16 @@ services:
       - /tmp/beef:/tmp/data
       - ./data/beef/config.yaml:beef/config.yaml
     labels:
-      - "caddy=matrix.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 3000}}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.beef.rule=Host(`matrix.marcpartensky.com`)"
-      - "traefik.http.routers.beef.entrypoints=websecure"
-      - "traefik.http.routers.beef.tls.certresolver=tls"
-      - "traefik.http.services.beef.loadbalancer.server.port=3000"
+      caddy: beef.marcpartensky.com"
+      caddy.reverse_proxy: "{{upstreams 3000}}"
+      caddy.@ws.0_header: "Connection *Upgrade*"
+      caddy.@ws.1_header: "Upgrade websocket"
+      caddy.0_reverse_proxy: "@ws {{upstreams}}"
+      traefik.enable: true
+      traefik.http.routers.beef.rule: Host(`beef.marcpartensky.com`)
+      traefik.http.routers.beef.entrypoints: websecure
+      traefik.http.routers.beef.tls.certresolver: tls
+      traefik.http.services.beef.loadbalancer.server.port: 3000
 
 
   monero_daemon:
@@ -2052,8 +2055,6 @@ services:
         limits:
           cpus: '2'
           memory: 1000M
-
-
 
 volumes:
     # caddy:
