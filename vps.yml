@@ -2028,6 +2028,7 @@ services:
     volumes:
       - beef:/root/.ms4f
       - /tmp/beef:/tmp/data
+      - ./data/beef/config.yaml:beef/config.yaml
     labels:
       - "caddy=matrix.marcpartensky.com"
       - "caddy.reverse_proxy={{upstreams 3000}}"
