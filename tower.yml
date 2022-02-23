@@ -1460,7 +1460,13 @@ services:
       DISPLAY_HEIGHT: 1080
         # RUN_XTERM={yes|no} (yes)
         # RUN_FLUXBOX={yes|no} (yes)
-
+        #
+        #
+  novnc-fedora:
+    image: richxsl/fedora-vnc-desktop
+    ports:
+      - "8085:6080"
+      - "5906:5900"
 
 volumes:
   nextcloud:
