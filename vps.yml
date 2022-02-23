@@ -32,11 +32,21 @@ services:
     deploy:
       labels: # Global options
         caddy.email: marc.partensky@gmail.com
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        order: start-first
       placement:
         constraints:
           - node.role == manager
         # restart_policy:
         #     condition: any
+      reservations:
+        cpus: '1'
+        memory: 500M
 
   portainer:
     image: portainer/portainer-ce
@@ -199,7 +209,9 @@ services:
         failure_action: rollback
       rollback_config:
         order: start-first
-
+      reservations:
+        cpus: "1"
+        memory: "500M"
 
   postgres:
     image: postgres
