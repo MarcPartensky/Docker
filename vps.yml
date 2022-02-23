@@ -2086,6 +2086,7 @@ volumes:
   fail2ban:
   synapse:
   xmrchain:
+  beef:
 
 networks:
   swarmpit:
