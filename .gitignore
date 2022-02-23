@@ -4,5 +4,6 @@ data/certbot
 data/traefik
 data/searx
 data/jenkins
+data/beef
 data/tmate/keys
 data.tar.gz
