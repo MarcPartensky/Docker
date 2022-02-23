@@ -210,7 +210,7 @@ services:
         failure_action: rollback
       rollback_config:
         order: start-first
-      ressources:
+      resources:
         reservations:
           cpus: "1"
           memory: "500M"
