@@ -2024,7 +2024,7 @@ services:
     image: phocean/beef
     restart: unless-stopped
     networks:
-        - caddy
+      - caddy
     volumes:
       - beef:/root/.ms4f
       - /tmp/beef:/tmp/data
