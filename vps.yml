@@ -2040,7 +2040,7 @@ services:
       - ldap
     volumes:
       - ldap:/var/lib/ldap
-      - ldap_slapd.d:/etc/ldap/slapd.d
+      - ldap_slapd:/etc/ldap/slapd.d
     # labels: # only used in internal networks
     #   caddy: ldap.marcpartensky.com
     #   caddy.reverse_proxy: "{{upstreams 389}}"
