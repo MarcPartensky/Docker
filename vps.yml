@@ -2020,6 +2020,16 @@ services:
       - "traefik.http.routers.beef.tls.certresolver=tls"
       - "traefik.http.services.beef.loadbalancer.server.port=3000"
 
+
+  monero_daemon:
+    image: kannix/monero-full-node
+    restart: unless-stopped
+    volumes:
+      - xmrchain:/home/monero/.bitmonero
+    ports:
+      - "18080:18080"
+      - "18081:18081"
+
 volumes:
     # caddy:
   caddy_data:
@@ -2051,6 +2061,7 @@ volumes:
   seafile_mysql:
   fail2ban:
   synapse:
+  xmrchain:
 
 networks:
   swarmpit:
