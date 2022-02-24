@@ -2020,7 +2020,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: '0.5'
           memory: 2000M
 
   ldap:
