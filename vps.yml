@@ -1162,27 +1162,24 @@ services:
   #     - "2376:2376"
 
   jenkins:
-    image: jenkins/jenkins:lts
+    image: jenkins/jenkins:lts-jdk11
     privileged: true
-    # user: root
-    # ports:
-    #   - "8080:8080"
-    # - "50000:50000"
     volumes:
-      - $BIND_MOUNTS/jenkins:/var/jenkins_home
+      - jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
     networks:
       - caddy
       - nginx
+    ports:
+      - "50000:50000"
     labels:
       - "caddy=jenkins.marcpartensky.com"
-      - "caddy.reverse_proxy={{upstreams 8000}}"
+      - "caddy.reverse_proxy={{upstreams 8080}}"
       - "traefik.enable=true"
       - "traefik.http.routers.jenkins.rule=Host(`jenkins.marcpartensky.com`)"
       - "traefik.http.routers.jenkins.entrypoints=websecure"
       - "traefik.http.routers.jenkins.tls.certresolver=tls"
-      - "traefik.http.services.jenkins.loadbalancer.server.port=8000"
+      - "traefik.http.services.jenkins.loadbalancer.server.port=8080"
 
   # tmate:
   #   image: marcpartensky/tmate-ssh-server
