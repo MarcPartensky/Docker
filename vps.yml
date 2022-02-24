@@ -1906,7 +1906,7 @@ services:
     #   - '2224:22'
     volumes:
       - gitlab_config:/etc/gitlab
-      - /var/log:/var/log
+      - gitlab_log:/var/log
       - gitlab_data:/var/opt/gitlab
     labels:
       - "caddy=gitlab.marcpartensky.com"
@@ -2095,6 +2095,7 @@ volumes:
   beef:
   ldap:
   ldap_slapd:
+  jenkins:
 
 networks:
   swarmpit:
