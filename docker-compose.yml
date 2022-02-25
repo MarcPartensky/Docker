@@ -1782,7 +1782,7 @@ volumes:
   tmate_db:
   tmate_keys:
   teleport:
-  monero_daemon:
+  xmrchain:
 
 networks:
   caddy:
