@@ -1721,11 +1721,6 @@ services:
     restart: unless-stopped
     env_file:
      - ./data/secrets/monero_miner.env
-    entrypoint: /xmr/xmrig \
-      -o pool.supportxmr.com:3333 \
-      -u $WALLET \
-      -k  \
-      --cpu-priority=2
 
   monero_daemon:
     image: kannix/monero-full-node
