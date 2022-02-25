@@ -1727,6 +1727,20 @@ services:
       -k  \
       --cpu-priority=2
 
+  monero_daemon:
+    image: kannix/monero-full-node
+    restart: unless-stopped
+    volumes:
+      - xmrchain:/home/monero/.bitmonero
+    ports:
+      - "18080:18080"
+      - "18081:18081"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2000M
+
 volumes:
   caddy:
   portainer:
