@@ -1899,7 +1899,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: '1'
           memory: 2000M
 
   ldap:
