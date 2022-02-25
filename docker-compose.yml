@@ -1697,6 +1697,11 @@ services:
       - gitlab_config:/etc/gitlab
       - gitlab_logs:/var/log/gitlab
       - gitlab_data:/var/opt/gitlab
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2000M
 
   apt-repo-server:
     image: dorowu/apt-repo-server
