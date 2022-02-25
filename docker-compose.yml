@@ -1782,6 +1782,7 @@ volumes:
   tmate_db:
   tmate_keys:
   teleport:
+  monero_daemon:
 
 networks:
   caddy:
