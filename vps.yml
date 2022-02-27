@@ -1843,7 +1843,7 @@ services:
     image: matrixdotorg/synapse
     restart: unless-stopped
     environment:
-      SYNAPSE_REPORT_STATS: no
+      SYNAPSE_REPORT_STATS: "no"
       SYNAPSE_SERVER_NAME: matrix.marcpartensky.com
     volumes:
       - synapse:/data
