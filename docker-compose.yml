@@ -1741,6 +1741,13 @@ services:
           cpus: '2'
           memory: 2000M
 
+  mx-puppet-discord:
+    image: sorunome/mx-puppet-discord
+    restart: unless-stopped
+    volumes:
+      - ./data/mx-puppet-discord/config.yml:/data/config.yaml
+      - ./data/mx-puppet-discord/discord-registration.yml:/data/discord-registration.yaml
+
 volumes:
   caddy:
   portainer:
