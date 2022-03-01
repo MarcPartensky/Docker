@@ -1851,11 +1851,13 @@ services:
   matrix:
     image: matrixdotorg/synapse
     restart: unless-stopped
-    environment:
-      SYNAPSE_REPORT_STATS: "no"
-      SYNAPSE_SERVER_NAME: matrix.marcpartensky.com
+    # environment:
+    #   SYNAPSE_REPORT_STATS: "no"
+    #   SYNAPSE_SERVER_NAME: matrix.marcpartensky.com
+    #   SYNAPSE_ENABLE_REGISTRATION: "true"
     volumes:
-      - synapse:/data
+      - ./data/matrix:/data
+      # - matrix:/data
     networks:
         - caddy
     labels:
@@ -1949,7 +1951,8 @@ services:
       - caddy
     labels:
       caddy: auth.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 80}}"
+      caddy.reverse_proxy: "{{upstreams https 443}}"
+      caddy.tls: internal
 
 volumes:
     # caddy:
@@ -1981,7 +1984,7 @@ volumes:
   seafile:
   seafile_mysql:
   fail2ban:
-  synapse:
+   #matrix:
   xmrchain:
   beef:
   ldap:
