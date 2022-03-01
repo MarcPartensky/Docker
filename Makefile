@@ -1,7 +1,7 @@
-up:
-	docker stack deploy -c vps.yml vps --with-registry-auth
 upn:
 	docker stack deploy -c vps.yml vps
+up:
+	docker stack deploy -c vps.yml vps --with-registry-auth
 down:
 	docker stack rm vps
 export:
