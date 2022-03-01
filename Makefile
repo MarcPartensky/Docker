@@ -1,5 +1,5 @@
 upn:
-	docker stack deploy -c vps.yml vps
+	DOCKER_HOST=ssh://contabo docker stack deploy -c vps.yml vps
 up:
 	docker stack deploy -c vps.yml vps --with-registry-auth
 down:
