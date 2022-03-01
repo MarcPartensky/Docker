@@ -550,6 +550,9 @@ services:
   jupyterhub:
     image: jupyterhub/jupyterhub
     restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - jupyterhub:/srv/jupyterhub
     networks:
     - caddy
     environment:
