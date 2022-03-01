@@ -545,6 +545,15 @@ services:
     #   - /etc/letsencrypt/keys:/home/jovyan/work/key
     #   - /etc/letsencrypt/csr:/home/jovyan/work/cert
     #   - /etc/letsencrypt:/etc/letsencrypt
+    #
+  jupyterhub:
+    image: jupyterhub/jupyterhub
+    restart: unless-stopped
+  networks:
+    - caddy
+  labels:
+    caddy: jupyterhub.marcpartensky.com
+    caddy.reverse_proxy: "{{upstreams 8000}}"
 
   # elasticsearch:
     # image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
