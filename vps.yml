@@ -365,7 +365,7 @@ services:
     labels:
       caddy: pandoc.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.pandoc.rule: Host(`pandoc.marcpartensky.com`)
       traefik.http.routers.pandoc.entrypoints: websecure
       traefik.http.routers.pandoc.tls.certresolver: tls
@@ -1064,7 +1064,7 @@ services:
 
   jenkins:
     image: jenkins/jenkins:lts-jdk11
-    privileged: true
+    privileged: "true"
     volumes:
       - jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
