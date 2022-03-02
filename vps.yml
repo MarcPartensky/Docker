@@ -1888,7 +1888,7 @@ services:
     restart: unless-stopped
     environment:
       LDAP_ORGANISATION: admin
-      LDAP_DOMAIN: ldap.marcpartensky.com
+      LDAP_DOMAIN: admin.org
       LDAP_ADMIN_PASSWORD: change_me
       LDAP_RFC2307BIS_SCHEMA: "true"
       LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
@@ -1908,7 +1908,7 @@ services:
     environment:
       SERVER_HOSTNAME: auth.marcpartensy.com
       LDAP_URI: ldap://ldap
-      LDAP_BASE_DN: dc=ldapusermanager,dc=org
+      LDAP_BASE_DN: dc=admin,dc=org
       LDAP_ADMINS_GROUP: admins
       LDAP_ADMIN_BIND_DN: cn=admin,dc=admin,dc=org
       LDAP_ADMIN_BIND_PWD: change_me
