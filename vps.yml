@@ -8,18 +8,20 @@ configs:
 
 services:
   # sslh:
-  #   image: sslh:latest
-  #   hostname: sslh
+  #   image: marcpartensky/sslh
   #   networks:
-
+  #     - caddy
+  #     - bridge
   #   ports:
-  #     - 443:443
-  #   command: --listen=0.0.0.0:80 --tls=nginx:443 --openvpn=openvpn:1194
+  #     - "443:443"
+  #   command: --tls=caddy:443 --ssh=localhost:7022
   #   depends_on:
-  #     - nginx
+  #     - caddy
+
   caddy:
     image: lucaslorentz/caddy-docker-proxy:ci-alpine
     ports:
+      - "80:80"
       - "443:443"
     environment:
       CADDY_INGRESS_NETWORKS: caddy
@@ -1930,6 +1932,53 @@ services:
     labels:
       caddy: auth.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
+
+  pritunl:
+    # image: jippi/pritunl
+    image: goofball222/pritunl
+    restart: unless-stopped
+    ports:
+      - "1194-1195:1194-1195/udp"
+    depends_on:
+        - pritunl_mongo
+    # depends_on:
+    #     - mongo
+    environment:
+      REVERSE_PROXY: "true"
+      TZ: Europe/Paris
+      MONGODB_URI: mongodb://pritunl_mongo:27017/pritunl
+      PRITUNL_DEBUG: "true"
+    # privileged: true
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+    sysctls:
+        - net.ipv6.conf.all.disable_ipv6=0
+        - net.ipv4.ip_forward=1
+        # healthcheck:
+        #   test: ["CMD", "wget", "-q", "localhost:80", "-O", "/dev/null"]
+    # volumes:
+    #   - /etc/localtime:/etc/localtime:ro
+    networks:
+      - caddy
+      - nginx
+      - pritunl
+    labels:
+      - "caddy=vpn.marcpartensky.com"
+      - "caddy.reverse_proxy={{upstreams http 9700}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pritunl.rule=Host(`vpn.marcpartensky.com`)"
+      - "traefik.http.routers.pritunl.entrypoints=websecure"
+      - "traefik.http.routers.pritunl.tls.certresolver=tls"
+      - "traefik.http.services.pritunl.loadbalancer.server.port=9700"
+
+  pritunl_mongo:
+    image: mongo:latest
+    # container_name: pritunldb
+    volumes:
+      - pritunl_mongo:/data/db
+    networks:
+      - pritunl
 
 volumes:
     # caddy:
