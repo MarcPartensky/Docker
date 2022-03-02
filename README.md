@@ -1,4 +1,4 @@
-[![Docker](https://github.com/MarcPartensky/Docker/actions/workflows/docker-push.yml/badge.svg)](https://github.com/MarcPartensky/Docker/actions/workflows/docker-push.yml)
+[![Docker Swarm Deployed](https://github.com/MarcPartensky/Docker/actions/workflows/docker-swarm-deploy.yml/badge.svg)](https://github.com/MarcPartensky/Docker/actions/workflows/docker-swarm-deploy.yml)
 
 # Docker
 
