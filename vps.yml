@@ -1064,7 +1064,7 @@ services:
 
   jenkins:
     image: jenkins/jenkins:lts-jdk11
-    privileged: "true"
+    privileged: true
     volumes:
       - jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
