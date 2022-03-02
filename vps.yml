@@ -1947,7 +1947,7 @@ services:
     image: wheelybird/ldap-user-manager:latest
     restart: unless-stopped
     environment:
-      SERVER_HOSTNAME: localhost
+      SERVER_HOSTNAME: auth.marcpartensy.com
       LDAP_URI: ldap://ldap
       LDAP_BASE_DN: dc=ldapusermanager,dc=org
       LDAP_ADMINS_GROUP: admins
