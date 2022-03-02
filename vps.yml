@@ -7,10 +7,19 @@ configs:
       caddy:
 
 services:
+  # sslh:
+  #   image: sslh:latest
+  #   hostname: sslh
+  #   networks:
+
+  #   ports:
+  #     - 443:443
+  #   command: --listen=0.0.0.0:80 --tls=nginx:443 --openvpn=openvpn:1194
+  #   depends_on:
+  #     - nginx
   caddy:
     image: lucaslorentz/caddy-docker-proxy:ci-alpine
     ports:
-      - "80:80"
       - "443:443"
     environment:
       CADDY_INGRESS_NETWORKS: caddy
