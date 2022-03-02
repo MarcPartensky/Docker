@@ -2025,8 +2025,8 @@ networks:
     attachable: true
     driver: overlay
   pritunl:
-    internal: true
-    driver: bridge
+    # internal: true
+    # driver: bridge
     ipam:
       config:
         - subnet: 172.177.0.0/16
