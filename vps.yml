@@ -2016,6 +2016,7 @@ volumes:
   ldap:
   ldap_slapd:
   jenkins:
+  pritunl_mongo:
 
 networks:
   swarmpit:
