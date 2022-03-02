@@ -741,7 +741,7 @@ services:
     labels:
       caddy: oxivia.business.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.oxivia.rule: Host(`oxivia.business.marcpartensky.com`)
       traefik.http.routers.oxivia.entrypoints: websecure
       traefik.http.routers.oxivia.tls.certresolver: tls
