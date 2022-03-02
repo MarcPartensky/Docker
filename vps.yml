@@ -1955,6 +1955,7 @@ services:
       LDAP_ADMIN_BIND_PWD: change_me
       LDAP_IGNORE_CERT_ERRORS: "true"
       LDAP_REQUIRE_STARTTLS: "FALSE"
+      NO_HTTPS: "TRUE"
     networks:
       - ldap
       - caddy
