@@ -1961,8 +1961,7 @@ services:
       - caddy
     labels:
       caddy: auth.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams https 443}}"
-      caddy.tls: internal
+      caddy.reverse_proxy: "{{upstreams}}"
 
 volumes:
     # caddy:
