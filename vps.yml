@@ -323,7 +323,6 @@ services:
     # entrypoint: "flask run --host 0.0.0.0 --port 80"
     volumes:
       - pandoc:/app/files
-      - /var/log/nginx:/var/log/nginx
     labels:
       caddy: pandoc.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
