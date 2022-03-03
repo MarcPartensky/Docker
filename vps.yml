@@ -1859,10 +1859,11 @@ services:
     environment:
       LDAP_ORGANISATION: admin
       LDAP_DOMAIN: admin.org
-      LDAP_ADMIN_PASSWORD: change_me
       LDAP_RFC2307BIS_SCHEMA: "true"
       LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
       LDAP_TLS_VERIFY_CLIENT: never
+    env_file:
+      - ./data/secrets/ldap.env
     networks:
       - ldap
     ports:
