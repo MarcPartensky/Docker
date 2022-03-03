@@ -1,5 +1,5 @@
 up:
-	STACK=vps ./setup.sh caddy registry website portainer
+	STACK=vps ./setup.sh caddy registry website portainer discord-bot
 down:
 	docker stack rm vps
 export:
