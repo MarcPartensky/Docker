@@ -18,7 +18,7 @@ jobs:
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
           deployment_mode: docker-swarm
           copy_stack_file: true
-          deploy_path: /root/docker
+          deploy_path: /root/git/docker
           stack_file_name: vps.yml
           keep_files: 5
           args: vps
