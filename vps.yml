@@ -266,8 +266,8 @@ services:
       - "27017:27017"
     env_file:
       - ./data/secrets/discord_bot_mongo.env
-    healthcheck:
-      test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+    # healthcheck:
+    #   test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
 
   mongo_express:
     image: mongo-express
