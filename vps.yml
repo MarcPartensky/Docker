@@ -1883,6 +1883,8 @@ services:
       LDAP_IGNORE_CERT_ERRORS: "true"
       LDAP_REQUIRE_STARTTLS: "FALSE"
       NO_HTTPS: "TRUE"
+    env_file:
+      - ./data/secrets/ldap.env
     networks:
       - ldap
       - caddy
