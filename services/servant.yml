@@ -1,0 +1,6 @@
+version: "3.9"
+
+services:
+  servant:
+    image: marcpartensky/servitor
+    restart: unless-stopped
