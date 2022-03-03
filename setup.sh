@@ -3,9 +3,9 @@
 services=$@
 
 config_files() {
-    for service in services/$services
+    for service in $services
     do
-        echo -n "-c $service.yml "
+        echo -n "-c services/$service.yml "
     done
 }
 
