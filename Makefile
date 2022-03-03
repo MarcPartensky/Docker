@@ -1,5 +1,5 @@
 up:
-	./up.sh vps
+	ENV=vps ./setup.sh caddy registry website
 down:
 	docker stack rm vps
 export:
