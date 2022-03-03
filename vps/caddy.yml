@@ -2,7 +2,7 @@ version: "3.9"
 
 configs:
   caddy-basic-content:
-    file: ./data/caddy/Caddyfile
+    file: ../data/caddy/Caddyfile
     labels:
       caddy:
 
