@@ -486,8 +486,8 @@ services:
     #   - minecraft_1.17
     #   - minecraft_aventure
 
-  notebook:
-    image: jupyter/base-notebook
+  jupyterlab:
+    image: marcpartensky/jupyterlab
     restart: unless-stopped
     environment:
     #   - GEN_CERT=yes
@@ -498,10 +498,10 @@ services:
       - caddy
       - nginx
     labels:
-      caddy: notebook.marcpartensky.com
+      caddy: lab.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8888}}"
       traefik.enable: "true"
-      traefik.http.routers.notebook.rule: Host(`notebook.marcpartensky.com`)
+      traefik.http.routers.notebook.rule: Host(`lab.marcpartensky.com`)
       traefik.http.routers.notebook.entrypoints: websecure
       traefik.http.routers.notebook.tls.certresolver: tls
       traefik.http.services.notebook.loadbalancer.server.port: 8888
