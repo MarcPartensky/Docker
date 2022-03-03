@@ -9,6 +9,6 @@ config_files() {
     done
 }
 
-cmd="docker stack deploy $(config_files) $ENV"
+cmd="docker stack deploy $(config_files) $STACK"
 echo $cmd
 # eval $cmd
