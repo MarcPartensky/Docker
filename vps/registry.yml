@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  registry:
+    restart: unless-stopped
+    image: registry:latest
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:80
+      # REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+      # REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+      # REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      # REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    env_file:
+      - ./data/secrets/registry.env
+    volumes:
+      - registry_data:/var/lib/registry
+      - registry_certs:/certs
+      - registry_auth:/auth
+    labels:
+      caddy: registry.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.registry.rule: Host(`registry.marcpartensky.com`)
+      traefik.http.routers.registry.entrypoints: websecure
+      traefik.http.routers.registry.tls.certresolver: "tls"
+      traefik.http.services.registry.loadbalancer.server.port: 80
+
+volumes:
+  registry_data:
+  registry_certs:
+  registry_auth:
+
+networks:
+  caddy:
+    external: true
+    attachable: true
+    driver: overlay
