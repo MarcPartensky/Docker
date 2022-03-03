@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  esclave:
+  discord-bot:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     ports:
