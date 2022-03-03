@@ -10,10 +10,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to swarm
-        uses: sagebind/docker-swarm-deploy-action@v2
+      - name: Deploy to Docker swarm
+        uses: wshihadeh/docker-deployment-action@v1
         with:
-          remote_host: ${{ secrets.SSH_HOST }}
+          remote_docker_host: ${{ secrets.SSH_REMOTE_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-          args: stack deploy --compose-file vps.yml vps
+          deployment_mode: docker-swarm
+          copy_stack_file: true
+          deploy_path: /root/docker
+          stack_file_name: vps.yml
+          keep_files: 5
+          args: vps
