@@ -1,0 +1,94 @@
+version: "3.9"
+
+services:
+  pandoc:
+    image: marcpartensky/pandoc-api
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - ./data/secrets/pandoc.env
+    entrypoint: "flask run --host 0.0.0.0 --port 80"
+    volumes:
+      - pandoc:/app/files
+    labels:
+      caddy: pandoc.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.pandoc.rule: Host(`pandoc.marcpartensky.com`)
+      traefik.http.routers.pandoc.entrypoints: websecure
+      traefik.http.routers.pandoc.tls.certresolver: tls
+      traefik.http.services.pandoc.loadbalancer.server.port: 80
+    networks:
+      - caddy
+
+volumes:
+    # caddy:
+  caddy_data:
+  portainer:
+  registry_data:
+  registry_certs:
+  registry_auth:
+  website_media:
+  postgres:
+  pandoc:
+  ssh_honeypot:
+  swarmpit-data:
+    driver: local
+  swarmpit-influx-data:
+    driver: local
+  nextcloud:
+  nextcloud_mariadb:
+  mcvnc:
+  mcvnc_usr:
+  gitlab_config:
+  gitlab_log:
+  gitlab_data:
+  minecraft_ankharak:
+  tmate_db:
+  tmate_keys:
+  pritunl:
+  pritunldb:
+  seafile:
+  seafile_mysql:
+  fail2ban:
+   #matrix:
+  xmrchain:
+  beef:
+  ldap:
+  ldap_slapd:
+  jenkins:
+  pritunl_mongo:
+
+networks:
+  swarmpit:
+    driver: overlay
+  caddy:
+    external: true
+    attachable: true
+    driver: overlay
+  pritunl:
+    # internal: true
+    # driver: bridge
+    ipam:
+      config:
+        - subnet: 172.177.0.0/16
+  healingpath:
+  nextcloud:
+  website:
+  nginx:
+  ldap:
+  wordpress:
+  # business:
+  wordpress_alex:
+  gitea:
+  elk:
+  box:
+  todolist_api:
+  discord:
+  oxivia:
+  minecraft:
+  tmate:
+  # traefik:
+  seafile_net:
+  ldap:
+  jupyterhub:
