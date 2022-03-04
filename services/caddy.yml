@@ -19,8 +19,6 @@ services:
       - caddy_data:/data
       # - ./data/caddy/Caddyfile:/etc/Caddyfile
     networks:
-      - nginx
-      - box
       - caddy
     logging:
       # syslog?
