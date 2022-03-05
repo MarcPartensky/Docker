@@ -24,4 +24,4 @@ else
 fi
 
 echo $cmd
-# eval $cmd
+eval $cmd
