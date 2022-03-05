@@ -1,7 +1,7 @@
 compose:
-	cat vps.txt | xargs ./setup.sh
+	cat ./env/vps.txt | xargs ./setup.sh
 swarm:
-	cat vps.txt | STACK=vps xargs ./setup.sh
+	cat ./env/vps.txt | STACK=vps xargs ./setup.sh
 down:
 	docker stack rm vps
 export:
