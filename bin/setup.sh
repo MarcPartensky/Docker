@@ -2,7 +2,7 @@
 
 if [ $1 = merge ]
 then
-    cat ./env/$2.txt | xargs -I @ echo ./services/@.yml | xargs ./bin/merge.py > ./stack/docker-compose.yml
+    cat ./env/$2.txt | xargs -I @ echo ./services/@.yml | xargs ./bin/merge.py > ./stacks/docker-compose.yml
     # export COMPOSE_FILE="$PWD/../docker-compose.yml"
     exit
 fi
