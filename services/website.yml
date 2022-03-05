@@ -30,7 +30,6 @@ services:
       - website_media:/app/media
     networks:
       - website
-      - nginx
       - caddy
     # healthcheck:
     #     test: ["CMD", "curl", "-f", "http://localhost:80/live"]
