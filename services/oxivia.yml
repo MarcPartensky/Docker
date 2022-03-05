@@ -5,7 +5,7 @@ services:
     image: wordpress
     restart: unless-stopped
     env_file:
-      - data/secrets/oxivia.env
+      - ../data/secrets/oxivia.env
     volumes:
       - $BIND_MOUNTS/oxivia:/var/www/html
       - ./data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
@@ -30,7 +30,7 @@ services:
     image: mysql
     restart: unless-stopped
     env_file:
-      - data/secrets/oxivia.env
+      - ../data/secrets/oxivia.env
     ports:
       - "3307:3306"
     volumes:

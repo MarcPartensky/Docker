@@ -5,7 +5,7 @@ services:
     image: marcpartensky/website
     restart: unless-stopped
     env_file:
-      - ./data/secrets/website.env
+      - ../data/secrets/website.env
     environment:
       VIRTUAL_HOST: marcpartensky.com
       VIRTUAL_PORT: 80
@@ -67,7 +67,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     env_file:
-      - data/secrets/postgres.env
+      - ../data/secrets/postgres.env
     networks:
       - website
 
@@ -75,7 +75,7 @@ services:
     image: sosedoff/pgweb
     restart: unless-stopped
     env_file:
-        - data/secrets/postgres.env
+        - ../data/secrets/postgres.env
     networks:
       - website
       - caddy
