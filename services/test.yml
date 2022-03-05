@@ -1,39 +1,24 @@
 version: "3.9"
 
-configs:
-  caddy-basic-content:
-    file: ./data/caddy/Caddyfile
-    labels:
-      caddy:
-
 services:
-  ialab:
-    image: marcpartensky/ialab
-    user: nobody
+  open_web_calendar:
+    image: marcpartensky/open-web-calendar
     restart: unless-stopped
+    working_dir: /app
     environment:
-      FLASK_APP: server.py
-    # env_file:
-      # - $HOME/git/ialab/.flaskenv
-    # working_dir: /app
-    entrypoint: flask run --host ialab --port 80
-    # entrypoint: "gunicorn server:app"
-    # entrypoint: "gunicorn --chdir /app server:app"
-    volumes:
-      - ialab:/app
+      HOST: open_web_calendar
+      PORT: 80
     networks:
       - caddy
+    entrypoint: python app.py
     labels:
-      caddy: ialab.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams}}"
+      caddy: calendar.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
       traefik.enable: "true"
-      traefik.http.routers.ialab.rule: Host(`ialab.marcpartensky.com`)
-      traefik.http.routers.ialab.entrypoints: websecure
-      traefik.http.routers.ialab.tls.certresolver: tls
-      traefik.http.services.ialab.loadbalancer.server.port: 80
-
-volumes:
-  ialab:
+      traefik.http.routers.open_web_calendar.rule: Host(`calendar.marcpartensky.com`)
+      traefik.http.routers.open_web_calendar.entrypoints: websecure
+      traefik.http.routers.open_web_calendar.tls.certresolver: tls
+      traefik.http.services.open_web_calendar.loadbalancer.server.port: 80
 
 networks:
   caddy:
