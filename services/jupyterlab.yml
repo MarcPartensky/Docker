@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  jupyterlab:
+    image: marcpartensky/jupyterlab
+    restart: unless-stopped
+    environment:
+    #   - GEN_CERT=yes
+      JUPYTER_ENABLE_LAB: "yes"
+      GRANT_SUDO: "yes"
+    entrypoint: start.sh jupyter lab --user root
+    networks:
+      - caddy
+    labels:
+      caddy: lab.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8888}}"
+      traefik.enable: "true"
+      traefik.http.routers.notebook.rule: Host(`lab.marcpartensky.com`)
+      traefik.http.routers.notebook.entrypoints: websecure
+      traefik.http.routers.notebook.tls.certresolver: tls
+      traefik.http.services.notebook.loadbalancer.server.port: 8888
+# entrypoint: start-notebook.sh \
+    #     --NotebookApp.keyfile=key/0000_key-certbot.pem
+    #     --NotebookApp.certfile=cert/0000_csr-certbot.pem
+    # volumes:
+    #   - /etc/letsencrypt/keys:/home/jovyan/work/key
+    #   - /etc/letsencrypt/csr:/home/jovyan/work/cert
+    #   - /etc/letsencrypt:/etc/letsencrypt
+    #
+
+networks:
+  caddy:
+    external: true
+    attachable: true
+    driver: overlay
