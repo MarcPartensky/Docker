@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  jupyterhub:
+    image: jupyterhub/jupyterhub
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - jupyterhub:/srv/jupyterhub
+    networks:
+    - caddy
+    environment:
+      DOCKER_JUPYTER_IMAGE: marcpartensky/jupyterlab
+      DOCKER_NETWORK_NAME: jupyterhub
+      HUB_IP: jupyterhub
+    labels:
+      caddy: jupyterhub.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+
+networks:
+  caddy:
+    external: true
+    attachable: true
+    driver: overlay
