@@ -686,7 +686,7 @@ services:
   oxivia:
     image: wordpress
     restart: unless-stopped
-    user: marc:marc
+    user: 1000:1000
     env_file:
       - data/secrets/oxivia.env
     volumes:
@@ -712,7 +712,7 @@ services:
   oxivia_mysql:
     image: mysql
     restart: unless-stopped
-    user: marc:marc
+    user: 1000:1000
     env_file:
       - data/secrets/oxivia.env
     ports:
