@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT_PATH=".."
+PROJECT_PATH="$PROGRAMS_PATH/docker"
 
 COMPOSE_PATH_SEPARATOR=" "
 COMPOSE_FILE=$(/bin/ls $PROJECT_PATH/services)
