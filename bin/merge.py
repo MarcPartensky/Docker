@@ -18,7 +18,6 @@ d = {}
 for file in sys.argv[1:]:
     with open(file, "r") as stream:
         di = yaml.safe_load(stream)
-        print(di)
         d = update(d, di)
 
 print(yaml.safe_dump(d))
