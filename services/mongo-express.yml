@@ -7,7 +7,7 @@ services:
     environment:
       ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
     env_file:
-      - ./data/secrets/mongo_express.env
+      - ../data/secrets/mongo_express.env
     networks:
       - discord
       - caddy

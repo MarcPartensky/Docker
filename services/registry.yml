@@ -11,7 +11,7 @@ services:
       # REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
       # REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
     env_file:
-      - ./data/secrets/registry.env
+      - ../data/secrets/registry.env
     volumes:
       - registry_data:/var/lib/registry
       - registry_certs:/certs

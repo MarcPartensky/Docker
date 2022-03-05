@@ -8,7 +8,7 @@ services:
       - ../data/secrets/oxivia.env
     volumes:
       - $BIND_MOUNTS/oxivia:/var/www/html
-      - ./data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - ../data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     networks:
       - caddy
       - oxivia

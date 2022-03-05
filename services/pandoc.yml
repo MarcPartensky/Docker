@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     working_dir: /app
     env_file:
-      - ./data/secrets/pandoc.env
+      - ../data/secrets/pandoc.env
     volumes:
       - pandoc:/app/files
     labels:
