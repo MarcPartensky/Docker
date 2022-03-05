@@ -1,7 +1,9 @@
 compose:
-	cat ./env/vps.txt | xargs ./setup.sh
+	cat ./env/vps.txt | xargs ./bin/setup.sh
 swarm:
-	cat ./env/vps.txt | STACK=vps xargs ./setup.sh
+	cat ./env/vps.txt | STACK=vps xargs ./bin/setup.sh
+merge:
+	cat ./env/vps.txt | xargs -I @ echo ./services/@.yml | xargs ./bin/merge.py
 down:
 	docker stack rm vps
 export:
