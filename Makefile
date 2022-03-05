@@ -1,5 +1,7 @@
-up:
-	SWARM=false STACK=vps ./setup.sh caddy registry website portainer discord-bot
+compose:
+	cat vps.txt | xargs ./setup.sh
+swarm:
+	cat vps.txt | STACK=vps xargs ./setup.sh
 down:
 	docker stack rm vps
 export:

@@ -1,10 +1,10 @@
 #!/bin/sh
 
-if $SWARM
+if [ -z $STACK ]
 then
-    sep="-c"
-else
     sep="-f"
+else
+    sep="-c"
 fi
 
 services=$@
@@ -16,11 +16,11 @@ config_files() {
     done
 }
 
-if $SWARM
+if [ -z $STACK ]
 then
-    cmd="docker stack deploy $(config_files) $STACK"
-else
     cmd="docker compose $(config_files) up -d"
+else
+    cmd="docker stack deploy $(config_files) $STACK"
 fi
 
 echo $cmd
