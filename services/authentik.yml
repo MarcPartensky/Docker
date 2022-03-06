@@ -65,7 +65,7 @@ services:
       - authentik_media:/media
       - authentik_certs:/certs
       - authentik_templates:/templates
-      - gauthentik_geoip:/geoip
+      - authentik_geoip:/geoip
     env_file:
       - ../data/secrets/authentik.env
     networks:
