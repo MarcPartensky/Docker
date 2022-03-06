@@ -31,5 +31,3 @@ services:
 networks:
   caddy:
     external: true
-    attachable: true
-    driver: overlay

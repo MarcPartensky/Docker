@@ -19,6 +19,8 @@ services:
       traefik.http.services.pandoc.loadbalancer.server.port: 80
     networks:
       - caddy
+    depends_on:
+      - caddy
 
 volumes:
   pandoc:
@@ -26,5 +28,3 @@ volumes:
 networks:
   caddy:
     external: true
-    attachable: true
-    driver: overlay

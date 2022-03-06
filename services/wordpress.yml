@@ -44,5 +44,3 @@ networks:
   wordpress:
   caddy:
     external: true
-    attachable: true
-    driver: overlay
