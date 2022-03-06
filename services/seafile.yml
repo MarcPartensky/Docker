@@ -4,7 +4,7 @@ services:
   seafile_mariadb:
     image: mariadb:10.5
     env_file:
-      - ./data/secrets/seafile.env
+      - ../data/secrets/seafile.env
     volumes:
       - seafile_mysql:/var/lib/mysql
     networks:
