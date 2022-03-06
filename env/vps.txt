@@ -1,5 +1,9 @@
 caddy
 website
 oxivia
+servant
 discord-bot
 ialab
+registry
+portainer
+authentik
