@@ -11,6 +11,8 @@ services:
     networks:
       - caddy
     entrypoint: python app.py
+    depends_on:
+      caddy:
     labels:
       caddy: calendar.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
@@ -23,5 +25,3 @@ services:
 networks:
   caddy:
     external: true
-    attachable: true
-    driver: overlay
