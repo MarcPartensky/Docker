@@ -19,3 +19,4 @@ etherpad
 monero-miner
 monero-node
 pritunl
+minecraft
