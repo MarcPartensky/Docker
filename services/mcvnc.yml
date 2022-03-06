@@ -17,7 +17,7 @@ services:
     depends_on:
       - minecraft
     labels:
-      caddy: minecraft.marcpartensky.com
+      caddy: minecraft.marcpartensky.com, mc.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
 
 volumes:
