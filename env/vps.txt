@@ -13,4 +13,4 @@ searx
 todolist
 nextcloud
 jenkins
-
+seafile
