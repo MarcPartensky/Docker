@@ -10,3 +10,4 @@ data/tmate/keys
 data/mx-puppet-discord
 data/matrix
 data.tar.gz
+services/template.yml
