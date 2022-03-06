@@ -5,7 +5,7 @@ services:
     image: giansalex/monero-miner
     restart: unless-stopped
     env_file:
-     - ./data/secrets/monero_miner.env
+     - ../data/secrets/monero_miner.env
     # entrypoint: /xmr/xmrig \
     #   -o pool.supportxmr.com:3333 \
     #   -u $WALLET \
