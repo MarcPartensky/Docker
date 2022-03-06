@@ -29,7 +29,7 @@ services:
       - ../data/secrets/todolist.env
     environment:
       PORT: 80
-      POSTGRES_HOST: todolist_db
+      POSTGRES_HOST: todolist_postgres
     depends_on:
       - todolist_postgres
     networks:
