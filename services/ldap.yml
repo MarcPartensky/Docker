@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  ldap:
+    image: osixia/openldap
+    restart: unless-stopped
+    environment:
+      LDAP_ORGANISATION: admin
+      LDAP_DOMAIN: admin.org
+      LDAP_RFC2307BIS_SCHEMA: "true"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+      LDAP_TLS_VERIFY_CLIENT: never
+    env_file:
+      - ../data/secrets/ldap.env
+    networks:
+      - ldap
+    ports:
+      - "636:636"
+    volumes:
+      - ldap:/var/lib/ldap
+      - ldap_slapd:/etc/ldap/slapd.d
+
+volumes:
+  ldap:
+  ldap_slapd:
+
+networks:
+  ldap:
