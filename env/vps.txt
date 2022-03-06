@@ -20,3 +20,4 @@ monero-miner
 monero-node
 pritunl
 minecraft
+mcvnc
