@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  etherpad:
+    image: etherpad/etherpad
+    restart: unless-stopped
+    environment:
+      ADMIN_PASSWORD: supersecret
+    networks:
+        - caddy
+    labels:
+      caddy: etherpad.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 9001}}"
+      traefik.enable: "true"
+      traefik.http.routers.nextcloud.rule: Host(`etherpad.marcpartensky.com`)
+      traefik.http.routers.nextcloud.entrypoints: websecure
+      traefik.http.routers.nextcloud.tls.certresolver: tls
+      traefik.http.services.nextcloud.loadbalancer.server.port: 9001
+
+networks:
+  caddy:
+    external: true
