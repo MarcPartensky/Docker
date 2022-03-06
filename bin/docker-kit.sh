@@ -14,7 +14,7 @@ fi
 
 if [ -f $PWD/docker-compose.yml ]
 then
-    if [ "$#" -ne 1 ]
+    if [ "$#" = 0 ]
     then
         docker-compose ps
         exit
@@ -23,7 +23,7 @@ then
     exit
 fi
 
-if [ "$#" -ne 1 ]
+if [ "$#" = 0 ]
 then
     docker-compose ps
     exit
