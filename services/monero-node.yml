@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  monero_node:
+    image: kannix/monero-full-node
+    restart: unless-stopped
+    volumes:
+      - monero_node_xmrchain:/home/monero/.bitmonero
+    ports:
+      - "18080:18080"
+      - "18081:18081"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2000M
+
+volumes:
+  monero_node_xmrchain:
+
+networks:
+  caddy:
+    external: true
