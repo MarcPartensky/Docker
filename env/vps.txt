@@ -27,3 +27,4 @@ gitlab
 swarmpit
 fail2ban
 ldap
+ldap_manager
