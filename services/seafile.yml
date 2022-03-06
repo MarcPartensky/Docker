@@ -43,5 +43,5 @@ volumes:
 
 networks:
   seafile:
-    caddy:
-      external: true
+  caddy:
+    external: true
