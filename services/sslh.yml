@@ -5,7 +5,7 @@ services:
     image: marcpartensky/sslh
     networks:
       - caddy
-      - bridge
+      # - bridge
     ports:
       - "443:443"
     command: --tls=caddy:443 --ssh=localhost:7022
@@ -15,5 +15,3 @@ services:
 networks:
   caddy:
     external: true
-    attachable: true
-    driver: overlay
