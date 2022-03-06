@@ -23,4 +23,7 @@ minecraft
 mcvnc
 mcadmin
 gitea
+gitlab
 swarmpit
+fail2ban
+ldap
