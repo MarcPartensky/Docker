@@ -15,7 +15,7 @@ services:
       - caddy
       - gitea
     volumes:
-      - gitea_ssh/:/data/git/.ssh
+      - gitea_ssh:/data/git/.ssh
       - gitea:/data
       # - /etc/timezone:/etc/timezone:ro
       # - /etc/localtime:/etc/localtime:ro
