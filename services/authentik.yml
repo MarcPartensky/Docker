@@ -8,10 +8,14 @@ services:
       - authentik_postgres:/var/lib/postgresql/data
     env_file:
       - ../data/secrets/authentik.env
+    networks:
+      - authentik
 
   authentik_redis:
     image: redis:alpine
     restart: unless-stopped
+    networks:
+      - authentik
 
   authentik:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2022.2.1}
@@ -35,6 +39,9 @@ services:
       - authentik_postgres
       - authentik_redis
       - authentik_worker
+      - caddy
+    networks:
+      - authentik
       - caddy
     labels:
       caddy: authentik.marcpartensky.com
@@ -61,6 +68,8 @@ services:
       - gauthentik_geoip:/geoip
     env_file:
       - ../data/secrets/authentik.env
+    networks:
+      - authentik
 
   authentik_geoipupdate:
     image: maxmindinc/geoipupdate:latest
@@ -72,6 +81,8 @@ services:
       GEOIPUPDATE_FREQUENCY: "8"
     # env_file:
     #   - ../data/secrets/authentik.env
+    networks:
+      - authentik
 
 volumes:
   authentik_postgres:
@@ -80,3 +91,8 @@ volumes:
   authentik_certs:
   authentik_templates:
   authentik_geoip:
+
+networks:
+  authentik:
+  caddy:
+    external: true
