@@ -24,7 +24,7 @@ services:
       traefik.http.services.minecraft.loadbalancer.server.port: 8080
 
 volumes:
-  mcadmin:
+  mcmyadmin:
 
 networks:
   minecraft:
