@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  pritunl_mongo:
+    image: mongo:latest
+    volumes:
+      - pritunl_mongo:/data/db
+    networks:
+      - pritunl
+
+volumes:
+  pritunl_mongo:
+
+networks:
+  pritunl:
+    # internal: true
+    # driver: bridge
+    ipam:
+      config:
+        - subnet: 172.177.0.0/16
