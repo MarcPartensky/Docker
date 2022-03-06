@@ -1,7 +1,9 @@
-upn:
-	docker stack deploy -c vps.yml vps
-up:
-	docker stack deploy -c vps.yml vps --with-registry-auth
+compose:
+	cat ./env/vps.txt | xargs ./bin/docker-setup.sh
+swarm:
+	cat ./env/vps.txt | STACK=vps xargs ./bin/docker-setup.sh
+merge:
+	./bin/setup.sh merge vps
 down:
 	docker stack rm vps
 export:

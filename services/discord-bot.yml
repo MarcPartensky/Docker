@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  discord-bot:
+    image: marcpartensky/discord-bot
+    restart: unless-stopped
+    ports:
+        - "7010:8000"
+    networks:
+      - discord
+    depends_on:
+      - docker_api
+    env_file:
+      - ../data/secrets/esclave.env
+
+networks:
+  discord:

@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  oxivia:
+    image: wordpress
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/oxivia.env
+    volumes:
+      - $BIND_MOUNTS/oxivia:/var/www/html
+      - ../data/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - caddy
+      - oxivia
+    depends_on:
+      - oxivia_mysql
+      - caddy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:80"]
+    labels:
+      caddy: oxivia.business.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams}}"
+      traefik.enable: "true"
+      traefik.http.routers.oxivia.rule: Host(`oxivia.business.marcpartensky.com`)
+      traefik.http.routers.oxivia.entrypoints: websecure
+      traefik.http.routers.oxivia.tls.certresolver: tls
+      traefik.http.services.oxivia.loadbalancer.server.port: 80
+
+networks:
+  oxivia:
+  caddy:
+    external: true

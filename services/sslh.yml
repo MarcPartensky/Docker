@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  sslh:
+    image: marcpartensky/sslh
+    networks:
+      - caddy
+      # - bridge
+    ports:
+      - "443:443"
+    command: --tls=caddy:443 --ssh=localhost:7022
+    depends_on:
+      - caddy
+
+networks:
+  caddy:
+    external: true

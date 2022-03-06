@@ -1,0 +1,54 @@
+version: "3.9"
+
+configs:
+  caddy-basic-content:
+    file: ../data/caddy/Caddyfile
+    labels:
+      caddy:
+
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CADDY_INGRESS_NETWORKS: caddy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy_data:/data
+      # - ./data/caddy/Caddyfile:/etc/Caddyfile
+    networks:
+      - caddy
+    logging:
+      # syslog?
+      options:
+        max-size: 5m
+        max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:80"]
+    deploy:
+      labels: # Global options
+        caddy.email: marc.partensky@gmail.com
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        order: start-first
+      placement:
+        constraints:
+          - node.role == manager
+        # restart_policy:
+        #     condition: any
+      resources:
+        reservations:
+          cpus: '1'
+          memory: 500M
+volumes:
+  caddy_data:
+
+networks:
+  caddy:
+    external: true

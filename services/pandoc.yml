@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  pandoc:
+    image: marcpartensky/pandoc-api
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - ../data/secrets/pandoc.env
+    volumes:
+      - pandoc:/app/files
+    labels:
+      caddy: pandoc.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.pandoc.rule: Host(`pandoc.marcpartensky.com`)
+      traefik.http.routers.pandoc.entrypoints: websecure
+      traefik.http.routers.pandoc.tls.certresolver: tls
+      traefik.http.services.pandoc.loadbalancer.server.port: 80
+    networks:
+      - caddy
+    depends_on:
+      - caddy
+
+volumes:
+  pandoc:
+
+networks:
+  caddy:
+    external: true

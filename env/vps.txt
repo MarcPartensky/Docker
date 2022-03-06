@@ -1,0 +1,10 @@
+caddy
+website
+oxivia
+servant
+discord-bot
+docker-api
+ialab
+registry
+portainer
+authentik

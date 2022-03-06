@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  oxivia_mysql:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/oxivia.env
+    volumes:
+      - $BIND_MOUNTS/oxivia_mysql:/var/lib/mysql
+    networks:
+      - caddy
+      - oxivia
+
+networks:
+  oxivia:
+  caddy:
+    external: true
