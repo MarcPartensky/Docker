@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  mcvnc:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    volumes:
+      - /dev/shm:/dev/shm
+      - mcvnc:/home/marc
+      - mcvnc_usr:/usr
+    ports:
+      - 7900:5900
+    environment:
+      USER: marc
+      PASSWORD: test
+    networks:
+      - minecraft
+    depends_on:
+      - minecraft
+    labels:
+      caddy: minecraft.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams}}"
+
+volumes:
+  mcvnc:
+  mcvnc_usr:
+
+networks:
+  minecraft:
+  caddy:
+    external: true
