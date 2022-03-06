@@ -1,7 +1,3 @@
-install:
-	install -m 750 ./bin/docker-kit.sh /usr/local/bin
-	install -m 750 ./bin/docker-merge.py /usr/local/bin
-	install -m 750 ./bin/docker-setup.sh /usr/local/bin
 compose:
 	cat ./env/vps.txt | xargs ./bin/setup.sh
 swarm:

@@ -2,10 +2,23 @@
 
 PROJECT_PATH="$PROGRAMS_PATH/docker"
 
-COMPOSE_PATH_SEPARATOR=" "
-COMPOSE_FILE=$(/bin/ls $PROJECT_PATH/services)
+export COMPOSE_PATH_SEPARATOR=":"
+export COMPOSE_FILE=$(find $PROJECT_PATH/services/*.yml | xargs -I @ echo -n @:)
+export COMPOSE_FILE=${COMPOSE_FILE::-1}
 echo $COMPOSE_FILE
+
+# sep="-f"
+
+# config_files() {
+#     for service in find $PROJECT_PATH/services/*.yml
+#     do
+#         echo -n "$sep $service "
+#     done
+# }
+echo before ps
 docker-compose ps
+
+echo ps failed
 exit
 
 if [ "$1" = "-f" ]
