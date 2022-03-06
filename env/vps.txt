@@ -16,3 +16,4 @@ jenkins
 seafile
 matrix
 etherpad
+monero-miner
