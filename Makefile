@@ -1,7 +1,7 @@
 compose:
-	cat ./env/vps.txt | xargs ./bin/setup.sh
+	cat ./env/vps.txt | xargs ./bin/docker-setup.sh
 swarm:
-	cat ./env/vps.txt | STACK=vps xargs ./bin/setup.sh
+	cat ./env/vps.txt | STACK=vps xargs ./bin/docker-setup.sh
 merge:
 	./bin/setup.sh merge vps
 down:
