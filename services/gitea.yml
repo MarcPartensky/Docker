@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  gitea:
+    image: gitea/gitea:1.14.6
+    restart: unless-stopped
+    # user: git
+    # environment:
+    #   - USER=git
+    #   - USER_UID=1004
+    #   - USER_GID=1004
+    env_file:
+      - ../data/secrets/gitea.env
+    networks:
+      - caddy
+      - gitea
+    volumes:
+      - gitea_ssh/:/data/git/.ssh
+      - gitea:/data
+      # - /etc/timezone:/etc/timezone:ro
+      # - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "7012:22"
+    depends_on:
+      - gitea_postgres
+    labels:
+      caddy: gitea.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 3000}}"
+      traefik.enable: true
+      traefik.http.routers.gitea.rule: Host(`git.marcpartensky.com`)
+      traefik.http.routers.gitea.entrypoints: websecure
+      traefik.http.routers.gitea.tls.certresolver: tls
+      traefik.http.services.gitea.loadbalancer.server.port: 3000
+
+volumes:
+  gitea:
+  gitea_ssh:
+
+networks:
+  gitea:
+  caddy:
+    external: true
