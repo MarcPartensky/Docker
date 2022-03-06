@@ -3,7 +3,7 @@ compose:
 swarm:
 	cat ./env/vps.txt | STACK=vps xargs ./bin/docker-setup.sh
 merge:
-	./bin/setup.sh merge vps
+	./bin/docker-setup.sh merge vps
 down:
 	docker stack rm vps
 export:
