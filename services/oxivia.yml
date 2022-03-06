@@ -14,6 +14,7 @@ services:
       - oxivia
     depends_on:
       - oxivia_mysql
+      - caddy
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost:80"]
     labels:
@@ -25,22 +26,7 @@ services:
       traefik.http.routers.oxivia.tls.certresolver: tls
       traefik.http.services.oxivia.loadbalancer.server.port: 80
 
-  oxivia_mysql:
-    image: mysql
-    restart: unless-stopped
-    env_file:
-      - ../data/secrets/oxivia.env
-    ports:
-      - "3307:3306"
-    volumes:
-      - $BIND_MOUNTS/oxivia_mysql:/var/lib/mysql
-    networks:
-      - caddy
-      - oxivia
-
 networks:
   oxivia:
   caddy:
     external: true
-    attachable: true
-    driver: overlay
