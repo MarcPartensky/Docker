@@ -53,8 +53,8 @@ services:
     user: root
     command: worker
     environment:
-      AUTHENTIK_REDIS__HOST: redis
-      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_REDIS__HOST: authentik_redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik_postgres
       AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
     # This is optional, and can be removed. If you remove this, the following will happen
     # - The permissions for the /backups and /media folders aren't fixed, so make sure they are 1000:1000
