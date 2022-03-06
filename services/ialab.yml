@@ -18,7 +18,7 @@ services:
     networks:
       - caddy
     depends_on:
-      caddy:
+      - caddy
     labels:
       caddy: ialab.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
