@@ -11,7 +11,6 @@ services:
       - todolist_api
     networks:
       - caddy
-      - nginx
     labels:
       caddy: todolist.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
