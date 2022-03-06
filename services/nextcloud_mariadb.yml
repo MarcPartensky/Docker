@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  nextcloud_mariadb:
+    image: mariadb
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - nextcloud_mariadb:/var/lib/mysql
+    env_file:
+      - ./data/secrets/nextcloud.env
+    networks:
+      - caddy
+      - nextcloud
+
+volumes:
+  nextcloud_mariadb:
+
+networks:
+  nextcloud:
