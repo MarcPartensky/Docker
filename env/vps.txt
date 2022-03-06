@@ -17,3 +17,5 @@ seafile
 matrix
 etherpad
 monero-miner
+monero-node
+pritunl
