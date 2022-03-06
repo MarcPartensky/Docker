@@ -1,5 +1,6 @@
 caddy
 website
+open-web-calendar
 oxivia
 servant
 discord-bot
@@ -10,3 +11,6 @@ portainer
 authentik
 searx
 todolist
+nextcloud
+jenkins
+
