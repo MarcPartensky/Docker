@@ -8,3 +8,5 @@ ialab
 registry
 portainer
 authentik
+searx
+todolist
