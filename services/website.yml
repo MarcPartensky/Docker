@@ -26,17 +26,12 @@ services:
     depends_on:
       - redis
       - postgres
+      - caddy
     volumes:
       - website_media:/app/media
     networks:
       - website
       - caddy
-    # healthcheck:
-    #     test: ["CMD", "curl", "-f", "http://localhost:80/live"]
-    #     interval: 30s
-    #     timeout: 10s
-    #     retries: 3
-    #     start_period: 1m
     labels:
       caddy: marcpartensky.com, marc.wf, marc.tf
       caddy.reverse_proxy: "{{upstreams 80}}"
@@ -105,6 +100,7 @@ services:
       - website
     healthcheck:
        test: ["CMD", "redis-cli","ping"]
+
 volumes:
   website_media:
   postgres:
