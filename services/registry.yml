@@ -17,7 +17,9 @@ services:
       - registry_certs:/certs
       - registry_auth:/auth
     depends_on:
-      caddy:
+      - caddy
+    networks:
+      - caddy
     labels:
       caddy: registry.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
