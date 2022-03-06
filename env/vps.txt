@@ -21,3 +21,4 @@ monero-node
 pritunl
 minecraft
 mcvnc
+gitea
