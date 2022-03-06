@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  ldap_manager:
+    image: wheelybird/ldap-user-manager:latest
+    restart: unless-stopped
+    environment:
+      SERVER_HOSTNAME: auth.marcpartensy.com
+      LDAP_URI: ldap://ldap
+      LDAP_BASE_DN: dc=admin,dc=org
+      LDAP_ADMINS_GROUP: admins
+      LDAP_ADMIN_BIND_DN: cn=admin,dc=admin,dc=org
+      LDAP_IGNORE_CERT_ERRORS: "true"
+      LDAP_REQUIRE_STARTTLS: "FALSE"
+      NO_HTTPS: "TRUE"
+    env_file:
+      - ../data/secrets/ldap.env
+    networks:
+      - ldap
+      - caddy
+    labels:
+      caddy: auth.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams}}"
+
+networks:
+  ldap:
+  caddy:
+    external: true
