@@ -28,13 +28,17 @@ services:
       - authentik_geoip:/geoip
     env_file:
       - ../data/secrets/authentik.env
-    ports:
-      - "0.0.0.0:${AUTHENTIK_PORT_HTTP:-9000}:9000"
-      - "0.0.0.0:${AUTHENTIK_PORT_HTTPS:-9443}:9443"
+    # ports:
+    #   - "0.0.0.0:${AUTHENTIK_PORT_HTTP:-9000}:9000"
+    #   - "0.0.0.0:${AUTHENTIK_PORT_HTTPS:-9443}:9443"
     depends_on:
       - authentik_postgres
       - authentik_redis
       - authentik_worker
+      - caddy
+    labels:
+      caddy: authentik.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 9000}}"
 
   authentik_worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2022.2.1}
