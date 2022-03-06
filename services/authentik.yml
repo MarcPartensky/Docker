@@ -25,6 +25,7 @@ services:
       AUTHENTIK_REDIS__HOST: authentik_redis
       AUTHENTIK_POSTGRESQL__HOST: authentik_postgres
       AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+      AUTHENTIK_DEFAULT_USER_CHANGE_USERNAME: admin
       # WORKERS: 2
     volumes:
       - authentik_media:/media
