@@ -6,7 +6,7 @@ services:
     env_file:
       - ./data/secrets/seafile.env
     volumes:
-      - seafile_mysql:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
+      - seafile_mysql:/var/lib/mysql
     networks:
       - seafile
 
@@ -19,12 +19,12 @@ services:
   seafile:
     image: seafileltd/seafile-mc:latest
     volumes:
-      - seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
+      - seafile:/shared
     env_file:
       - ../data/secrets/seafile.env
     depends_on:
-      - db
-      - memcached
+      - seafile_mariadb
+      - seafile_memcached
     networks:
       - seafile
       - caddy
