@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  swarmpit-influxdb:
+    image: influxdb:1.7
+    volumes:
+      - swarmpit-influxdb:/var/lib/influxdb
+    networks:
+      - swarmpit
+    deploy:
+      resources:
+        limits:
+          cpus: '0.60'
+          memory: 512M
+        # reservations:
+        #   cpus: '0.30'
+        #   memory: 128M
+
+volumes:
+  swarmpit-influxdb:
+
+networks:
+  swarmpit:

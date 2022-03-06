@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  swarmpit-agent:
+    image: swarmpit/agent:latest
+    environment:
+      DOCKER_API_VERSION: 1.35
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - swarmpit
+    deploy:
+      mode: global
+      labels:
+        swarmpit.agent: 'true'
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 64M
+        # reservations:
+        #   cpus: '0.05'
+        #   memory: 32M
+
+networks:
+  swarmpit:
