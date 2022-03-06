@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  seafile_mariadb:
+    image: mariadb:10.5
+    env_file:
+      - ./data/secrets/seafile.env
+    volumes:
+      - seafile_mysql:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
+    networks:
+      - seafile
+
+  seafile_memcached:
+    image: memcached:1.5.6
+    entrypoint: memcached -m 256
+    networks:
+      - seafile
+
+  seafile:
+    image: seafileltd/seafile-mc:latest
+    volumes:
+      - seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
+    env_file:
+      - ../data/secrets/seafile.env
+    depends_on:
+      - db
+      - memcached
+    networks:
+      - seafile
+      - caddy
+    labels:
+      caddy: seafile.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams http 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.nextcloud.rule: Host(`seafile.marcpartensky.com`)
+      traefik.http.routers.nextcloud.entrypoints: websecure
+      traefik.http.routers.nextcloud.tls.certresolver: tls
+      traefik.http.services.nextcloud.loadbalancer.server.port: 80
+
+volumes:
+  seafile:
+  seafile_mysql:
+
+networks:
+  seafile:
+    caddy:
+      external: true
