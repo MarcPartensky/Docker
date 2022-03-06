@@ -18,6 +18,8 @@ services:
         # healthcheck:
         # test: ["CMD", "curl", "-f", "http://localhost:9000"]
         # test: ["CMD", "portainer", "--healthcheck"]
+    depends_on:
+      caddy:
     labels:
       caddy: docker.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 9000}}"
