@@ -1,10 +1,10 @@
 version: "3.9"
 
 services:
-  swarmpit-db:
+  swarmpit_db:
     image: couchdb:2.3.0
     volumes:
-      - swarmpit-db:/opt/couchdb/data
+      - swarmpit_db:/opt/couchdb/data
     networks:
       - swarmpit
     deploy:
@@ -17,7 +17,7 @@ services:
         #   memory: 128M
 
 volumes:
-  swarmpit-db:
+  swarmpit_db:
 
 networks:
   swarmpit:

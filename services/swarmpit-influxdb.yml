@@ -1,10 +1,10 @@
 version: "3.9"
 
 services:
-  swarmpit-influxdb:
+  swarmpit_influxdb:
     image: influxdb:1.7
     volumes:
-      - swarmpit-influxdb:/var/lib/influxdb
+      - swarmpit_influxdb:/var/lib/influxdb
     networks:
       - swarmpit
     deploy:
@@ -17,7 +17,7 @@ services:
         #   memory: 128M
 
 volumes:
-  swarmpit-influxdb:
+  swarmpit_influxdb:
 
 networks:
   swarmpit:
