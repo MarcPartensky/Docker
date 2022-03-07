@@ -6,14 +6,14 @@ services:
     restart: unless-stopped
     environment:
       TZ: Europe/Paris
-      EULA: TRUE
+      EULA: "TRUE"
       OPS: MazexRedstone
-      ENABLE_COMMAND_BLOCK: TRUE
+      ENABLE_COMMAND_BLOCK: "TRUE"
       MEMORY: 2G
       VERSION: 1.16.5
       ICON: https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
       MOTD: Made in Marc Partensky
-      ANNOUNCE_PLAYER_ACHIEVEMENTS: TRUE
+      ANNOUNCE_PLAYER_ACHIEVEMENTS: "TRUE"
       LEVEL: Server
       ONLINE_MODE: "FALSE" # no need for an account
       DIFFICULTY: hard
