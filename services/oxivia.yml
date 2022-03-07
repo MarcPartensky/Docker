@@ -4,6 +4,7 @@ services:
   oxivia:
     image: wordpress
     restart: unless-stopped
+    user: 1000:1000
     env_file:
       - ../data/secrets/oxivia.env
     volumes:
