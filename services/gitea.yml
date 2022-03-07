@@ -26,7 +26,7 @@ services:
     labels:
       caddy: gitea.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 3000}}"
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.gitea.rule: Host(`git.marcpartensky.com`)
       traefik.http.routers.gitea.entrypoints: websecure
       traefik.http.routers.gitea.tls.certresolver: tls
