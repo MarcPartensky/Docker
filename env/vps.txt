@@ -2,6 +2,7 @@ caddy
 website
 open-web-calendar
 oxivia
+oxivia-myql
 servant
 discord-bot
 docker-api
