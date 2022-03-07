@@ -15,7 +15,7 @@ services:
       MOTD: Made in Marc Partensky
       ANNOUNCE_PLAYER_ACHIEVEMENTS: TRUE
       LEVEL: Server
-      ONLINE_MODE: FALSE # no need for an account
+      ONLINE_MODE: "FALSE" # no need for an account
       DIFFICULTY: hard
       VIEW_DISTANCE: 32
       # MAX_PLAYERS: 50
