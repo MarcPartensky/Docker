@@ -4,7 +4,7 @@ services:
   oxivia_mysql:
     image: mysql
     restart: unless-stopped
-    user: 1000:1000
+    user: 999:1000
     env_file:
       - ../data/secrets/oxivia.env
     volumes:
