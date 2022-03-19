@@ -3,6 +3,7 @@ version: "3.9"
 services:
   pritunl_mongo:
     image: mongo:latest
+    restart: unless-stopped
     volumes:
       - pritunl_mongo:/data/db
     networks:

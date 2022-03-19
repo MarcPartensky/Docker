@@ -21,6 +21,7 @@ etherpad
 monero-miner
 monero-node
 pritunl
+pritunl-mongo
 minecraft
 mcvnc
 mcadmin
