@@ -4,6 +4,8 @@ swarm:
 	cat ./env/vps.txt | STACK=vps xargs ./bin/docker-setup.sh
 merge:
 	./bin/docker-setup.sh merge vps
+mswarm: merge
+	docker stack deploy -c stacks/docker-compose.yml vps
 down:
 	docker stack rm vps
 export:
