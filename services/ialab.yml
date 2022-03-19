@@ -7,10 +7,6 @@ services:
     restart: unless-stopped
     environment:
       FLASK_APP: server.py
-    # env_file:
-      # - $HOME/git/ialab/.flaskenv
-    # working_dir: /app
-    entrypoint: flask run --host ialab --port 80
     # entrypoint: "gunicorn server:app"
     # entrypoint: "gunicorn --chdir /app server:app"
     volumes:
