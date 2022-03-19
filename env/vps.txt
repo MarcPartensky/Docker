@@ -5,6 +5,7 @@ oxivia
 oxivia-mysql
 servant
 discord-bot
+ia
 docker-api
 ialab
 registry
