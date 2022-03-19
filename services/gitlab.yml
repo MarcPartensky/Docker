@@ -7,10 +7,9 @@ services:
     hostname: gitlab.marcpartensky.com
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab.marcpartensky.com:7021'
+        external_url 'http://gitlab.marcpartensky.com'
         gitlab_rails['gitlab_shell_ssh_port'] = 7020
     ports:
-       - '7021:80'
        - '7020:22'
     networks:
       - caddy
