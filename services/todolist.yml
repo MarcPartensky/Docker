@@ -43,7 +43,7 @@ services:
       traefik.http.routers.todolist_api.tls.certresolver: tls
       traefik.http.services.todolist_api.loadbalancer.server.port: 8080
 
-  todolist_postres:
+  todolist_postgres:
     image: postgres
     restart: unless-stopped
     volumes:
