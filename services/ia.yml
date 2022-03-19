@@ -5,7 +5,7 @@ services:
     image: marcpartensky/discord-bot
     restart: unless-stopped
     ports:
-        - "7010:8000"
+        - "7011:8000"
     networks:
       - discord
     depends_on:
