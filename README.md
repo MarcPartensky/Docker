@@ -19,6 +19,7 @@
 - https://prometheus.marcpartensky.com
 - https://swarm.marcpartensky.com
 - https://auth.marcpartensky.com
+- https://seafile.marcpartensky.com
 <!-- - https://dns.marcpartensky.com -->
 <!-- - https://glou.marcpartensky.com -->
 <!-- - https://minecraft.marcpartensky.com -->
