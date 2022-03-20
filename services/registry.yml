@@ -21,7 +21,7 @@ services:
     networks:
       - caddy
     labels:
-      caddy: registry.marcpartensky.com
+      caddy: registry.marcpartensky.com, r.marc.wf
       caddy.reverse_proxy: "{{upstreams 80}}"
       traefik.enable: "true"
       traefik.http.routers.registry.rule: Host(`registry.marcpartensky.com`)
