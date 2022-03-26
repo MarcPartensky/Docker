@@ -28,7 +28,6 @@ services:
     env_file:
       - ../data/secrets/wordpress.env
     networks:
-      - caddy
       - wordpress
     volumes:
       - wordpress_mysql:/var/lib/mysql
