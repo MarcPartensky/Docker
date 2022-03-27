@@ -31,8 +31,8 @@ services:
       - wordpress
     volumes:
       - wordpress_mysql:/var/lib/mysql
-    healthcheck:
-      test: CMD /bin/sh -c 'mysqladmin ping --user=$MYSQL_USER --password=$MYSQL_PASSWORD'
+    # healthcheck:
+    #   test: CMD /bin/sh -c 'mysqladmin ping --user=$MYSQL_USER --password=$MYSQL_PASSWORD'
 
 
 volumes:
