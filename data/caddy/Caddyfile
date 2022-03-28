@@ -4,11 +4,11 @@ test.marcpartensky.com {
     redir https://caddyserver.com/docs/caddyfile/patterns
 }
 
-authent.marcpartensky.com {
-    reverse_proxy authentik:9443 {
-        tls internal
-    }
-}
+# authent.marcpartensky.com {
+#     reverse_proxy authentik:9443 {
+#         tls internal
+#     }
+# }
 
 # healthcheck
 # :8080 {
