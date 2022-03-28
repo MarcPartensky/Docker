@@ -7,8 +7,10 @@ services:
     networks:
       - caddy
       - wordpress_je
+    environment:
+      WORDPRESS_DB_HOST: wordpress_je_mysql
     env_file:
-      - ../data/secrets/wordpress.env
+      - ../data/secrets/wordpress_template.env
     volumes:
       - wordpress_je:/var/www/html
     depends_on:
@@ -21,7 +23,7 @@ services:
     image: mysql
     restart: unless-stopped
     env_file:
-      - ../data/secrets/wordpress.env
+      - ../data/secrets/wordpress_template.env
     networks:
       - wordpress_je
     volumes:
