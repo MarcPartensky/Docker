@@ -14,7 +14,7 @@ services:
     depends_on:
       - wordpress_je_mysql
     labels:
-      caddy: wordpress.je.marcpartensky.com"
+      caddy: wordpress.je.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
 
   wordpress_je_mysql:
