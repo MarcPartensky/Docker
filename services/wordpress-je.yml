@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  wordpress_je:
+    image: wordpress
+    restart: unless-stopped
+    networks:
+      - caddy
+      - wordpress
+    env_file:
+      - ../data/secrets/wordpress.env
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - wordpress_mysql
+    labels:
+      caddy: wordpress.je.marcpartensky.com"
+      caddy.reverse_proxy: "{{upstreams}}"
+
+  wordpress_je_mysql:
+    image: mysql
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/wordpress.env
+    networks:
+      - wordpress
+    volumes:
+      - wordpress_mysql:/var/lib/mysql
+
+volumes:
+  wordpress_je:
+  wordpress_je_mysql:
+
+networks:
+  wordpress_je:
+  caddy:
+    external: true
