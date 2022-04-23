@@ -14,9 +14,9 @@ services:
       PASSWORD: test
     networks:
       - minecraft
+      - caddy
     depends_on:
       - minecraft
-      - caddy
     labels:
       caddy: minecraft.marcpartensky.com, mc.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
