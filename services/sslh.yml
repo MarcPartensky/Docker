@@ -8,7 +8,7 @@ services:
       # - bridge
     ports:
       - "443:443"
-    command: --tls=caddy:443 --ssh=localhost:7022
+    command: --tls=caddy:443 --ssh=marcpartensky.com:7022
     depends_on:
       - caddy
 
