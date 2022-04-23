@@ -14,6 +14,7 @@ services:
       - "25566:25565"
     networks:
       - minecraft
+      - caddy
     labels:
       caddy: mcadmin.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
