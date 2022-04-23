@@ -1,0 +1,58 @@
+version: "3.3"
+
+services:
+
+  peertube:
+    image: chocobozzz/peertube:production-bullseye
+    restart: unless-stopped
+    networks:
+      - caddy
+    env_file:
+      - .env
+    ports:
+     - "1935:1935" # If you don't want to use the live feature, you can comment this line
+    #  - "9000:9000" # If you provide your own webserver and reverse-proxy, otherwise not suitable for production
+    volumes:
+      - peertube_assets:/app/client/dist
+      - peertube:/data
+      - ../data/peertube:/config
+    depends_on:
+      - peertube_postgres
+      - peertube_redis
+      - peertube_postfix
+    labels:
+      caddy: peertube.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 9000}}"
+
+  peertube_postgres:
+    image: postgres:13-alpine
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - peertube_postgres:/var/lib/postgresql/data
+
+  peertube_redis:
+    image: redis:6-alpine
+    restart: unless-stopped
+    volumes:
+      - peertube_redis:/data
+
+  peertube_postfix:
+    image: mwader/postfix-relay
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - peertube_postfix:/etc/opendkim/keys
+
+networks:
+  caddy:
+    external: true
+
+volumes:
+  peertube:
+  peertube_assets:
+  peertube_postgres:
+  peertube_redis:
+  peertube_postfix:
