@@ -30,7 +30,7 @@ services:
       MYSQL_DATABASE: "panel"
       MYSQL_USER: "pterodactyl"
     env_file:
-      - ../data/secrets/pterodacyl.env
+      - ../data/secrets/pterodactyl.env
 
   cache:
     image: redis:alpine
@@ -40,7 +40,7 @@ services:
     image: ghcr.io/pterodactyl/panel:latest
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:80"
       - "8443:443"
     links:
       - database
@@ -51,7 +51,7 @@ services:
       - "/srv/pterodactyl/certs/:/etc/letsencrypt/"
       - "/srv/pterodactyl/logs/:/app/storage/logs"
     env_file:
-      - ../data/secrets/pterodacyl.env
+      - ../data/secrets/pterodactyl.env
     environment:
       <<: [*panel-environment, *mail-environment]
       APP_ENV: "production"
