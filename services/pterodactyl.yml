@@ -32,11 +32,11 @@ services:
     env_file:
       - ../data/secrets/pterodactyl.env
 
-  cache:
+  pterodactyl_redis:
     image: redis:alpine
     restart: unless-stopped
 
-  panel:
+  pterodactyl_panel:
     image: ghcr.io/pterodactyl/panel:latest
     restart: unless-stopped
     ports:
