@@ -43,8 +43,8 @@ services:
       - "8080:80"
       - "8443:443"
     links:
-      - database
-      - cache
+      - pterodactyl_mariadb
+      - pterodactyl_redis
     volumes:
       - "/srv/pterodactyl/var/:/app/var/"
       - "/srv/pterodactyl/nginx/:/etc/nginx/http.d/"
