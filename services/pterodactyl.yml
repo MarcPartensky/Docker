@@ -23,9 +23,8 @@ services:
   pterodactyl_mariadb:
     image: mariadb:10.5
     restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - "/srv/pterodactyl/database:/var/lib/mysql"
+      - pterodactyl_mariadb:/var/lib/mysql
     environment:
       MYSQL_DATABASE: "panel"
       MYSQL_USER: "pterodactyl"
@@ -46,10 +45,8 @@ services:
       - pterodactyl_mariadb
       - pterodactyl_redis
     volumes:
-      - "/srv/pterodactyl/var/:/app/var/"
-      - "/srv/pterodactyl/nginx/:/etc/nginx/http.d/"
-      - "/srv/pterodactyl/certs/:/etc/letsencrypt/"
-      - "/srv/pterodactyl/logs/:/app/storage/logs"
+      - pterodactyl_panel_var/:/app/var/
+      - pterodactyl_panel_logs/:/app/storage/logs
     env_file:
       - ../data/secrets/pterodactyl.env
     environment:
@@ -62,12 +59,18 @@ services:
       REDIS_HOST: "cache"
       DB_HOST: "mariadb"
       DB_PORT: "3306"
+      DB_USERNAME: "pterodactyl"
     networks:
       - pterodactyl
       - caddy
     labels:
       caddy: pterodactyl.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
+
+volumes:
+  pterodactyl_mariadb:
+  pterodactyl_panel_var:
+  pterodactyl_panel_logs:
 
 networks:
   pterodactyl:
