@@ -4,6 +4,14 @@ test.marcpartensky.com {
     redir https://caddyserver.com/docs/caddyfile/patterns
 }
 
+marc.wf {
+    redir marcpartensky.com
+}
+
+marc.tf {
+    redir marcpartensky.com
+}
+
 # authent.marcpartensky.com {
 #     reverse_proxy authentik:9443 {
 #         tls internal
