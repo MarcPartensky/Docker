@@ -8,10 +8,8 @@ discord-bot
 ia
 docker-api
 ialab
-registry
 portainer
 authentik
-searx
 todolist
 nextcloud
 jenkins
@@ -22,12 +20,6 @@ monero-miner
 monero-node
 pritunl
 pritunl-mongo
-minecraft
-mcvnc
-mcadmin
-gitea
-gitlab
-swarmpit
 fail2ban
 ldap
 ldap-manager
