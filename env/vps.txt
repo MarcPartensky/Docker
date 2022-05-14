@@ -2,7 +2,7 @@ caddy
 website
 open-web-calendar
 oxivia
-oxivia-mysql
+wordpress-oxivia
 servant
 discord-bot
 ia
