@@ -5,11 +5,11 @@ test.marcpartensky.com {
 }
 
 marc.wf {
-    redir marcpartensky.com
+    redir https://marcpartensky.com
 }
 
 marc.tf {
-    redir marcpartensky.com
+    redir https://marcpartensky.com
 }
 
 # authent.marcpartensky.com {
