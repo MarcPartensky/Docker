@@ -1271,7 +1271,7 @@ enable_registration: true
 # Disabling this option will not delete any tokens previously generated.
 # Defaults to false. Uncomment the following to require tokens:
 #
-#registration_requires_token: true
+registration_requires_token: false
 
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
@@ -1712,17 +1712,17 @@ saml2_config:
     #      width: "200"
     #      height: "80"
 
-    #organization:
-    #  name: Example com
-    #  display_name:
-    #    - ["Example co", "en"]
-    #  url: "http://example.com"
+    organization:
+      name: Marc Partensky Corp
+      display_name:
+        - ["Marc", "Partensky"]
+      url: "https://marcpartensky.com"
 
-    #contact_person:
-    #  - given_name: Bob
-    #    sur_name: "the Sysadmin"
-    #    email_address": ["admin@example.com"]
-    #    contact_type": technical
+    contact_person:
+      - given_name: Marc
+        sur_name: "Marc Partensky"
+        email_address": ["marc@marcpartensky.com"]
+        contact_type": admin
 
   # Instead of putting the config inline as above, you can specify a
   # separate pysaml2 configuration file:
