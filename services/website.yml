@@ -33,7 +33,7 @@ services:
       - website
       - caddy
     labels:
-      caddy: marcpartensky.com, marc.wf, marc.tf
+      caddy: marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
       # caddy.tls: "internal"
       traefik.enable: "true"
