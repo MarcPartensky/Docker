@@ -7,6 +7,8 @@ services:
     networks:
       - caddy
       - wordpress
+    environment:
+      - WORDPRESS_DB_HOST: wordpress_oxivia_mysql
     env_file:
       - ../data/secrets/wordpress_oxivia.env
     volumes:
@@ -32,7 +34,7 @@ services:
     volumes:
       - wordpress_oxivia_mysql:/var/lib/mysql
     command:
-      --character-set-server=utf8_general_ci --collation-server=utf8_general_ci
+      --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     # healthcheck:
     #   test: CMD /bin/sh -c 'mysqladmin ping --user=$MYSQL_USER --password=$MYSQL_PASSWORD'
 
