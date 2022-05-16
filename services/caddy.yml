@@ -29,7 +29,7 @@ services:
       test: ["CMD", "curl", "-f", "localhost:80"]
     deploy:
       labels: # Global options
-        caddy.email: marc.partensky@gmail.com
+        caddy.email: marc@marcpartensky.com
       update_config:
         parallelism: 1
         delay: 5s
