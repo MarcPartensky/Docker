@@ -8,7 +8,7 @@ services:
       - caddy
       - wordpress
     environment:
-      - WORDPRESS_DB_HOST: wordpress_oxivia_mysql
+      WORDPRESS_DB_HOST: wordpress_oxivia_mysql
     env_file:
       - ../data/secrets/wordpress_oxivia.env
     volumes:
