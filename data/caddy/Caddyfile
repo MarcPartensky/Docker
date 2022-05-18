@@ -3,23 +3,19 @@
 {
   security {
     authorization policy marc {
-      set auth url https://portal.marcpartensky.com/
+      set auth url https://gate.marcpartensky.com/
       crypto key verify {env.JWT_SECRET}
       allow roles authp/admin authp/user
     }
   }
 }
 
-test.marcpartensky.com {
-    redir https://caddyserver.com/docs/caddyfile/patterns
-}
-
 marc.wf {
-    redir https://marcpartensky.com
+    redir https://marcpartensky.com/{uri}
 }
 
 marc.tf {
-    redir https://marcpartensky.com
+    redir https://marcpartensky.com{uri}
 }
 
 # authent.marcpartensky.com {
