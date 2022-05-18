@@ -18,6 +18,7 @@ services:
     labels:
       caddy: mcadmin.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
+      authorize.with: marc
       traefik.enable: "true"
       traefik.http.routers.minecraft.rule: Host(`mcadmin.marcpartensky.com`)
       traefik.http.routers.minecraft.entrypoints: websecure

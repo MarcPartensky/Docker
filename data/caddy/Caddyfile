@@ -1,5 +1,15 @@
 # first caddyfile
 
+{
+  security {
+    authorization policy marc {
+      set auth url https://portal.marcpartensky.com/
+      crypto key verify {env.JWT_SECRET}
+      allow roles authp/admin authp/user
+    }
+  }
+}
+
 test.marcpartensky.com {
     redir https://caddyserver.com/docs/caddyfile/patterns
 }
