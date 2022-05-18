@@ -17,7 +17,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - caddy_data:/data
-      # - ./data/caddy/Caddyfile:/etc/Caddyfile
+      - ./data/caddy/Caddyfile:/etc/Caddyfile
     networks:
       - caddy
     logging:
