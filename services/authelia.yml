@@ -35,6 +35,9 @@ services:
     volumes:
       - ./redis:/data
     networks:
+      - authelia
 
 networks:
   authelia:
+  caddy:
+    external: true
