@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  authelia:
+    image: authelia/authelia
+    restart: unless-stopped
+    expose:
+      - 9091
+    environment:
+      TZ: France/Paris
+    volumes:
+      - ../authelia:/config
+    networks:
+      - authelia
+      - caddy
+    labels:
+      caddy: authelia.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 9091}}"
+      traefik.enable: true
+      traefik.http.routers.authelia.rule: Host(`authelia.marcpartensky.com`)
+      traefik.http.routers.authelia.entrypoints: https
+      traefik.http.routers.authelia.tls: true
+      traefik.http.routers.authelia.tls.certresolver: letsencrypt
+      traefik.http.middlewares.authelia.forwardauth.address: http://authelia:9091/api/verify?rd=https://authelia.example.com  # yamllint disable-line rule:line-length
+      traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: true
+      traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: Remote-User,Remote-Groups,Remote-Name,Remote-Email  # yamllint disable-line rule:line-length
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+      - authelia
+    expose:
+      - 6379
+    environment:
+      TZ: France/Paris
+    volumes:
+      - ./redis:/data
+    networks:
+
+networks:
+  authelia:
