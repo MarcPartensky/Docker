@@ -27,7 +27,6 @@ services:
   redis:
     image: redis:alpine
     restart: unless-stopped
-      - authelia
     expose:
       - 6379
     environment:
