@@ -10,5 +10,6 @@ data/tmate/keys
 data/authelia
 data/mx-puppet-discord
 data/matrix
+data/heimdall
 data.tar.gz
 services/template.yml
