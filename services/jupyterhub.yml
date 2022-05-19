@@ -16,6 +16,11 @@ services:
     labels:
       caddy: jupyterhub.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8000}}"
+      traefik.enable: "true"
+      traefik.http.routers.jupyterhub.rule: Host(`jupyterhub.marcpartensky.com`)
+      traefik.http.routers.jupyterhub.entrypoints: websecure
+      traefik.http.routers.jupyterhub.tls.certresolver: tls
+      traefik.http.services.jupyterhub.loadbalancer.server.port: 3000
 
 networks:
   caddy:
