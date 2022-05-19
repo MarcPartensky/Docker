@@ -17,12 +17,20 @@ services:
 
   vaultwarden:
     image: vaultwarden/server
-    ports:
-      - "8000:80"
     environment:
       ADMIN_TOKEN: admin
       SIGNUPS_ALLOWED: 'false'
       INVITATIONS_ALLOWED: 'true'
+    networks:
+      - caddy
+    labels:
+      caddy: vault.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.gitea.rule: Host(`vault.marcpartensky.com`)
+      traefik.http.routers.gitea.entrypoints: websecure
+      traefik.http.routers.gitea.tls.certresolver: tls
+      traefik.http.services.gitea.loadbalancer.server.port: 80
 
   ldap_admin:
     image: osixia/phpldapadmin
@@ -33,3 +41,7 @@ services:
       PHPLDAPADMIN_LDAP_HOSTS: ldap
     depends_on:
       - ldap
+
+  networks:
+    caddy:
+      external: true
