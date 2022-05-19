@@ -17,7 +17,6 @@ services:
     volumes:
       - gitea_ssh:/data/git/.ssh
       - gitea:/data
-      # - /etc/timezone:/etc/timezone:ro
       # - /etc/localtime:/etc/localtime:ro
     ports:
       - "7012:22"
