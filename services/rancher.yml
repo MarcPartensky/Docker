@@ -12,10 +12,10 @@ services:
       caddy: rancher.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
       traefik.enable: "true"
-      traefik.http.routers.nextcloud.rule: Host(`rancher.marcpartensky.com`)
-      traefik.http.routers.nextcloud.entrypoints: websecure
-      traefik.http.routers.nextcloud.tls.certresolver: tls
-      traefik.http.services.nextcloud.loadbalancer.server.port: 8080
+      traefik.http.routers.rancher.rule: Host(`rancher.marcpartensky.com`)
+      traefik.http.routers.rancher.entrypoints: websecure
+      traefik.http.routers.rancher.tls.certresolver: tls
+      traefik.http.services.rancher.loadbalancer.server.port: 8080
     user: root
     deploy:
       resources:
