@@ -33,7 +33,7 @@ services:
     image: postgres:13-alpine
     restart: unless-stopped
     env_file:
-      - .env
+      - ../data/secrets/peertube.env
     volumes:
       - peertube_postgres:/var/lib/postgresql/data
 
