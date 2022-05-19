@@ -15,10 +15,10 @@ services:
       caddy: lab.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8888}}"
       traefik.enable: "true"
-      traefik.http.routers.notebook.rule: Host(`lab.marcpartensky.com`)
-      traefik.http.routers.notebook.entrypoints: websecure
-      traefik.http.routers.notebook.tls.certresolver: tls
-      traefik.http.services.notebook.loadbalancer.server.port: 8888
+      traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.com`)
+      traefik.http.routers.jupyterlab.entrypoints: websecure
+      traefik.http.routers.jupyterlab.tls.certresolver: tls
+      traefik.http.services.jupyterlab.loadbalancer.server.port: 8888
 # entrypoint: start-notebook.sh \
     #     --NotebookApp.keyfile=key/0000_key-certbot.pem
     #     --NotebookApp.certfile=cert/0000_csr-certbot.pem
