@@ -20,7 +20,7 @@ services:
       traefik.http.routers.authelia.entrypoints: websecure
       traefik.http.routers.authelia.tls: true
       traefik.http.routers.authelia.tls.certresolver: tls
-      traefik.http.middlewares.authelia.forwardauth.address: http://authelia:9091/api/verify?rd=https://authelia.example.com  # yamllint disable-line rule:line-length
+      traefik.http.middlewares.authelia.forwardauth.address: http://authelia:9091/api/verify?rd=https://authelia.marcpartensky.com  # yamllint disable-line rule:line-length
       traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: true
       traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: Remote-User,Remote-Groups,Remote-Name,Remote-Email  # yamllint disable-line rule:line-length
 
