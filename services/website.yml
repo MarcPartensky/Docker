@@ -37,10 +37,10 @@ services:
       caddy.reverse_proxy: "{{upstreams 80}}"
       # caddy.tls: "internal"
       traefik.enable: "true"
-      traefik.http.routers.website.rule: "Host(`marcpartensky.com`)"
-      traefik.http.routers.website.entrypoints: "websecure"
-      traefik.http.routers.website.tls.certresolver: "tls"
-      traefik.http.services.website.loadbalancer.server.port: "80"
+      traefik.http.routers.website.rule: Host(`marcpartensky.com`)
+      traefik.http.routers.website.entrypoints: websecure
+      traefik.http.routers.website.tls.certresolver: tls
+      traefik.http.services.website.loadbalancer.server.port: 80
     deploy:
       # mode: global
       update_config:
@@ -85,6 +85,11 @@ services:
       # caddy.reverse_proxy.header_up.X-Forwarded-For: "{host}"  # redundant
       caddy.basicauth: /* bcrypt
       caddy.basicauth.admin: JDJhJDEyJDVRUXdqQllCR2dCSEZ0ZUlaVUZTRE95WXpROFdUcFdXSm4wVGE2TmE4cEkxNHc5Si4venJxCg==
+      traefik.enable: "true"
+      traefik.http.routers.website.rule: Host(`db.marcpartensky.com`)
+      traefik.http.routers.website.entrypoints: websecure
+      traefik.http.routers.website.tls.certresolver: tls
+      traefik.http.services.website.loadbalancer.server.port: 8081
 
   # postgres_adminer:
   # adminer:
