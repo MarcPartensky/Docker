@@ -8,3 +8,5 @@ services:
       - "5554:5554"
       - "5555:5555"
       - "4723:4723"
+    environment:
+      DEVICE: "Samsung Galaxy S6"
