@@ -1,0 +1,38 @@
+version: "3.9"
+
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      # - "80:80/tcp"
+    environment:
+      TZ: 'Europe/Paris'
+      # WEBPASSWORD: 'set a secure password here or it will be random'
+    # Volumes store your data between container upgrades
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)
+    networks:
+      - caddy
+    labels:
+      caddy: pihole.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.pihole.rule: Host(`pihole.marcpartensky.com`)
+      traefik.http.routers.pihole.entrypoints: websecure
+      traefik.http.routers.pihole.tls.certresolver: tls
+      traefik.http.services.pihole.loadbalancer.server.port: 80
+
+networks:
+  caddy:
+    external: true
