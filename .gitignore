@@ -11,5 +11,6 @@ data/authelia
 data/mx-puppet-discord
 data/matrix
 data/heimdall
+data/pihole/etc-pihole
 data.tar.gz
 services/template.yml
