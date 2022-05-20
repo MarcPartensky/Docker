@@ -35,7 +35,7 @@ services:
       traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.com`)
       traefik.http.routers.authentik.entrypoints: websecure
       traefik.http.routers.authentik.tls.certresolver: tls
-      traefik.http.services.authentik.loadbalancer.server.port: 9001
+      traefik.http.services.authentik.loadbalancer.server.port: 9000
 
   authentik_postgres:
     image: postgres:alpine
