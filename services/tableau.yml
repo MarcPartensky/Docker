@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  tableau:
+    image: pvtmert/tableau
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    # env_file:
+    #   - ../data/secrets/tableau.env
+
+# docker run \
+# -e LICENSE_KEY=<key> \
+# -e TABLEAU_USERNAME=<username> \
+# -e TABLEAU_PASSWORD=<password> \
+# --hostname=<static (internal) name of host machine> \
+# -p 8080:8080 -d <Tableau Server in a Container image ID or tag>
