@@ -1,8 +1,9 @@
 version: "3.9"
 services:
   android:
-    image: budtmo/docker-android-x86-8.1
+    image: budtmo/docker-android-x86-12.0
     restart: unless-stopped
+    privileged: true
     ports:
       - "6080:6080"
       - "5554:5554"
