@@ -12,6 +12,8 @@ services:
       - docker_api
     env_file:
       - ../data/secrets/ia.env
+    deploy:
+      replicas: 1
 
 networks:
   discord:
