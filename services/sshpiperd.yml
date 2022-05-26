@@ -1,0 +1,13 @@
+versions: "3.9"
+
+services:
+  image: farmer1992/sshpiperd
+  restart: unless-stopped
+  ports:
+    - "2222:2222"
+  volumes:
+    - sshpiper:/var/sshpiper
+    # - /etc/ssh/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key
+
+volumes:
+  sshpiper:
