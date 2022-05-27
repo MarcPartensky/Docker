@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  homer:
+    image: b4bz/homer
+    restart: unless-stopped
+    volumes:
+      - homer:/www/assets
+    environment:
+      INIT_ASSETS: 1 # default
+    networks:
+      - caddy
+    labels:
+      caddy: homer.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+
+volumes:
+  homer:
+
+networks:
+  caddy:
