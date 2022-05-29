@@ -82,9 +82,9 @@ services:
       - wing1
       - pterodactyl
     ports:
-      - "8080:8080"
-      - "2022:2022"
-      - "443:443"
+      - "9080:8080"
+      - "9022:2022"
+      - "9443:443"
     tty: true
     environment:
       TZ: "UTC"
