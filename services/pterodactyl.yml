@@ -23,15 +23,14 @@ services:
   pterodactyl_panel:
     image: ghcr.io/pterodactyl/panel:latest
     restart: unless-stopped
-    ports:
-      - "8080:80"
-      - "8443:443"
     links:
       - pterodactyl_mariadb
       - pterodactyl_redis
     volumes:
       - pterodactyl_panel_var:/app/var/
       - pterodactyl_panel_logs:/app/storage/logs
+      - pterodactyl_nginx/:/etc/nginx/http.d
+      - pterodactyl_certs/:/etc/letsencrypt
     env_file:
       - ../data/secrets/pterodactyl.env
     environment:
@@ -76,6 +75,44 @@ services:
     networks:
       - pterodactyl
 
+  pterodactyl_wing_1:
+    image: ghcr.io/pterodactyl/wings:v1.6.1
+    restart: always
+    networks:
+      - wings0
+      - pterodactyl
+    ports:
+      - "8080:8080"
+      - "2022:2022"
+      - "443:443"
+    tty: true
+    environment:
+      TZ: "UTC"
+      WINGS_UID: 988
+      WINGS_GID: 988
+      WINGS_USERNAME: pterodactyl
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers/:/var/lib/docker/containers
+      - pterodactyl_etc:/etc/pterodactyl
+      - pterodactyl_var_lib:/var/lib/pterodactyl
+      - pterodactyl_var_log:/var/log/pterodactyl
+      - /tmp/pterodactyl:/tmp/pterodactyl
+      # - /etc/ssl/certs:/etc/ssl/certs:ro
+      # you may need /srv/daemon-data if you are upgrading from an old daemon
+      #- "/srv/daemon-data/:/srv/daemon-data/"
+      # Required for ssl if you use let's encrypt. uncomment to use.
+      #- "/etc/letsencrypt/:/etc/letsencrypt/"
+    labels:
+      caddy: wing1.pterodactylmarcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+      traefik.enable: "true"
+      traefik.http.routers.pterodactyl_wing_1.rule: Host(`wing1.pterodactyl.marcpartensky.com`)
+      traefik.http.routers.pterodactyl_wing_1.entrypoints: websecure
+      traefik.http.routers.pterodactyl_wing_1.tls.certresolver: tls
+      traefik.http.services.pterodactyl_wing_1.loadbalancer.server.port: 8080
+
+
 volumes:
   pterodactyl_mariadb:
   pterodactyl_panel_var:
@@ -85,3 +122,11 @@ networks:
   pterodactyl:
   caddy:
     external: true
+  wings0:
+    name: wings0
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.21.0.0/16"
+    driver_opts:
+      com.docker.network.bridge.name: wings0
