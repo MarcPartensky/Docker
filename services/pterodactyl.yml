@@ -52,10 +52,10 @@ services:
       caddy: pterodactyl.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
       traefik.enable: "true"
-      traefik.http.routers.gitea.rule: Host(`pterodactyl.marcpartensky.com`)
-      traefik.http.routers.gitea.entrypoints: websecure
-      traefik.http.routers.gitea.tls.certresolver: tls
-      traefik.http.services.gitea.loadbalancer.server.port: 80
+      traefik.http.routers.pterodactyl.rule: Host(`pterodactyl.marcpartensky.com`)
+      traefik.http.routers.pterodactyl.entrypoints: websecure
+      traefik.http.routers.pterodactyl.tls.certresolver: tls
+      traefik.http.services.pterodactyl.loadbalancer.server.port: 80
 
   pterodactyl_mariadb:
     image: mariadb:10.5
@@ -67,10 +67,14 @@ services:
       MYSQL_USER: "pterodactyl"
     env_file:
       - ../data/secrets/pterodactyl.env
+    networks:
+      - pterodactyl
 
   pterodactyl_redis:
     image: redis:alpine
     restart: unless-stopped
+    networks:
+      - pterodactyl
 
 volumes:
   pterodactyl_mariadb:
