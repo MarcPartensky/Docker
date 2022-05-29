@@ -7,6 +7,7 @@ services:
       - pterodactyl_php
     networks:
       - pterodactyl
+      - caddy
     volumes:
       - pterodactyl_env:/var/www/html/env
       - pterodactyl_panel:/var/www/html/pterodactyl
