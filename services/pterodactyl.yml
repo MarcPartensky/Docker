@@ -117,6 +117,9 @@ volumes:
   pterodactyl_mariadb:
   pterodactyl_panel_var:
   pterodactyl_panel_logs:
+  pterodactyl_etc:
+  pterodactyl_var_lib:
+  pterodactyl_var_log:
 
 networks:
   pterodactyl:
