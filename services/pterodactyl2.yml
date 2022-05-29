@@ -33,12 +33,12 @@ services:
     environment:
       MYSQL_DATABASE: pterodactyl
       MYSQL_PASSWORD: pterodactyl
-      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_USER: pterodactyl
     networks:
       - pterodactyl
     volumes:
-      - db:/var/lib/mysql
+      - pterodactyl_db:/var/lib/mysql
 
   redis:
     image: redis:alpine
