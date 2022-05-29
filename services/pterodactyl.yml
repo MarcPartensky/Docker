@@ -37,12 +37,12 @@ services:
     environment:
       <<: [*panel-environment, *mail-environment]
       APP_ENV: production
-      APP_ENVIRONMENT_ONLY: false
+      APP_ENVIRONMENT_ONLY: "false"
       CACHE_DRIVER: redis
       SESSION_DRIVER: redis
       QUEUE_DRIVER: redis
-      REDIS_HOST: cache
-      DB_HOST: mariadb
+      REDIS_HOST: pterodactyl_redis
+      DB_HOST: pterodactyl_mariadb
       DB_PORT: 3306
       DB_USERNAME: pterodactyl
     networks:
