@@ -29,8 +29,8 @@ services:
     volumes:
       - pterodactyl_panel_var:/app/var/
       - pterodactyl_panel_logs:/app/storage/logs
-      - pterodactyl_nginx/:/etc/nginx/http.d
-      - pterodactyl_certs/:/etc/letsencrypt
+      - pterodactyl_panel_nginx:/etc/nginx/http.d
+      - pterodactyl_panel_certs:/etc/letsencrypt
     env_file:
       - ../data/secrets/pterodactyl.env
     environment:
@@ -117,6 +117,8 @@ volumes:
   pterodactyl_mariadb:
   pterodactyl_panel_var:
   pterodactyl_panel_logs:
+  pterodactyl_panel_nginx:
+  pterodactyl_panel_certs:
   pterodactyl_etc:
   pterodactyl_var_lib:
   pterodactyl_var_log:
