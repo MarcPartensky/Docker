@@ -79,7 +79,7 @@ services:
     image: ghcr.io/pterodactyl/wings:v1.6.1
     restart: always
     networks:
-      - wings0
+      - wing1
       - pterodactyl
     ports:
       - "8080:8080"
@@ -125,13 +125,14 @@ volumes:
 
 networks:
   pterodactyl:
+  wing1:
   caddy:
     external: true
-  wings0:
-    name: wings0
-    driver: bridge
-    ipam:
-      config:
-        - subnet: "172.21.0.0/16"
-    driver_opts:
-      com.docker.network.bridge.name: wings0
+  # wings0:
+  #   name: wings0
+  #   driver: bridge
+  #   ipam:
+  #     config:
+  #       - subnet: "172.21.0.0/16"
+  #   driver_opts:
+  #     com.docker.network.bridge.name: wings0
