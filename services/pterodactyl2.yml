@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+  pterodactyl_http:
+    image: marcpartensky/pterodactyl-http
+    restart: unless-stopped
+    depends_on:
+      - pterodactyl_php
+    networks:
+      - pterodactyl
+    volumes:
+      - pterodactyl_env:/var/www/html/env
+      - pterodactyl_panel:/var/www/html/pterodactyl
+      - pterodactyl_storage:/var/www/html/pterodactyl/storage
+    labels:
+      caddy: pterodactyl.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams}}"
+
+  php:
+      image: marcpartensky/pterodactyl-php
+      restart: unless-stopped
+      depends_on:
+        - pterodactyl_db
+      networks:
+        - pterodactyl
+      volumes:
+        - pterodactyl_env:/var/www/html/env
+        - pterodactyl_panel:/var/www/html/pterodactyl
+        - pterodactyl_storage:/var/www/html/pterodactyl/storage
+
+  pterodactyl_db:
+    image: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: pterodactyl
+      MYSQL_PASSWORD: pterodactyl
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_USER: pterodactyl
+    networks:
+      - pterodactyl
+    volumes:
+      - db:/var/lib/mysql
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    networks:
+      - pterodactyl
+
+networks:
+  pterodactyl:
+  caddy:
+    external: true
+
+volumes:
+  pterodactyl_db:
+  pterodactyl_env:
+  pterodactyl_panel:
+  pterodactyl_storage:
