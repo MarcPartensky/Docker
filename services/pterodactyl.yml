@@ -13,9 +13,9 @@ x-common:
     &mail-environment
     MAIL_FROM: "noreply@pterodactyl.marcpartensky.com"
     MAIL_DRIVER: "smtp"
-    MAIL_HOST: "mail"
+    MAIL_HOST: "marcpartensky.com"
     MAIL_PORT: "1025"
-    MAIL_USERNAME: ""
+    MAIL_USERNAME: "marc@marcpartensky.com"
     MAIL_PASSWORD: ""
     MAIL_ENCRYPTION: "true"
 
