@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  ssh_chat:
+    image: marcoslater/ssh-chat:latest
+    restart: unless-stopped
+    ports:
+      - "2022:2022"
+    volumes:
+      ssh_chat_key: /ssh_key
+
+volumes:
+  ssh_chat_key:
