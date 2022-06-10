@@ -25,7 +25,7 @@ services:
       - /srv/minecraft/data:/server
       # - minecraft:/data
     ports:
-      - "25566:25565"
+      - "25564:25565"
     networks:
       - minecraft
 
