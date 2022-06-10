@@ -22,7 +22,7 @@ services:
       # WORLD: $BIND_MOUNTS/minecraft/zip/Server.zip
       # SNOOPER_ENABLED: false
     volumes:
-      - /srv/minecraft/data:/server
+      - /srv/minecraft/server:/data
       # - minecraft:/data
     ports:
       - "25564:25565"
