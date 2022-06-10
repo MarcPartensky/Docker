@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Paris
+      EULA: "TRUE"
+      OPS: MazexRedstone
+      ENABLE_COMMAND_BLOCK: "TRUE"
+      MEMORY: 2G
+      VERSION: 1.16.5
+      ICON: https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
+      MOTD: Made in Marc Partensky
+      ANNOUNCE_PLAYER_ACHIEVEMENTS: "TRUE"
+      LEVEL: Server
+      ONLINE_MODE: "FALSE" # no need for an account
+      DIFFICULTY: hard
+      VIEW_DISTANCE: 32
+      # MAX_PLAYERS: 50
+      # WORLD: $BIND_MOUNTS/minecraft/zip/Server.zip
+      # SNOOPER_ENABLED: false
+    volumes:
+      - /srv/minecraft/data:/server
+      # - minecraft:/data
+    ports:
+      - "25566:25565"
+    networks:
+      - minecraft
+
+# volumes:
+#   minecraft:
+
+networks:
+  minecraft:
