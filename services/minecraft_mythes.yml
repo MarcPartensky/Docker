@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  minecraft:
+  minecraft_mythes:
     image: itzg/minecraft-server
     restart: unless-stopped
     environment:
@@ -10,7 +10,7 @@ services:
       OPS: MazexRedstone
       ENABLE_COMMAND_BLOCK: "TRUE"
       MEMORY: 2G
-      VERSION: 1.16.5
+      VERSION: 1.12
       ICON: https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
       MOTD: Made in Marc Partensky
       ANNOUNCE_PLAYER_ACHIEVEMENTS: "TRUE"
@@ -22,7 +22,7 @@ services:
       # WORLD: $BIND_MOUNTS/minecraft/zip/Server.zip
       # SNOOPER_ENABLED: false
     volumes:
-      - /srv/minecraft/origin:/data
+      - /srv/minecraft/mythes:/data
       # - minecraft:/data
     ports:
       - "25565:25565"
