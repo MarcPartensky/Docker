@@ -11,7 +11,7 @@ services:
       ENABLE_COMMAND_BLOCK: "TRUE"
       MEMORY: 2G
       VERSION: 1.16.5
-      ICON: https://cdn.discordapp.com/attachments/611251401514811392/818288635199225886/server.png
+      ICON: https://media.discordapp.net/attachments/507519157387132940/984995267197677598/unknown.png
       MOTD: Made in Marc Partensky
       ANNOUNCE_PLAYER_ACHIEVEMENTS: "TRUE"
       LEVEL: Server
