@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  minecraft:
+  minecraft_origin:
     image: itzg/minecraft-server
     restart: unless-stopped
     environment:
@@ -22,10 +22,10 @@ services:
       # WORLD: $BIND_MOUNTS/minecraft/zip/Server.zip
       # SNOOPER_ENABLED: false
     volumes:
-      - /srv/minecraft/origin:/data
+      - /srv/minecraft/jungle:/data
       # - minecraft:/data
     ports:
-      - "25565:25565"
+      - "25564:25565"
     networks:
       - minecraft
 
