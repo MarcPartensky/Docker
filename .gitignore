@@ -12,5 +12,6 @@ data/mx-puppet-discord
 data/matrix
 data/heimdall
 data/pihole/etc-pihole
+data/pxe
 data.tar.gz
 services/template.yml
