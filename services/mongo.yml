@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    volumes:
+      - mongo:/data/db
+    networks:
+      - mongo
+    ports:
+      - "27017:27017"
+    env_file:
+      - ../data/secrets/discord_bot_mongo.env
+    # healthcheck:
+    #   test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+
+  mongo_express:
+    image: mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+    env_file:
+      - ../data/secrets/mongo_express.env
+    networks:
+      - mongo
+      - caddy
+    depends_on:
+      - mongo
+    labels:
+      caddy: mongo.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8081}}"
+      traefik.enable: "true"
+      traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
+      traefik.http.routers.mongo.entrypoints: websecure
+      traefik.http.routers.mongo.tls.certresolver: tls
+      traefik.http.services.mongo.loadbalancer.server.port: 80
+
+volumes:
+  mongo:
+
+networks:
+  mongo:
+  caddy:
+    external: true
+    attachable: true
+    driver: overlay
