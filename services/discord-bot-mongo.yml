@@ -15,13 +15,13 @@ services:
     # healthcheck:
     #   test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
 
-  mongo_express:
+  discord_mongo_express:
     image: mongo-express
     restart: unless-stopped
     environment:
       ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
     env_file:
-      - ../data/secrets/mongo_express.env
+      - ../data/secrets/discord_mongo_express.env
     networks:
       - discord
       - caddy
