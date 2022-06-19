@@ -28,7 +28,7 @@ services:
     depends_on:
       - mongo
     labels:
-      caddy: mongo.marcpartensky.com
+      caddy: mongo.marcpartensky.com, mongo.marc.wf, mongo.marc.tf
       caddy.reverse_proxy: "{{upstreams 8081}}"
       traefik.enable: "true"
       traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
