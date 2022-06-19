@@ -11,7 +11,7 @@ services:
     ports:
       - "27017:27017"
     env_file:
-      - ../data/secrets/discord_bot_mongo.env
+      - ../data/secrets/mongo.env
     # healthcheck:
     #   test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
 
