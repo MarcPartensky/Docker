@@ -3,7 +3,7 @@ services:
   arch:
     image: marcpartensky/arch:vnc
     restart: unless-stopped
-    network:
+    networks:
       - caddy
     labels:
       caddy: arch.marcpartensky.com
