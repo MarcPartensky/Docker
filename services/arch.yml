@@ -1,17 +1,18 @@
 version: "3.9"
 services:
-  image: marcpartensky/arch:vnc
-  restart: unless-stopped
-  network:
-    - caddy
-  labels:
-    caddy: arch.marcpartensky.com
-    caddy.reverse_proxy: "{{upstreams 8080}}"
-    traefik.enable: "true"
-    traefik.http.routers.arch.rule: Host(`arch.marcpartensky.com`)
-    traefik.http.routers.arch.entrypoints: websecure
-    traefik.http.routers.arch.tls.certresolver: tls
-    traefik.http.services.arch.loadbalancer.server.port: 8080
+  arch:
+    image: marcpartensky/arch:vnc
+    restart: unless-stopped
+    network:
+      - caddy
+    labels:
+      caddy: arch.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+      traefik.enable: "true"
+      traefik.http.routers.arch.rule: Host(`arch.marcpartensky.com`)
+      traefik.http.routers.arch.entrypoints: websecure
+      traefik.http.routers.arch.tls.certresolver: tls
+      traefik.http.services.arch.loadbalancer.server.port: 8080
 
 networks:
   caddy:
