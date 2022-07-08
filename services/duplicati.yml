@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    restart: unless-stopped
+    ports:
+      - 8200:8200
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/London
+      # CLI_ARGS:  #optional
+    volumes:
+      - duplicati_config:/config
+      - duplicati_backups:/backups
+      - duplicati_source:/source
+
+volumes:
+  duplicati_config:
+  duplicati_backups:
+  duplicati_source:
