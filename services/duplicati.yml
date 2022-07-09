@@ -12,6 +12,8 @@ services:
       - duplicati_config:/config
       - duplicati_backups:/backups
       - duplicati_source:/source
+    networks:
+      - caddy
     labels:
       caddy: duplicati.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8200}}"
@@ -20,3 +22,7 @@ volumes:
   duplicati_config:
   duplicati_backups:
   duplicati_source:
+
+networks:
+  caddy:
+    external: true
