@@ -9,6 +9,7 @@ services:
       TZ: Europe/Paris
       # CLI_ARGS:  #optional
     volumes:
+      - /srv:/srv
       - duplicati_config:/config
       - duplicati_backups:/backups
       - duplicati_source:/source
