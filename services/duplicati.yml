@@ -3,8 +3,6 @@ services:
   duplicati:
     image: lscr.io/linuxserver/duplicati:latest
     restart: unless-stopped
-    ports:
-      - 8200:8200
     environment:
       PUID: 1000
       PGID: 1000
@@ -16,7 +14,7 @@ services:
       - duplicati_source:/source
     labels:
       caddy: duplicati.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 80}}"
+      caddy.reverse_proxy: "{{upstreams 8200}}"
 
 volumes:
   duplicati_config:
