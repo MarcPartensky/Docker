@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  router:
+    image: ${MC_ROUTER_IMAGE:-itzg/mc-router}
+    environment:
+      # enable API
+      API_BINDING: ":25564"
+    ports:
+      - 25565:25565
+      # bind the API port to only loopback to avoid external exposure
+      - 127.0.0.1:25564:25564
+    command: --mapping=champi.marcpartensky.com=champi:25565,jungle.marcpartensky.com=jungle:25565
+    networks:
+      - minecraft
+
+networks:
+  minecraft:
