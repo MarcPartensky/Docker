@@ -32,7 +32,7 @@ The `docker-compose.yml` configuration is compatible with the following reverse-
 - caddy
 - nginx
 
-## Docker-compose
+## Run few services at once
 - Example : run a monero node
 ```sh
 docker-compose -f services/monero-node.yml up -d
