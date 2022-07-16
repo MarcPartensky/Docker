@@ -32,10 +32,38 @@ The `docker-compose.yml` configuration is compatible with the following reverse-
 - caddy
 - nginx
 
-
-## Deploy the stack
+## Docker-compose
+- Example : run a monero node
+```sh
+docker-compose -f services/monero-node.yml up -d
 ```
-docker stack deploy -c vps.yml vps
+
+- Example : run multiple a wordpress website behind a proxy
+```sh
+# create a global network
+docker network create --attachable caddy # add '--driver overlay' for swarm
+# then deploy both services
+docker-compose -f services/caddy.yml -f services/wordpress.yml up -d
+```
+
+## Deploy lots of services at once
+- Select your services by putting those in ./env/vps.txt
+```sh
+nvim ./env/vps.txt
+```
+
+- Generate a ./stack/docker-compose.yml with all merged configurations
+```sh
+./bin/docker-setup.sh merge vps # or make merge
+```
+
+- Deploy
+```sh
+# as a swarm stack
+docker stack deploy -c ./stack/docker-compose.yml vps # or make mswarm
+
+# or using docker-compose
+docker-compose -f ./stacks/docker-compose.yml up -d 
 ```
 
 ### Links
