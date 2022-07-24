@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     networks:
       - caddy
+    volumes:
+      - arch:/home/marc
     labels:
       caddy: arch.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
@@ -13,6 +15,9 @@ services:
       traefik.http.routers.arch.entrypoints: websecure
       traefik.http.routers.arch.tls.certresolver: tls
       traefik.http.services.arch.loadbalancer.server.port: 8080
+
+volumes:
+  arch:
 
 networks:
   caddy:
