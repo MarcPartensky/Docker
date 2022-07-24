@@ -5,8 +5,8 @@ services:
     image: tnwhitwell/sslh
     restart: unless-stopped
     environment:
-      LISTEN_IP: 0.0.0.0
-      LISTEN_PORT: 443
+      # LISTEN_IP: 0.0.0.0
+      # LISTEN_PORT: 443
       SSH_HOST: marcpartensky.com
       SSH_PORT: 22
       # OPENVPN_HOST: localhost
@@ -14,7 +14,7 @@ services:
       HTTPS_HOST: caddy
       HTTPS_PORT: 443
     ports:
-      - "443:443"
+      - "443:8443"
     # command: --tls=caddy:443 --ssh=marcpartensky.com:7022
     networks:
       - caddy
