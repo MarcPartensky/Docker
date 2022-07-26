@@ -9,3 +9,5 @@ services:
     environment:
       EULA: "true"
       VERSION: "1.18"
+      OPS: "000901FA5EE9A31B"
+
