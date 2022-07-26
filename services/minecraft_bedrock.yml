@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     ports:
       - "19132:19132"
+      - "39926:39926"
     environment:
       EULA: "true"
       VERSION: "1.18"
