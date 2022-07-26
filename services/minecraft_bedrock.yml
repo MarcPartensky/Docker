@@ -7,3 +7,4 @@ services:
       - "19132:19132/udp"
     environment:
       EULA: "true"
+      VERSION: "1.18.12"
