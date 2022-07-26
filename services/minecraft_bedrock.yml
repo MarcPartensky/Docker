@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  minecraft_bedrock:
+    image: itzg/minecraft-bedrock-server
+    restart: unless-stopped
+    ports:
+      - "19132:19132/udp"
+    environment:
+      EULA: true
