@@ -4,7 +4,7 @@ services:
     image: itzg/minecraft-bedrock-server
     restart: unless-stopped
     ports:
-      - "19132:19132/udp"
+      - "19132:19132"
     environment:
       EULA: "true"
       VERSION: "1.18"
