@@ -30,9 +30,8 @@ services:
       - rustdesk
 
 volumes:
-  - rustdesk_hbbs
-  - rustdesk_hbbr
+  rustdesk_hbbs:
+  rustdesk_hbbr:
 
-network:
-  - rustdesk
-
+networks:
+  rustdesk:
