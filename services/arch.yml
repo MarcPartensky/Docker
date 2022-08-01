@@ -3,6 +3,8 @@ services:
   arch:
     image: marcpartensky/arch:vnc
     restart: unless-stopped
+    ports: # vnc is shared
+      - "5900:5900"
     networks:
       - caddy
     volumes:
