@@ -21,6 +21,11 @@ services:
       # - bridge
     depends_on:
       - caddy
+    healthcheck:
+      test: ["CMD-SHELL", "curl", "-k", "https://caddy:8443"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   caddy:
