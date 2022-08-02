@@ -17,10 +17,10 @@ services:
       caddy: matrix.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8008}}"
       traefik.enable: "true"
-      traefik.http.routers.nextcloud.rule: Host(`matrix.marcpartensky.com`)
-      traefik.http.routers.nextcloud.entrypoints: websecure
-      traefik.http.routers.nextcloud.tls.certresolver: tls
-      traefik.http.services.nextcloud.loadbalancer.server.port: 8008
+      traefik.http.routers.matrix.rule: Host(`matrix.marcpartensky.com`)
+      traefik.http.routers.matrix.entrypoints: websecure
+      traefik.http.routers.matrix.tls.certresolver: tls
+      traefik.http.services.matrix.loadbalancer.server.port: 8008
 
 networks:
   caddy:

@@ -1143,7 +1143,7 @@ oembed:
 # unless a captcha is answered. Requires a valid ReCaptcha
 # public/private key. Defaults to 'false'.
 #
-#enable_registration_captcha: true
+enable_registration_captcha: true
 
 # The API endpoint to use for verifying m.login.recaptcha responses.
 # Defaults to "https://www.recaptcha.net/recaptcha/api/siteverify".
