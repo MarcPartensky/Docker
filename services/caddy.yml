@@ -19,7 +19,8 @@ services:
       - caddy_data:/data
       - ../data/caddy/Caddyfile:/etc/Caddyfile
     networks:
-      - caddy
+      caddy:
+        ipv4_address: 10.0.0.1
     logging:
       # syslog?
       options:
