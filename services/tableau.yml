@@ -1,12 +1,13 @@
-version: "3.9"
+vrsion: "3.9"
 services:
   tableau:
     image: pvtmert/tableau
     restart: unless-stopped
-    ports:
-      - "8081:8080"
-    # env_file:
-    #   - ../data/secrets/tableau.env
+    env_file:
+      - ../data/secrets/tableau.env
+    labels:
+      caddy: tableau.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8080}}"
 
 # docker run \
 # -e LICENSE_KEY=<key> \
