@@ -33,7 +33,19 @@ services:
       - wordpress_mysql:/var/lib/mysql
     # healthcheck:
     #   test: CMD /bin/sh -c 'mysqladmin ping --user=$MYSQL_USER --password=$MYSQL_PASSWORD'
-
+    #
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/wordpress.env
+    networks:
+      - wordpress
+    ports:
+      - "8880:80"
+    labels:
+      caddy: phpmyadmin.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams}}"
 
 volumes:
   wordpress:
