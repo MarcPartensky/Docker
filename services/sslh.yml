@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   sslh:
-    image: tnwhitwell/sslh
+    image: marcpartensky/sslh
     restart: unless-stopped
     environment:
       # LISTEN_IP: 0.0.0.0
@@ -21,11 +21,12 @@ services:
       # - bridge
     depends_on:
       - caddy
-    # healthcheck:
-    #   test: ["CMD-SHELL", "wget", "--no-check-certificate", "https://caddy:8443"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
+    healthcheck:
+      # test: ["CMD-SHELL", "wget", "--no-check-certificate", "https://caddy:8443"]
+      test: ["CMD-SHELL", "curl", "-k", "https://caddy:443"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   caddy:
