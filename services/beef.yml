@@ -6,10 +6,14 @@ services:
     restart: unless-stopped
     networks:
       - caddy
+    ports:
+      - "6789:6789"
+      - "61985:61985"
+      - "61986:61986"
     volumes:
       - beef:/root/.ms4f
       - /tmp/beef:/tmp/data
-      - ../data/beef/config.yaml:beef/config.yaml
+      - ../data/beef/config.yaml:/beef/config.yaml
     labels:
       caddy: beef.marcpartensky.com"
       caddy.reverse_proxy: "{{upstreams 3000}}"
