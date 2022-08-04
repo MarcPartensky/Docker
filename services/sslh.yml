@@ -23,7 +23,7 @@ services:
       - caddy
     healthcheck:
       # test: ["CMD-SHELL", "wget", "--no-check-certificate", "https://caddy:8443"]
-      test: ["CMD-SHELL", "curl", "-k", "https://caddy:443"]
+      test: ["CMD-SHELL", "curl", "http://caddy"]
       interval: 10s
       timeout: 5s
       retries: 5
