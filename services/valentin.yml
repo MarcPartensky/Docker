@@ -1,9 +1,8 @@
 version: "3.9"
 
 services:
-  website:
+  valentin_website:
     image: valentincolin/website
-    container_name: valentincolin_website
     restart: unless-stopped
     environment:
       PRODUCTION: "True"
