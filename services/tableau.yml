@@ -8,6 +8,8 @@ services:
     labels:
       caddy: tableau.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
+    networks:
+      - caddy
 
 networks:
   caddy:
