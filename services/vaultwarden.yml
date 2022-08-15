@@ -13,7 +13,6 @@ services:
       RUST_BACKTRACE: 1
     depends_on:
       - vaultwarden
-      - ldap
 
   vaultwarden:
     image: vaultwarden/server
