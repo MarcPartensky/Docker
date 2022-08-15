@@ -38,8 +38,6 @@ services:
     environment:
       PHPLDAPADMIN_HTTPS: 'false'
       PHPLDAPADMIN_LDAP_HOSTS: ldap
-    depends_on:
-      - ldap
 
 networks:
   caddy:
