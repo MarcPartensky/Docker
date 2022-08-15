@@ -10,11 +10,11 @@ services:
       caddy.reverse_proxy: "{{upstreams 8080}}"
     networks:
       - caddy
-      traefik.enable: "true"
-      traefik.http.routers.website.rule: Host(`tableau.marcpartensky.com`)
-      traefik.http.routers.website.entrypoints: websecure
-      traefik.http.routers.website.tls.certresolver: tls
-      traefik.http.services.website.loadbalancer.server.port: 80
+    traefik.enable: "true"
+    traefik.http.routers.website.rule: Host(`tableau.marcpartensky.com`)
+    traefik.http.routers.website.entrypoints: websecure
+    traefik.http.routers.website.tls.certresolver: tls
+    traefik.http.services.website.loadbalancer.server.port: 80
 
 networks:
   caddy:
