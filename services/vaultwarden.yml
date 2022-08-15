@@ -42,6 +42,6 @@ services:
     depends_on:
       - ldap
 
-  networks:
-    caddy:
-      external: true
+networks:
+  caddy:
+    external: true
