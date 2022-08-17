@@ -14,7 +14,7 @@ services:
       HTTPS_HOST: caddy
       HTTPS_PORT: 443
     ports:
-      - "443:8443"
+      # - "443:8443"
     # command: --tls=caddy:443 --ssh=marcpartensky.com:7022
     networks:
       - caddy
