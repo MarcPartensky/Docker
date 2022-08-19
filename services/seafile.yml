@@ -4,12 +4,11 @@ services:
     image: ggogel/seafile-server:9.0.7
     volumes:
       - seafile_data:/shared
+    env_file:
+      - ../data/secrets/seafile.env
     environment:
-      - DB_HOST=db
-      - DB_ROOT_PASSWD=db_dev
-      - TIME_ZONE=Europe/Paris
-      - HTTPS=true
-      - SEAFILE_SERVER_HOSTNAME=seafile.marcpartensky.com # Mandatory on first deployment!
+      HTTPS: true
+      SEAFILE_SERVER_HOSTNAME: seafile.marcpartensky.com # Mandatory on first deployment!
     depends_on:
       - seafile_mariadb
       - seafile_memcached
@@ -23,9 +22,8 @@ services:
       - seafile_data:/shared
       - seahub_avatars:/shared/seafile/seahub-data/avatars
       - seahub_custom:/shared/seafile/seahub-data/custom
-    environment:
-      - SEAFILE_ADMIN_EMAIL=marc@marcpartensky.com
-      - SEAFILE_ADMIN_PASSWORD=secret
+    env_file:
+      - ../data/secrets/seafile.env
     depends_on:
       - seafile_server
       - seafile_caddy
@@ -45,9 +43,8 @@ services:
 
   seafile_mariadb:
     image: mariadb:10.7.4
-    environment:
-      - MYSQL_ROOT_PASSWORD=db_dev
-      - MYSQL_LOG_CONSOLE=true
+    env_file:
+      - ../data/secrets/seafile.env
     volumes:
       - seafile_mariadb:/var/lib/mysql
     networks:
