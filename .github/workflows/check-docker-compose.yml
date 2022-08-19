@@ -10,7 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Update apt
+        run: apt update
       - name: Install docker-compose
-        run: apt-get install -y docker-compose
+        run: apt install -y docker-compose
       - name: Check docker-compose files
         run: for file in `find services` ; docker-compose -f $file config > /dev/null done
