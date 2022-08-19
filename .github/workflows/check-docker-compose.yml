@@ -10,6 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Install docker-compose
         run: sudo apt install -y docker-compose
       - name: Check docker-compose files
