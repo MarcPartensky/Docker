@@ -50,7 +50,7 @@ services:
     networks:
       - seafile
 
-  memcached:
+  seafile_memcached:
     image: memcached:1.6.16
     entrypoint: memcached -m 1024
     networks:
