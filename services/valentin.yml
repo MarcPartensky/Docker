@@ -11,6 +11,8 @@ services:
       dockerfile: Dockerfile
     networks:
       - caddy
+    entrypoint: |
+      ./manage.py migrate && /app/entrypoint.sh
     labels:
       caddy: valentin-colin.fr
       caddy.reverse_proxy: "{{upstreams 80}}"
