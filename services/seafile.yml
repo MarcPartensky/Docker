@@ -24,8 +24,8 @@ services:
       - seahub-avatars:/shared/seafile/seahub-data/avatars
       - seahub-custom:/shared/seafile/seahub-data/custom
     environment:
-      - SEAFILE_ADMIN_EMAIL=me@example.com
-      - SEAFILE_ADMIN_PASSWORD=asecret
+      - SEAFILE_ADMIN_EMAIL=marc@marcpartensky.com
+      - SEAFILE_ADMIN_PASSWORD=secret
     depends_on:
       - seafile-server
       - seafile-caddy
