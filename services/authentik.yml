@@ -24,7 +24,6 @@ services:
       - authentik_postgres
       - authentik_redis
       - authentik_worker
-      - caddy
     networks:
       - authentik
       - caddy
