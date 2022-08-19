@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     environment:
       PRODUCTION: "True"
+    env_file:
+      - ../data/secrets/valentin.env
     build:
       context: ./
       dockerfile: Dockerfile
