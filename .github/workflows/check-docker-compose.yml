@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install docker-compose
-        run: sudo apt install -y docker-compose
-      - name: Check docker-compose files
-        run: for file in `find services/*`; do docker-compose -f $file config > /dev/null; done
+        run: sudo apt install -y docker-compose make
+      # - name: Check docker-compose files
+      #   run: for file in `find services/*`; do docker-compose -f $file config > /dev/null; done
+      - name: Setup docker-compose
+        run: make compose
