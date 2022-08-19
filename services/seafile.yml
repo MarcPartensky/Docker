@@ -63,7 +63,6 @@ services:
     image: ggogel/seafile-caddy:1.0.6
     networks:
       - seafile
-    ports:
       - caddy
     labels:
         caddy: seafile.marcpartensky.com
