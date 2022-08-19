@@ -1,21 +1,21 @@
 version: "3.9"
 services:
-  seafile-server:
+  seafile_server:
     image: ggogel/seafile-server:9.0.7
     volumes:
-      - seafile-data:/shared
+      - seafile_data:/shared
     environment:
       - DB_HOST=db
       - DB_ROOT_PASSWD=db_dev
       - TIME_ZONE=Europe/Paris
       - HTTPS=true
-      - SEAFILE_SERVER_HOSTNAME=seafile.mydomain.com # Mandatory on first deployment!
+      - SEAFILE_SERVER_HOSTNAME=seafile.marcpartensky.com # Mandatory on first deployment!
     depends_on:
-      - db
-      - memcached
-      - seafile-caddy
+      - seafile_mariadb
+      - seafile_memcached
+      - seafile_caddy
     networks:
-      - seafile-net
+      - seafile
 
   seahub:
     image: ggogel/seahub:9.0.7
@@ -27,55 +27,56 @@ services:
       - SEAFILE_ADMIN_EMAIL=marc@marcpartensky.com
       - SEAFILE_ADMIN_PASSWORD=secret
     depends_on:
-      - seafile-server
-      - seafile-caddy
-      - seahub-media
+      - seafile_server
+      - seafile_caddy
+      - seahub_media
     networks:
-      - seafile-net
+      - seafile
 
-  seahub-media:
+  seahub_media:
     image: ggogel/seahub-media:9.0.7
     volumes:
      - seahub-avatars:/usr/share/caddy/media/avatars
      - seahub-custom:/usr/share/caddy/media/custom
     depends_on:
-      - seafile-caddy
+      - seafile_caddy
     networks:
-      - seafile-net
+      - seafile
 
-  db:
+  seafile_mariadb:
     image: mariadb:10.7.4
     environment:
       - MYSQL_ROOT_PASSWORD=db_dev
       - MYSQL_LOG_CONSOLE=true
     volumes:
-      - seafile-mariadb:/var/lib/mysql
+      - seafile_mariadb:/var/lib/mysql
     networks:
-      - seafile-net
+      - seafile
 
   memcached:
     image: memcached:1.6.16
     entrypoint: memcached -m 1024
     networks:
-      - seafile-net
+      - seafile
 
   seafile-caddy:
     image: ggogel/seafile-caddy:1.0.6
     networks:
-      - seafile-net
+      - seafile
+    ports:
       - caddy
     labels:
         caddy: seafile.marcpartensky.com
         caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
-  seafile-net:
+  seafile:
     internal: true
   caddy:
     external: true
 
 volumes:
-  seafile-data:
-  seafile-mariadb:
-  seahub-avatars:
-  seahub-custom:
+  seafile_data:
+  seafile_mariadb:
+  seahub_avatars:
+  seahub_custom:
