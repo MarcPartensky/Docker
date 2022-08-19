@@ -1,0 +1,16 @@
+name: Check docker compose files
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install docker-compose
+        run: apt-get install -y docker-compose
+      - name: Check docker-compose files
+        run: for file in `find services` ; docker-compose -f $file config > /dev/null done
