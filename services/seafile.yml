@@ -7,7 +7,7 @@ services:
     env_file:
       - ../data/secrets/seafile.env
     environment:
-      HTTPS: true
+      HTTPS: "true"
       SEAFILE_SERVER_HOSTNAME: seafile.marcpartensky.com # Mandatory on first deployment!
     depends_on:
       - seafile_mariadb
