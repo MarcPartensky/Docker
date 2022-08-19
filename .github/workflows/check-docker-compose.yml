@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install docker-compose
+      - name: Install make and docker-compose
         run: sudo apt install -y docker-compose make
       # - name: Check docker-compose files
       #   run: for file in `find services/*`; do docker-compose -f $file config > /dev/null; done
