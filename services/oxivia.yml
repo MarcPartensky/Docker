@@ -14,7 +14,7 @@ services:
       - caddy
       - oxivia
     depends_on:
-      - oxivia_mysql
+      #   - oxivia_mysql
       - caddy
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost:80"]
