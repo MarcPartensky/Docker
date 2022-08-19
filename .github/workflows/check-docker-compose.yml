@@ -13,4 +13,4 @@ jobs:
       - name: Install docker-compose
         run: sudo apt install -y docker-compose
       - name: Check docker-compose files
-        run: for file in `find services` ; docker-compose -f $file config > /dev/null done
+        run: for file in `find services`; do docker-compose -f $file config > /dev/null; done
