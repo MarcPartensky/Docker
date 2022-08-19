@@ -62,8 +62,8 @@ services:
       - seafile
       - caddy
     labels:
-        caddy: seafile.marcpartensky.com
-        caddy.reverse_proxy: "{{upstreams 80}}"
+      caddy: seafile.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
   seafile:
