@@ -1,47 +1,78 @@
 version: "3.9"
-
 services:
+  seafile_server:
+    image: ggogel/seafile-server:9.0.7
+    volumes:
+      - seafile_data:/shared
+    env_file:
+      - ../data/secrets/seafile.env
+    environment:
+      HTTPS: "true"
+      SEAFILE_SERVER_HOSTNAME: seafile.marcpartensky.com # Mandatory on first deployment!
+    depends_on:
+      - seafile_mariadb
+      - seafile_memcached
+      - seafile_caddy
+    networks:
+      - seafile
+
+  seahub:
+    image: ggogel/seahub:9.0.7
+    volumes:
+      - seafile_data:/shared
+      - seahub_avatars:/shared/seafile/seahub-data/avatars
+      - seahub_custom:/shared/seafile/seahub-data/custom
+    env_file:
+      - ../data/secrets/seafile.env
+    depends_on:
+      - seafile_server
+      - seafile_caddy
+      - seahub_media
+    networks:
+      - seafile
+
+  seahub_media:
+    image: ggogel/seahub-media:9.0.7
+    volumes:
+     - seahub_avatars:/usr/share/caddy/media/avatars
+     - seahub_custom:/usr/share/caddy/media/custom
+    depends_on:
+      - seafile_caddy
+    networks:
+      - seafile
+
   seafile_mariadb:
-    image: mariadb:10.5
+    image: mariadb:10.7.4
     env_file:
       - ../data/secrets/seafile.env
     volumes:
-      - seafile_mysql:/var/lib/mysql
+      - seafile_mariadb:/var/lib/mysql
     networks:
       - seafile
 
   seafile_memcached:
-    image: memcached:1.5.6
-    entrypoint: memcached -m 256
+    image: memcached:1.6.16
+    entrypoint: memcached -m 1024
     networks:
       - seafile
 
-  seafile:
-    image: seafileltd/seafile-mc:latest
-    volumes:
-      - seafile:/shared
-    env_file:
-      - ../data/secrets/seafile.env
-    depends_on:
-      - seafile_mariadb
-      - seafile_memcached
+  seafile_caddy:
+    image: ggogel/seafile-caddy:1.0.6
     networks:
       - seafile
       - caddy
     labels:
       caddy: seafile.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams http 80}}"
-      traefik.enable: "true"
-      traefik.http.routers.seafile.rule: Host(`seafile.marcpartensky.com`)
-      traefik.http.routers.seafile.entrypoints: websecure
-      traefik.http.routers.seafile.tls.certresolver: tls
-      traefik.http.services.seafile.loadbalancer.server.port: 80
-
-volumes:
-  seafile:
-  seafile_mysql:
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
   seafile:
+    internal: true
   caddy:
     external: true
+
+volumes:
+  seafile_data:
+  seafile_mariadb:
+  seahub_avatars:
+  seahub_custom:
