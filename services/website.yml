@@ -13,7 +13,6 @@ services:
       # SECURE_SSL_REDIRECT: false
       # KEY: /app/privkey.pem
       # CERT: /app/fullchain.pem
-    working_dir: /app
     entrypoint: >
       sh -c "./manage.py migrate;
              ./manage.py collectstatic --noinput;
