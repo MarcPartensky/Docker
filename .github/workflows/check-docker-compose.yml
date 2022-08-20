@@ -8,6 +8,8 @@ on:
       - v*
 jobs:
   build:
+    env:
+      BIND_MOUNTS: "/srv"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,7 +17,10 @@ jobs:
         run: sudo apt install -y docker-compose make
       # - name: Check docker-compose files
       #   run: for file in `find services/*`; do docker-compose -f $file config > /dev/null; done
+      - name: Clone validator
+        run: git clone https://github.com/serviceprototypinglab/dcvalidator /opt/validator
       - name: Merge to docker-compose.yml
         run: make merge
       - name: Validate docker-compose.yml
-        run: docker-compose -f stacks/docker-compose.yml config
+        # run: docker-compose -f stacks/docker-compose.yml config
+        run: /opt/validator/validator-cli.py -f stacks/docker-compose.yml
