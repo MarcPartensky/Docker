@@ -19,6 +19,8 @@ services:
       traefik.http.routers.heimdall.rule: Host(`heimdall.marcpartensky.com`)
       traefik.http.routers.heimdall.entrypoints: websecure
       traefik.http.routers.heimdall.tls: "true"
+      traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.source: marcpartensky.com
+      traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.baseDN: dc=marcpartensky,dc=com
       # traefik.http.services.heimdall.loadbalancer.server.port: 80
       # traefik.http.routers.heimdall.middlewares: authelia-basic@docker
 
