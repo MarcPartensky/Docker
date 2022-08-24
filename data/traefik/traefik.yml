@@ -3,3 +3,6 @@ authSources:
     ldap:
       url: ldaps://ldap:636
       startTLS: true
+      insecureSkipVerify: true
+      bindDN: cn=admin,dc=marcpartensky,dc=com
+      bindPassword: mypassword
