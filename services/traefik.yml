@@ -30,7 +30,8 @@ services:
     networks:
       - caddy
     volumes:
-      - ../data/traefik/letsencrypt:/letsencrypt
+      - traefik_letsencrypt:/letsencrypt
+      - ../data/traefik/traefik.yml:/root/.config/traefik.yml
       # - ./data/traefik/dynamic.yaml:/dynamic.yaml
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
@@ -46,6 +47,9 @@ services:
       # traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       # traefik.http.routers.redirs.middlewares: redirect-to-https
       # traefik.http.routers.redirs.rule: hostregexp(`{host:.+}`)
+
+volumes:
+  traefik_letsencrypt:
 
 networks:
   caddy:

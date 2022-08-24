@@ -2,7 +2,6 @@ docker-compose.yml
 data/openvpn
 data/secrets
 data/certbot
-data/traefik
 data/searx
 data/jenkins
 data/beef
