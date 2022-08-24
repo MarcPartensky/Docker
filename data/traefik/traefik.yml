@@ -1,0 +1,5 @@
+authSources:
+  ldapSource:
+    ldap:
+      url: ldaps://ldap:636
+      startTLS: true
