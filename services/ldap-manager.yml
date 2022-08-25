@@ -31,5 +31,6 @@ services:
 
 networks:
   ldap:
+    external: true
   caddy:
     external: true

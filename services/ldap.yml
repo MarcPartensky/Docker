@@ -26,3 +26,4 @@ volumes:
 
 networks:
   ldap:
+    external: true
