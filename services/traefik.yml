@@ -3,6 +3,8 @@ version: "3.9"
 services:
   traefik:
     image: traefik
+    env_file:
+      - ../data/secrets/traefik.env
     restart: unless-stopped
     command:
       ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
