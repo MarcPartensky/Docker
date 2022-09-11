@@ -33,8 +33,8 @@ services:
       - caddy
     volumes:
       - traefik_letsencrypt:/letsencrypt
-      - ../data/traefik/traefik.yml:traefik.yml # no configuration file
-      - ../data/traefik/dynamic.yml:dynamic.yml
+      - ../data/traefik/traefik.yml:/traefik.yml # static configuration
+      - ../data/traefik/dynamic.yml:/dynamic.yml
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       # traefik.log.level: DEBUG
