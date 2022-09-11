@@ -49,6 +49,10 @@ services:
       # traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       # traefik.http.routers.redirs.middlewares: redirect-to-https
       # traefik.http.routers.redirs.rule: hostregexp(`{host:.+}`)
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 
 volumes:
   traefik_letsencrypt:
