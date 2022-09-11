@@ -3,8 +3,8 @@ version: "3.9"
 services:
   traefik:
     image: traefik
-    env_file:
-      - ../data/secrets/traefik.env
+    # env_file:
+    #   - ../data/secrets/traefik.env
     restart: unless-stopped
     # command:
     #   ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
@@ -33,19 +33,20 @@ services:
       - caddy
     volumes:
       - traefik_letsencrypt:/letsencrypt
-      # - ../data/traefik/traefik.yml:/root/.config/traefik.yml # no configuration file
-      # - ./data/traefik/dynamic.yaml:/dynamic.yaml
+      - ../data/traefik/traefik.yml:traefik.yml # no configuration file
+      - ../data/traefik/dynamic.yml:dynamic.yml
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
+      # traefik.log.level: DEBUG
       traefik.enable: "true"
       traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.tls.certresolver: tls
       traefik.docker.network: caddy
-      traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.source: marcpartensky.com
-      traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.baseDN: dc=marcpartensky,dc=com
-      # traefik.http.routers.redirs.entrypoints: web
+        # traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.source: marcpartensky.com
+        # traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.baseDN: dc=marcpartensky,dc=com
+        # # traefik.http.routers.redirs.entrypoints: web
       # traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       # traefik.http.routers.redirs.middlewares: redirect-to-https
       # traefik.http.routers.redirs.rule: hostregexp(`{host:.+}`)

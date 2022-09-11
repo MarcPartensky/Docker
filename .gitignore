@@ -10,7 +10,7 @@ data/authelia
 data/mx-puppet-discord
 data/matrix
 data/heimdall
-data/traefik/static.yml
+data/traefik
 data/pihole/etc-pihole
 data/pxe
 data.tar.gz
