@@ -80,10 +80,10 @@ services:
       caddy.basicauth: /* bcrypt
       caddy.basicauth.admin: JDJhJDEyJDVRUXdqQllCR2dCSEZ0ZUlaVUZTRE95WXpROFdUcFdXSm4wVGE2TmE4cEkxNHc5Si4venJxCg==
       traefik.enable: "true"
-      traefik.http.routers.website.rule: Host(`db.marcpartensky.com`)
-      traefik.http.routers.website.entrypoints: websecure
-      traefik.http.routers.website.tls.certresolver: tls
-      traefik.http.services.website.loadbalancer.server.port: 8081
+      traefik.http.routers.pgweb.rule: Host(`db.marcpartensky.com`)
+      traefik.http.routers.pgweb.entrypoints: websecure
+      traefik.http.routers.pgweb.tls.certresolver: tls
+      traefik.http.services.pgweb.loadbalancer.server.port: 8081
 
   # postgres_adminer:
   # adminer:
