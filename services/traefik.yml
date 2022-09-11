@@ -6,26 +6,26 @@ services:
     env_file:
       - ../data/secrets/traefik.env
     restart: unless-stopped
-    command:
-      ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
-      # - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
-      - --providers.file.filename=/dynamic.yaml # <== Referring to a dynamic configuration file
-      # - --providers.docker.network=web # <== Operate on the docker network named web
-      - --providers.docker=true # <== Enabling docker as the provider for traefik
-      ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
-      - --api.insecure=false # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
-      - --api.dashboard=true
-      - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
-      ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --certificatesresolvers.tls.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
-      - --certificatesresolvers.tls.acme.email=marc.partensky@gmail.com
-      - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json # Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
-      - --log.level=DEBUG # <== Setting the level of the logs from traefik
-      - --entrypoints.web.http.redirections.entryPoint.to=websecure
-      - --entrypoints.web.http.redirections.entryPoint.scheme=https
-      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+    # command:
+    #   ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
+    #   # - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
+    #   - --providers.file.filename=/dynamic.yaml # <== Referring to a dynamic configuration file
+    #   # - --providers.docker.network=web # <== Operate on the docker network named web
+    #   - --providers.docker=true # <== Enabling docker as the provider for traefik
+    #   ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
+    #   - --api.insecure=false # <== Enabling insecure api, NOT RECOMMENDED FOR PRODUCTION
+    #   - --api.dashboard=true
+    #   - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
+    #   ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
+    #   - --entrypoints.web.address=:80
+    #   - --entrypoints.websecure.address=:443
+    #   - --certificatesresolvers.tls.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
+    #   - --certificatesresolvers.tls.acme.email=marc.partensky@gmail.com
+    #   - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json # Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
+    #   - --log.level=DEBUG # <== Setting the level of the logs from traefik
+    #   - --entrypoints.web.http.redirections.entryPoint.to=websecure
+    #   - --entrypoints.web.http.redirections.entryPoint.scheme=https
+    #   - --entrypoints.web.http.redirections.entrypoint.permanent=true
     ports:
       - "80:80"
       - "443:443"
