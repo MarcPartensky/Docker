@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  libreswan:
+    image: ibotty/ipsec-libreswan
+    restart: unless-stopped
+    privileged: true
+    environment:
+      HOST: /host
+      IMAGE: ipsec-libreswan
+      NAME: libreswan
+    entrypoint: /bin/sh
+    command: /bin/install.sh
+    volumes:
+      - libreswan:/host
+volumes:
+  libreswan:
