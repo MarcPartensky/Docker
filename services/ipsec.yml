@@ -7,5 +7,8 @@ services:
     - "500:500/udp"
     - "4500:4500/udp"
   volumes:
-    - ikev2-vpn-data:/etc/ipsec.d
+    - ikev2-vpn:/etc/ipsec.d
     - /lib/modules:/lib/modules:ro
+
+volumes:
+  ikev2-vpn:
