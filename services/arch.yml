@@ -18,6 +18,15 @@ services:
       traefik.http.routers.arch.entrypoints: websecure
       traefik.http.routers.arch.tls.certresolver: tls
       traefik.http.services.arch.loadbalancer.server.port: 8080
+      # ldapAuth Register Middleware ====================================================
+      traefik.http.routers.arch.middlewares: ldap_auth
+      # ldapAuth Options=================================================================
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: DEBUG
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldap://ldap.marcpartensky.com
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: dc=marcpartensky,dc=com
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
 
 volumes:
   arch:

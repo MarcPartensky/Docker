@@ -23,6 +23,14 @@ services:
       traefik.http.routers.duplicati.entrypoints: websecure
       traefik.http.routers.duplicati.tls.certresolver: tls
       traefik.http.services.duplicati.loadbalancer.server.port: 8200
+    # ldapAuth Options=================================================================
+      traefik.http.routers.duplicati.middlewares: ldap_auth
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: DEBUG
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldap://ldap.marcpartensky.com
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 389
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: dc=marcpartensky,dc=com
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
 
 volumes:
   duplicati_config:
