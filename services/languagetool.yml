@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  languagetool:
+    image: erikvl87/languagetool
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: languagetoo.marcpartensky.com
+      caddy.reverse_proxy: "{{ upstreams 8010 }}"
+
+networks:
+  caddy:
+    external: true
