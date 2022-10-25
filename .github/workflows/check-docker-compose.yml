@@ -23,4 +23,5 @@ jobs:
         run: make merge
       - name: Validate docker-compose.yml
         # run: docker-compose -f stacks/docker-compose.yml config
-        run: /opt/validator/validator-cli.py -f stacks/docker-compose.yml
+        # run: /opt/validator/validator-cli.py -f stacks/docker-compose.yml
+        run: docker-compose -f stacks/docker-compose.yml
