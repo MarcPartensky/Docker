@@ -22,6 +22,7 @@
 - https://seafile.marcpartensky.com
 - https://mail.marcpartensky.com
 - https://arch.marcpartensky.com
+- https://matrix.marcpartensky.com
 <!-- - https://dns.marcpartensky.com -->
 <!-- - https://glou.marcpartensky.com -->
 <!-- - https://minecraft.marcpartensky.com -->
