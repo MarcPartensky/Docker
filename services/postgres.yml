@@ -50,6 +50,8 @@ services:
     networks:
       - postgres
       - caddy
+    volumes:
+      - /srv/postgres:/usr/local/
     labels:
       caddy: pgadmin.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
