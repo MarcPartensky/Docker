@@ -53,6 +53,7 @@ services:
     image: postgres
     restart: unless-stopped
     volumes:
+      - ../data/postgres:/docker-entrypoint-initdb.d
       - postgres:/var/lib/postgresql/data
     env_file:
       - ../data/secrets/postgres.env
