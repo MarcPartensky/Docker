@@ -49,50 +49,6 @@ services:
           cpus: "1"
           memory: "500M"
 
-  postgres:
-    image: postgres
-    restart: unless-stopped
-    volumes:
-      - ../data/postgres:/docker-entrypoint-initdb.d
-      - postgres:/var/lib/postgresql/data
-    env_file:
-      - ../data/secrets/postgres.env
-    networks:
-      - website
-
-  pgweb:
-    image: sosedoff/pgweb
-    restart: unless-stopped
-    env_file:
-        - ../data/secrets/postgres.env
-    networks:
-      - website
-      - caddy
-    depends_on:
-      - postgres
-    healthcheck:
-      test: ["CMD", "wget", "-q", "localhost:8081", "-O", "/dev/null"]
-    labels:
-      caddy: db.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 8081}}"
-      # caddy.reverse_proxy.header_up.Host: "{upstream_hostport}" # redundant
-      # caddy.reverse_proxy.header_up.X-Real-IP: "{host}"
-      # caddy.reverse_proxy.header_up.X-Forwarded-For: "{host}"  # redundant
-      caddy.basicauth: /* bcrypt
-      caddy.basicauth.admin: JDJhJDEyJDVRUXdqQllCR2dCSEZ0ZUlaVUZTRE95WXpROFdUcFdXSm4wVGE2TmE4cEkxNHc5Si4venJxCg==
-      traefik.enable: "true"
-      traefik.http.routers.pgweb.rule: Host(`db.marcpartensky.com`)
-      traefik.http.routers.pgweb.entrypoints: websecure
-      traefik.http.routers.pgweb.tls.certresolver: tls
-      traefik.http.services.pgweb.loadbalancer.server.port: 8081
-
-  # postgres_adminer:
-  # adminer:
-  #   image: adminer
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8080:8080
-
   redis:
     image: redis:alpine
     restart: unless-stopped

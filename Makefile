@@ -12,5 +12,7 @@ export:
 	tar cvzf data.tgz data
 	gpg --encrypt --recipient 'marc.partensky@gmail.com' data.tgz
 	rm data.tgz
-network:
+networks:
 	docker network create --driver overlay --attachable caddy
+	docker network create --driver overlay --attachable ldap
+	docker network create --driver overlay --attachable postgres
