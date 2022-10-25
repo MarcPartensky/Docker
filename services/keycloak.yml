@@ -6,7 +6,7 @@ services:
       - ../data/secrets/keycloak.env
     networks:
       - caddy
-    command: start-prod
+    # command: start-dev
     labels:
       caddy: keycloak.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
