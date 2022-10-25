@@ -43,6 +43,10 @@ services:
     restart: unless-stopped
     env_file:
       - ../data/secrets/pgadmin.env
+    environment:
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: True
+      PGADMIN_CONFIG_LOGIN_BANNER: "Autorisation requise"
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 10
     networks:
       - postgres
     labels:
