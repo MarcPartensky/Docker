@@ -44,11 +44,12 @@ services:
     env_file:
       - ../data/secrets/pgadmin.env
     environment:
-      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: True
-      PGADMIN_CONFIG_LOGIN_BANNER: "Autorisation requise"
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
+      # PGADMIN_CONFIG_LOGIN_BANNER: "Authorised users only!"
       PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 10
     networks:
       - postgres
+      - caddy
     labels:
       caddy: pgadmin.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
