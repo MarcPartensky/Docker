@@ -2,19 +2,19 @@ version: "3.9"
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:19.0.3
-    entrypoint: start-dev
-  env_file:
-    - ../data/secrets/keycloak.env
-  networks:
-    - caddy
-  labels:
-    caddy: keycloak.marcpartensky.com
-    caddy.reverse_proxy: "{{upstreams 8080}}"
-    traefik.enable: "true"
-    traefik.http.routers.keycloak.rule: Host(`keycloak.marcpartensky.com`)
-    traefik.http.routers.keycloak.entrypoints: websecure
-    traefik.http.routers.keycloak.tls.certresolver: tls
-    traefik.http.services.keycloak.loadbalancer.server.port: 8080
+    env_file:
+      - ../data/secrets/keycloak.env
+    networks:
+      - caddy
+    command: start-prod
+    labels:
+      caddy: keycloak.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+      traefik.enable: "true"
+      traefik.http.routers.keycloak.rule: Host(`keycloak.marcpartensky.com`)
+      traefik.http.routers.keycloak.entrypoints: websecure
+      traefik.http.routers.keycloak.tls.certresolver: tls
+      traefik.http.services.keycloak.loadbalancer.server.port: 8080
 
 networks:
   caddy:
