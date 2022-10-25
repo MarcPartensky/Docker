@@ -60,7 +60,6 @@ services:
 
 volumes:
   website_media:
-  postgres:
 
 networks:
   website:
