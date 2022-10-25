@@ -8,6 +8,8 @@ services:
     #   SYNAPSE_REPORT_STATS: "no"
     #   SYNAPSE_SERVER_NAME: matrix.marcpartensky.com
     #   SYNAPSE_ENABLE_REGISTRATION: "true"
+    environment:
+      SYNAPSE_CONFIG_DIR: /data/homeserver.yml
     volumes:
       - ../data/matrix:/data
       # - matrix:/data
