@@ -24,6 +24,7 @@ services:
     volumes:
       - website_media:/app/media
     networks:
+      - postgres
       - website
       - caddy
     labels:
