@@ -13,5 +13,6 @@ data/heimdall
 data/traefik
 data/pihole/etc-pihole
 data/pxe
+data/postgres
 data.tar.gz
 services/template.yml
