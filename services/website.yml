@@ -63,5 +63,7 @@ volumes:
 
 networks:
   website:
+  postgres:
+    external: true
   caddy:
     external: true
