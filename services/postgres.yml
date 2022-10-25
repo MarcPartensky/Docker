@@ -1,5 +1,5 @@
 version: "3.9"
-
+services:
   postgres:
     image: postgres
     restart: unless-stopped
@@ -9,7 +9,7 @@ version: "3.9"
     env_file:
       - ../data/secrets/postgres.env
     networks:
-      - website
+      - postgres
 
   pgweb:
     image: sosedoff/pgweb
@@ -17,7 +17,7 @@ version: "3.9"
     env_file:
         - ../data/secrets/postgres.env
     networks:
-      - website
+      - postgres
       - caddy
     depends_on:
       - postgres
