@@ -7,7 +7,7 @@ services:
     networks:
       - caddy
     # command: start-dev
-    command: start
+    command: start --optimized
     labels:
       caddy: keycloak.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
