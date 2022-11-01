@@ -3,6 +3,7 @@ services:
   db:
     image: mariadb:10.5
     container_name: seafile_mariadb
+    restart: unless-stopped
     env_file:
       - ../data/secrets/seafile.env
     volumes:
@@ -13,6 +14,7 @@ services:
   memcached:
     image: memcached:1.6
     container_name: seafile-memcached
+    restart: unless-stopped
     entrypoint: memcached -m 256
     networks:
       - seafile
@@ -20,6 +22,7 @@ services:
   elasticsearch:
     image: elasticsearch:7.16.2
     container_name: seafile-elasticsearch
+    restart: unless-stopped
     environment:
       discovery.type: single-node
       bootstrap.memory_lock: true
@@ -37,6 +40,7 @@ services:
   seafile:
     image: docker.seadrive.org/seafileltd/seafile-pro-mc:latest
     container_name: seafile
+    restart: unless-stopped
     # ports:
       # - "80:80"
 #     - "443:443"  # If https is enabled, cancel the comment.
