@@ -14,6 +14,7 @@ services:
       - ../data/secrets/nextcloud.env
     networks:
       - caddy
+      - postgres
       - nextcloud
         # depends_on:
         #   - nextcloud_mariadb
@@ -32,4 +33,6 @@ volumes:
 networks:
   nextcloud:
   caddy:
+    external: true
+  postgres:
     external: true
