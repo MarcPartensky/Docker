@@ -38,7 +38,7 @@ services:
   seafile:
     image: docker.seadrive.org/seafileltd/seafile-pro-mc:latest
     container_name: seafile
-    ports:
+    # ports:
       # - "80:80"
 #     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
