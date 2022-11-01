@@ -6,16 +6,16 @@ services:
     env_file:
       - ../data/secrets/seafile.env
     volumes:
-      - /opt/seafile-mysql/db:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
+      - seafile_mariadb:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
     networks:
-      - seafile-net
+      - seafile
 
   memcached:
     image: memcached:1.6
     container_name: seafile-memcached
     entrypoint: memcached -m 256
     networks:
-      - seafile-net
+      - seafile
 
   elasticsearch:
     image: elasticsearch:7.16.2
@@ -30,9 +30,9 @@ services:
         hard: -1
     mem_limit: 2g
     volumes:
-      - /opt/seafile-elasticsearch/data:/usr/share/elasticsearch/data  # Requested, specifies the path to Elasticsearch data persistent store.
+      - seafile_elasticsearch:/usr/share/elasticsearch/data  # Requested, specifies the path to Elasticsearch data persistent store.
     networks:
-      - seafile-net
+      - seafile
 
   seafile:
     image: docker.seadrive.org/seafileltd/seafile-pro-mc:latest
@@ -42,7 +42,7 @@ services:
 #     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
       - seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
-      - ../data/seafile:/opt/seafile/conf
+      # - ../data/seafile:/opt/seafile/conf
     env_file:
       - ../data/secrets/seafile.env
     depends_on:
@@ -50,7 +50,7 @@ services:
       - memcached
       - elasticsearch
     networks:
-      - seafile-net
+      - seafile
       - caddy
     labels:
       caddy: seafile.marcpartensky.com
@@ -58,8 +58,10 @@ services:
 
 volumes:
   seafile:
+  seafile_mariadb:
+  seafile_elasticsearch:
 
 networks:
-  seafile-net:
+  seafile:
   caddy:
     external: true
