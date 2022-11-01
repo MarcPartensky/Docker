@@ -2,10 +2,9 @@ version: "3.9"
 services:
   db:
     image: mariadb:10.5
-    container_name: seafile-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: db_dev  # Requested, set the root's password of MySQL service.
-      MYSQL_LOG_CONSOLE: true
+    container_name: seafile_mariadb
+    env_file:
+      - ../data/secrets/seafile.env
     volumes:
       - /opt/seafile-mysql/db:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
     networks:
@@ -43,14 +42,8 @@ services:
 #     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
       - /opt/seafile-data:/shared   # Requested, specifies the path to Seafile data persistent store.
-    environment:
-      DB_HOST: db
-      DB_ROOT_PASSWD: db_dev  # Requested, the value should be root's password of MySQL service.
-      TIME_ZONE: Europe/Paris # Optional, default is UTC. Should be uncomment and set to your local time zone.
-      SEAFILE_ADMIN_EMAIL: marc@marcpartensky.com
-      SEAFILE_ADMIN_PASSWORD: asecret     # Specifies Seafile admin password, default is 'asecret'
-      SEAFILE_SERVER_LETSENCRYPT: false   # Whether to use https or not
-      SEAFILE_SERVER_HOSTNAME: seafile.marcpartensky.com # Specifies your host name if https is enabled
+    env_file:
+      - ../data/secrets/seafile.env
     depends_on:
       - db
       - memcached
