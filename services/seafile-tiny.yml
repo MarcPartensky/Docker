@@ -44,9 +44,19 @@ services:
     # ports:
       # - "80:80"
 #     - "443:443"  # If https is enabled, cancel the comment.
+    # environment:
+    #   SEAFILE_BOOTSTRAP: true
     volumes:
-      - seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
-      # - ../data/seafile:/opt/seafile/conf
+      - /srv/seafile:/shared/seafile
+      # - seafile:/shared/seafile/seafile-data
+      # - seahub:/shared/seafile/seahub-data
+      # - ../data/seafile:/shared/seafile/conf
+      # - ../data/seafile/ccnet.conf:/shared/seafile/conf/ccnet.conf
+      # - ../data/seafile/gunicorn.conf.py:/opt/seafile/conf/gunicorn.conf.py
+      # - ../data/seafile/seafdav.conf:/opt/seafile/conf/seafdav.conf
+      # - ../data/seafile/seafevents.conf:/opt/seafile/conf/seafevents.conf
+      # - ../data/seafile/seafile.conf:/opt/seafile/conf/seafile.conf
+      # - ../data/seafile/seahub_settings.py:/opt/seafile/conf/seahub_settings.py
     env_file:
       - ../data/secrets/seafile.env
     depends_on:
@@ -62,6 +72,7 @@ services:
 
 volumes:
   seafile:
+  seahub:
   seafile_mariadb:
   seafile_elasticsearch:
 
