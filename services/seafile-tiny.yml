@@ -31,7 +31,7 @@ services:
       memlock:
         soft: -1
         hard: -1
-    mem_limit: 2g
+    # mem_limit: 2g
     volumes:
       - seafile_elasticsearch:/usr/share/elasticsearch/data  # Requested, specifies the path to Elasticsearch data persistent store.
     networks:
