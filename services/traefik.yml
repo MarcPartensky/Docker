@@ -2,10 +2,10 @@ version: "3.9"
 
 services:
   traefik:
-    image: traefik
+    image: traefik:2.9.1 # https://github.com/wiltonsr/ldapAuth/issues/25
     # env_file:
     #   - ../data/secrets/traefik.env
-    restart: unless-stopped
+    # restart: unless-stopped
     # command:
     #   ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
     #   # - --providers.docker.exposedbydefault=false # <== Don't expose every container to traefik, only expose enabled ones
@@ -49,6 +49,8 @@ services:
       # traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       # traefik.http.routers.redirs.middlewares: redirect-to-https
       # traefik.http.routers.redirs.rule: hostregexp(`{host:.+}`)
+    healthcheck:
+      test: ./traefik healtcheck --ping
     deploy:
       placement:
         constraints:
