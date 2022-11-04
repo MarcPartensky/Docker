@@ -15,14 +15,57 @@ services:
       - duplicati_source:/source
     networks:
       - caddy
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.duplicati.rule=Host(`duplicati.marcpartensky.com`)
+    #   - traefik.http.routers.duplicati.entrypoints=web
+    #   # ldapAuth Register Middleware ====================================================
+    #   - traefik.http.routers.duplicati.middlewares=ldap_auth
+    #   # ldapAuth Options=================================================================
+    #   - traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled=true
+    #   - traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel=DEBUG
+    #   - traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url=ldaps://ldap.marcpartensky.com
+    #   - traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port=636
+    #   - traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN=dc=admin,dc=org
+    #   - traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute=uid
+      # =================================================================================
+      # caddy: duplicati.marcpartensky.com
+      # caddy.reverse_proxy: "{{upstreams 8200}}"
+      # traefik.enable: "true"
+      # traefik.http.services.duplicati.loadbalancer.server.port: 8200
+      # traefik.http.routers.duplicati.rule: Host(`duplicati.marcpartensky.com`)
+      # traefik.http.routers.duplicati.entrypoints: websecure
+      # traefik.http.routers.duplicati.tls.certresolver: tls
+      # # ldapAuth Register Middleware ====================================================
+      # traefik.http.routers.duplicati.middlewares: ldap_auth
+      # # ldapAuth Options=================================================================
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap.marcpartensky.com
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "dc=admin,dc=org"
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: uid=admin,dc=admin,dc=org
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindPassword: MarcGPTL44
     labels:
       caddy: duplicati.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8200}}"
       traefik.enable: "true"
+      traefik.http.services.duplicati.loadbalancer.server.port: 8200
       traefik.http.routers.duplicati.rule: Host(`duplicati.marcpartensky.com`)
       traefik.http.routers.duplicati.entrypoints: websecure
       traefik.http.routers.duplicati.tls.certresolver: tls
-      traefik.http.services.duplicati.loadbalancer.server.port: 8200
+      # ldapAuth Register Middleware ====================================================
+      traefik.http.routers.duplicati.middlewares: ldap_auth
+      # ldapAuth Options=================================================================
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap.marcpartensky.com
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: "true"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "ou=people,dc=admin,dc=org"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
 
 volumes:
   duplicati_config:
