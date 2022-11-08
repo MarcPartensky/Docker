@@ -1,4 +1,38 @@
 # Configuration file for jupyterhub.
+import os
+
+# Network
+c.ConfigurableHTTPProxy.should_start = True
+c.JupyterHub.hub_ip = '0.0.0.0'
+c.JupyterHub.hub_port = 8081
+c.JupyterHub.port = 8000
+c.JupyterHub.allow_named_servers = True
+c.JupyterHub.spawner_class = 'dockerspawner.SwarmSpawner'
+
+# Swarm
+network_name = os.environ['DOCKER_NETWORK_NAME']
+c.SwarmSpawner.network_name = network_name
+c.SwarmSpawner.remove_containers = True
+c.SwarmSpawner.debug = True
+c.SwarmSpawner.image = "jupyterhub/singleuser:latest"
+c.SwarmSpawner.host_ip = "0.0.0.0"
+
+# Persistence
+notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
+c.DockerSpawner.notebook_dir = notebook_dir
+c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+
+# Authentication
+# c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
+c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
+c.LDAPAuthenticator.server_address = "marcpartensky.com"
+c.LDAPAuthenticator.use_ssl = True
+c.LDAPAuthenticator.bind_dn_template = [
+    "uid={username},ou=people,dc=admin,dc=org",
+]
+
+
+# c.LDAPAuthenticator.lookup_dn = True
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
@@ -190,7 +224,7 @@
 #          This is the address on which the proxy will bind.
 #          Sets protocol, ip, base_url
 #  Default: 'http://:8000'
-c.JupyterHub.bind_url = 'https://jupyterhub.marcpartensky.com'
+# c.JupyterHub.bind_url = 'https://jupyterhub.marcpartensky.com'
 
 ## Whether to shutdown the proxy when the Hub shuts down.
 #
@@ -752,8 +786,6 @@ c.JupyterHub.bind_url = 'https://jupyterhub.marcpartensky.com'
 #    - localprocess: jupyterhub.spawner.LocalProcessSpawner
 #    - simple: jupyterhub.spawner.SimpleLocalProcessSpawner
 #  Default: 'jupyterhub.spawner.LocalProcessSpawner'
-# c.JupyterHub.spawner_class = 'jupyterhub.spawner.LocalProcessSpawner'
-
 ## Path to SSL certificate file for the public facing interface of the proxy
 #
 #          When setting this, you should also set ssl_key

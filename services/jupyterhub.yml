@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   jupyterhub:
-    image: jupyterhub/jupyterhub
+    image: marcpartensky/jupyterhub
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -10,6 +10,7 @@ services:
       # - jupyterhub:/srv/jupyterhub
     networks:
     - caddy
+    - jupyterhub
     environment:
       DOCKER_JUPYTER_IMAGE: marcpartensky/jupyterlab
       DOCKER_NETWORK_NAME: jupyterhub
@@ -24,5 +25,8 @@ services:
       traefik.http.services.jupyterhub.loadbalancer.server.port: 8000
 
 networks:
+  jupyterhub:
+    name: jupyterhub
+    driver: overlay
   caddy:
     external: true
