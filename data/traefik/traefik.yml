@@ -2,7 +2,7 @@ global:
   checkNewVersion: true
   sendAnonymousUsage: false
 api:
-  insecure: true
+  insecure: false # = secure
   dashboard: true
   debug: true
 providers:
@@ -21,7 +21,8 @@ certificatesResolvers:
       storage: /letsencrypt/acme.json
 ping: {} # mandatory for healthcheck
 log:
-  level: debug
+  # level: debug
+  level: error
 entryPoints:
   websecure:
     address: ':443'

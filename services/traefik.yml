@@ -41,8 +41,6 @@ services:
       - ../data/traefik/dynamic.yml:/dynamic.yml
         # - traefik_letsencrypt:/letsencrypt
       - traefik:/letsencrypt
-      # - traefik_certs:/letsencrypt
-      # - traefik:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       traefik.enable: "true"
@@ -59,12 +57,22 @@ services:
           - node.role == manager
       labels:
         traefik.enable: "true"
-          # traefik.http.routers.traefik.service: api@internal
-        traefik.docker.network: caddy
+        traefik.port: 8080
+          # traefik.docker.network: caddy
+          # traefik.http.services.traefik.loadbalancer.server.port: 8080
+        traefik.http.routers.traefik.service: api@internal
         traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
-        traefik.http.routers.traefik.entrypoints: websecure
+        traefik.http.routers.traefik.entrypoints: traefik
         traefik.http.routers.traefik.tls.certresolver: tls
-        traefik.http.services.traefik.loadbalancer.server.port: 8080
+        # ldapAuth Register Middleware ====================================================
+        traefik.http.routers.traefik.middlewares: ldap_auth
+        # ldapAuth Options=================================================================
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap.marcpartensky.com
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: "true"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
 
 volumes:
   # traefik_letsencrypt:
