@@ -10,7 +10,6 @@ data/authelia
 data/mx-puppet-discord
 data/matrix
 data/heimdall
-data/traefik
 data/pihole/etc-pihole
 data/pxe
 data/postgres

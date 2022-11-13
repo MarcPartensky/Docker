@@ -1,0 +1,74 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+api:
+  insecure: false
+  dashboard: true
+  debug: true
+providers:
+  docker:
+    # swarmMode: true
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false # traefik enabled containers only
+  file:
+    filename: dynamic.yml
+certificatesResolvers:
+  tls:
+    acme:
+      tlsChallenge: {}
+      email: marc.partensky@gmail.com
+      storage: /letsencrypt/acme.json
+log:
+  level: debug
+entryPoints:
+  websecure:
+    address: ':443'
+    forwardedHeaders:
+      insecure: true
+      # http3:
+      #   advertisedPort: 443
+    http:
+      tls:
+        certResolver: tls
+      # middlewares:
+      #   - ldap
+    # http3:
+    #   advertisedPort: 443
+  web:
+    address: ':80'
+    forwardedHeaders:
+      insecure: true
+    # forwardedHeaders:
+    #   trustedIPs:
+    #     - "127.0.0.1/32"
+    #     - "192.168.1.7"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+          priority: 10
+experimental:
+  # http3: true
+  plugins:
+    ldapAuth:
+      moduleName: "github.com/wiltonsr/ldapAuth"
+      version: "v0.0.19"
+
+# ldap entreprise  https://doc.traefik.io/traefik-enterprise/operations/static-configuration/
+# authSources:
+#   ldapSource:
+#     ldap:
+#       url: ldaps://marcpartensky.com:636
+#       startTLS: true
+#       insecureSkipVerify: true
+#       bindDN: cn=admin,dc=admin,dc=org
+
+# - --providers.docker.network=web # <== Operate on the docker network named web
+## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
+# TRAEFIK_CERTIFICATESRESOLVERS_TLS_ACME_TLSCHALLENGE=true
+# TRAEFIK_CERTIFICATESRESOLVERS_TLS_ACME_EMAIL=marc.partensky@gmail.com
+# TRAEFIK_CERTIFICATESRESOLVERS_TLS_ACME_STORAGE=/letsencrypt/acme.json # log settings (options: error, debug, panic, fatal, warn, info) - https://docs.traefik.io/observability/logs/ ##
+## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
+## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
