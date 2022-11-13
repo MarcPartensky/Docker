@@ -19,6 +19,7 @@ certificatesResolvers:
       tlsChallenge: {}
       email: marc.partensky@gmail.com
       storage: /letsencrypt/acme.json
+ping: {} # mandatory for healthcheck
 log:
   level: debug
 entryPoints:
