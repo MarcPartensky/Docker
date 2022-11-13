@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  sablier:
+    image: ghcr.io/acouvreur/sablier:local
+    command:
+      - start
+      - --provider.name=docker
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    labels:
+      traefik.enable: true
+      # Dynamic Middleware
+      traefik.http.middlewares.dynamic.plugin.sablier.names: sablier-whoami-1
+      traefik.http.middlewares.dynamic.plugin.sablier.sablierUrl: http://sablier:10000
+      traefik.http.middlewares.dynamic.plugin.sablier.dynamic.sessionDuration: 1m
