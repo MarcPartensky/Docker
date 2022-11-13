@@ -30,7 +30,7 @@ services:
       traefik.http.routers.adguardhome.tls.certresolver: tls
       traefik.http.services.adguardhome.loadbalancer.server.port: 3000
     volumes:
-      - adguardhome_work:/opt/adguardhome/work
+      - adguardhome:/opt/adguardhome/work
       - ../data/adguard:/opt/adguardhome/conf
 
 volumes:
