@@ -59,11 +59,12 @@ services:
           - node.role == manager
       labels:
         traefik.enable: "true"
+          # traefik.http.routers.traefik.service: api@internal
+        traefik.docker.network: caddy
         traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
-        traefik.http.routers.traefik.service: api@internal
         traefik.http.routers.traefik.entrypoints: websecure
         traefik.http.routers.traefik.tls.certresolver: tls
-        traefik.docker.network: caddy
+        traefik.http.routers.traefik.loadbalancer.server.port: 8080
 
 volumes:
   # traefik_letsencrypt:
