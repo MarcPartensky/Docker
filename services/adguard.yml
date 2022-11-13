@@ -8,16 +8,16 @@ services:
       - 53:53/tcp
       - 53:53/udp
       - 67:67/udp
-      - 68:68/udp
-      # - 80:80/tcp
+      - 68:68/udp # adguard home as dhcp
+      # - 80:80/tcp  # https/dns-over-https
       # - 443:443/tcp
       # - 443:443/udp
-      # - 3000:3000/tcp
-      - 853:853/tcp
-      - 784:784/udp
+      # - 3000:3000/tcp # adguard home's admin
+      - 853:853/tcp # dns-over-tls
+      - 784:784/udp # dns-over-quic
       - 853:853/udp
       - 8853:8853/udp
-      - 5443:5443/tcp
+      - 5443:5443/tcp # dnscrypt server
       - 5443:5443/udp
     networks:
       - caddy
