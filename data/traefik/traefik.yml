@@ -2,7 +2,7 @@ global:
   checkNewVersion: true
   sendAnonymousUsage: false
 api:
-  insecure: false
+  insecure: true
   dashboard: true
   debug: true
 providers:
