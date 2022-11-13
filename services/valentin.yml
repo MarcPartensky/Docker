@@ -19,6 +19,13 @@ services:
       traefik.http.routers.valentincolin_website.entrypoints: websecure
       traefik.http.routers.valentincolin_website.tls.certresolver: tls
       traefik.http.services.valentincolin_website.loadbalancer.server.port: 80
+    depoy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.valentincolin_website.rule: Host(`valentin-colin.com`)
+        traefik.http.routers.valentincolin_website.entrypoints: websecure
+        traefik.http.routers.valentincolin_website.tls.certresolver: tls
+        traefik.http.services.valentincolin_website.loadbalancer.server.port: 80
 
 networks:
   caddy:
