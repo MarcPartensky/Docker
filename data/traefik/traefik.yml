@@ -7,9 +7,10 @@ api:
   debug: true
 providers:
   docker:
-    # swarmMode: true
+    swarmMode: true
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false # traefik enabled containers only
+    network: caddy
   file:
     filename: dynamic.yml
 certificatesResolvers:
