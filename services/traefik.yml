@@ -58,7 +58,7 @@ services:
       # traefik.http.routers.redirs.middlewares: redirect-to-https
       # traefik.http.routers.redirs.rule: hostregexp(`{host:.+}`)
     healthcheck:
-      test: ./traefik healtcheck --ping
+      test: traefik healtcheck --ping
     deploy:
       placement:
         constraints:
