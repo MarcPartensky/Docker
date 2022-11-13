@@ -64,7 +64,7 @@ services:
         traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
         traefik.http.routers.traefik.entrypoints: websecure
         traefik.http.routers.traefik.tls.certresolver: tls
-        traefik.http.routers.traefik.loadbalancer.server.port: 8080
+        traefik.http.services.traefik.loadbalancer.server.port: 8080
 
 volumes:
   # traefik_letsencrypt:
