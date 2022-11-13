@@ -28,6 +28,13 @@ services:
       traefik.http.routers.ldap_manager.entrypoints: websecure
       traefik.http.routers.ldap_manager.tls.certresolver: tls
       traefik.http.services.ldap_manager.loadbalancer.server.port: 80
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.ldap_manager.rule: Host(`auth.marcpartensky.com`)
+        traefik.http.routers.ldap_manager.entrypoints: websecure
+        traefik.http.routers.ldap_manager.tls.certresolver: tls
+        traefik.http.services.ldap_manager.loadbalancer.server.port: 80
 
 networks:
   ldap:
