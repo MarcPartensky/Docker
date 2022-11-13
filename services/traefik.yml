@@ -51,18 +51,19 @@ services:
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.tls.certresolver: tls
       traefik.docker.network: caddy
-        # traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.source: marcpartensky.com
-        # traefik.http.middlewares.test-ldap-auth.plugin.ldapAuth.baseDN: dc=marcpartensky,dc=com
-        # # traefik.http.routers.redirs.entrypoints: web
-      # traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
-      # traefik.http.routers.redirs.middlewares: redirect-to-https
-      # traefik.http.routers.redirs.rule: hostregexp(`{host:.+}`)
     healthcheck:
       test: traefik healthcheck --ping
     deploy:
       placement:
         constraints:
           - node.role == manager
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
+        traefik.http.routers.traefik.service: api@internal
+        traefik.http.routers.traefik.entrypoints: websecure
+        traefik.http.routers.traefik.tls.certresolver: tls
+        traefik.docker.network: caddy
 
 volumes:
   # traefik_letsencrypt:
