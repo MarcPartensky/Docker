@@ -47,6 +47,12 @@ services:
         reservations:
           cpus: "1"
           memory: "500M"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.website.rule: Host(`marcpartensky.com`)
+        traefik.http.routers.website.entrypoints: websecure
+        traefik.http.routers.website.tls.certresolver: tls
+        traefik.http.services.website.loadbalancer.server.port: 80
 
   redis:
     image: redis:alpine
