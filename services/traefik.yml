@@ -59,10 +59,10 @@ services:
         traefik.enable: "true"
         traefik.port: 8080
           # traefik.docker.network: caddy
-          # traefik.http.services.traefik.loadbalancer.server.port: 8080
-        traefik.http.routers.traefik.service: api@internal
+        traefik.http.services.traefik.loadbalancer.server.port: 8080
+          # traefik.http.routers.traefik.service: api@internal
+        traefik.http.routers.traefik.entrypoints: websecure
         traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
-        traefik.http.routers.traefik.entrypoints: traefik
         traefik.http.routers.traefik.tls.certresolver: tls
         # ldapAuth Register Middleware ====================================================
         traefik.http.routers.traefik.middlewares: ldap_auth
