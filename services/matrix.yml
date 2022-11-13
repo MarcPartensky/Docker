@@ -15,6 +15,12 @@ services:
       # - matrix:/data
     networks:
         - caddy
+    healthcheck:
+      test: ["CMD", "curl", "-fSs", "http://localhost:8008/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     labels:
       caddy: matrix.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8008}}"
@@ -23,13 +29,13 @@ services:
       traefik.http.routers.matrix.entrypoints: websecure
       traefik.http.routers.matrix.tls.certresolver: tls
       traefik.http.services.matrix.loadbalancer.server.port: 8008
-    healthcheck:
-      test: ["CMD", "curl", "-fSs", "http://localhost:8008/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.matrix.rule: Host(`matrix.marcpartensky.com`)
+        traefik.http.routers.matrix.entrypoints: websecure
+        traefik.http.routers.matrix.tls.certresolver: tls
+        traefik.http.services.matrix.loadbalancer.server.port: 8008
 
 networks:
   caddy:
