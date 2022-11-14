@@ -13,6 +13,7 @@ services:
       TZ: Europe/Paris
       MONGODB_URI: mongodb://pritunl_mongo:27017/pritunl
       PRITUNL_DEBUG: "true"
+      # WIREGUARD: true
     privileged: true
     cap_add:
       - SYS_ADMIN
