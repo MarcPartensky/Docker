@@ -35,6 +35,15 @@ services:
       traefik.http.routers.mongo.entrypoints: websecure
       traefik.http.routers.mongo.tls.certresolver: tls
       traefik.http.services.mongo.loadbalancer.server.port: 8081
+      traefik.http.routers.duplicati.middlewares: ldap_auth
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
+        traefik.http.routers.mongo.entrypoints: websecure
+        traefik.http.routers.mongo.tls.certresolver: tls
+        traefik.http.services.mongo.loadbalancer.server.port: 8081
+        traefik.http.routers.duplicati.middlewares: ldap_auth
 
 volumes:
   mongo:
