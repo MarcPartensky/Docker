@@ -64,15 +64,15 @@ services:
         traefik.http.routers.traefik.entrypoints: websecure
         traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
         traefik.http.routers.traefik.tls.certresolver: tls
-        # ldapAuth Register Middleware ====================================================
-        # traefik.http.routers.traefik.middlewares: ldap_auth
-        # # ldapAuth Options=================================================================
-        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
-        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
-        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap.marcpartensky.com
-        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
-        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: "true"
-        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
+        # ldapAuth Options=================================================================
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap.marcpartensky.com
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: "true"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "ou=people,dc=admin,dc=org"
+        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
 
 volumes:
   # traefik_letsencrypt:
