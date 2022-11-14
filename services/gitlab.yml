@@ -26,13 +26,20 @@ services:
       traefik.http.routers.gitlab.entrypoints: websecure
       traefik.http.routers.gitlab.tls.certresolver: tls
       traefik.http.services.gitlab.loadbalancer.server.port: 80
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.gitlab.rule: Host(`gitlab.marcpartensky.com`)
+        traefik.http.routers.gitlab.entrypoints: websecure
+        traefik.http.routers.gitlab.tls.certresolver: tls
+        traefik.http.services.gitlab.loadbalancer.server.port: 80
 
   gitlab-runner:
     image: gitlab/gitlab-runner:alpine
     restart: unless-stopped
     deploy:
       mode: replicated
-      replicas: 4
+      replicas: 2
 
 volumes:
   gitlab_config:
