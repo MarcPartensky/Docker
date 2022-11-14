@@ -32,6 +32,8 @@ services:
         traefik.http.routers.pgweb.entrypoints: websecure
         traefik.http.routers.pgweb.tls.certresolver: tls
         traefik.http.services.pgweb.loadbalancer.server.port: 8081
+        # ldapAuth Register Middleware ====================================================
+        traefik.http.routers.pgweb.middlewares: ldap_auth
 
 networks:
   postgres:
