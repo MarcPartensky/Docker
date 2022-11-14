@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  pgweb:
+    image: sosedoff/pgweb
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/postgres.env
+    networks:
+      - postgres
+      - caddy
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "wget", "-q", "localhost:8081", "-O", "/dev/null"]
+    labels:
+      caddy: pgweb.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8081}}"
+      # caddy.reverse_proxy.header_up.Host: "{upstream_hostport}" # redundant
+      # caddy.reverse_proxy.header_up.X-Real-IP: "{host}"
+      # caddy.reverse_proxy.header_up.X-Forwarded-For: "{host}"  # redundant
+      caddy.basicauth: /* bcrypt
+      caddy.basicauth.admin: JDJhJDEyJDVRUXdqQllCR2dCSEZ0ZUlaVUZTRE95WXpROFdUcFdXSm4wVGE2TmE4cEkxNHc5Si4venJxCg==
+      traefik.enable: "true"
+      traefik.http.routers.pgweb.rule: Host(`pgweb.marcpartensky.com`)
+      traefik.http.routers.pgweb.entrypoints: websecure
+      traefik.http.routers.pgweb.tls.certresolver: tls
+      traefik.http.services.pgweb.loadbalancer.server.port: 8081
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.pgweb.rule: Host(`pgweb.marcpartensky.com`)
+        traefik.http.routers.pgweb.entrypoints: websecure
+        traefik.http.routers.pgweb.tls.certresolver: tls
+        traefik.http.services.pgweb.loadbalancer.server.port: 8081
+
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true
