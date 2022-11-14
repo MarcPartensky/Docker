@@ -23,6 +23,13 @@ services:
       traefik.http.routers.ialab.entrypoints: websecure
       traefik.http.routers.ialab.tls.certresolver: tls
       traefik.http.services.ialab.loadbalancer.server.port: 8000
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.ialab.rule: Host(`ialab.marcpartensky.com`)
+        traefik.http.routers.ialab.entrypoints: websecure
+        traefik.http.routers.ialab.tls.certresolver: tls
+        traefik.http.services.ialab.loadbalancer.server.port: 8000
 
 volumes:
   ialab:
