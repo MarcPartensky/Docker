@@ -22,8 +22,8 @@ certificatesResolvers:
       storage: /letsencrypt/acme.json
 ping: {} # mandatory for healthcheck
 log:
-  # level: debug
-  level: error
+  level: debug
+  # level: error
 entryPoints:
   websecure:
     address: ':443'
