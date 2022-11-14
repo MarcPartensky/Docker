@@ -21,6 +21,11 @@ services:
         limits:
           cpus: '0.50'
           memory: 1024M
+      labels:
+        traefik.http.routers.swarmpit.rule: Host(`swarm.marcpartensky.com`)
+        traefik.http.routers.swarmpit.entrypoints: websecure
+        traefik.http.routers.swarmpit.tls.certresolver: tls
+        traefik.http.services.swarmpit.loadbalancer.server.port: 8080
         # reservations:
         #   cpus: '0.25'
         #   memory: 512M
