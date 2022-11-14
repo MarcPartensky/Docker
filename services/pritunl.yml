@@ -35,6 +35,13 @@ services:
       traefik.http.routers.pritunl.entrypoints: websecure
       traefik.http.routers.pritunl.tls.certresolver: tls
       traefik.http.services.pritunl.loadbalancer.server.port: 9700
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.pritunl.rule: Host(`vpn.marcpartensky.com`)
+        traefik.http.routers.pritunl.entrypoints: websecure
+        traefik.http.routers.pritunl.tls.certresolver: tls
+        traefik.http.services.pritunl.loadbalancer.server.port: 9700
 
 networks:
   caddy:
