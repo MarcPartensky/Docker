@@ -77,6 +77,11 @@ services:
       placement:
         constraints:
           - node.role == manager
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.seafile.rule: Host(`seafile.marcpartensky.com`)
+        traefik.http.routers.seafile.entrypoints: websecure
+        traefik.http.services.seafile.loadbalancer.server.port: 80
 
 volumes:
   seafile:
