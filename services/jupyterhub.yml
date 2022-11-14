@@ -23,6 +23,13 @@ services:
       traefik.http.routers.jupyterhub.entrypoints: websecure
       traefik.http.routers.jupyterhub.tls.certresolver: tls
       traefik.http.services.jupyterhub.loadbalancer.server.port: 8000
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.jupyterhub.rule: Host(`jupyterhub.marcpartensky.com`)
+        traefik.http.routers.jupyterhub.entrypoints: websecure
+        traefik.http.routers.jupyterhub.tls.certresolver: tls
+        traefik.http.services.jupyterhub.loadbalancer.server.port: 8000
 
 networks:
   jupyterhub:
