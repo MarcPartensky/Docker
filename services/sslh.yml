@@ -11,7 +11,8 @@ services:
       SSH_PORT: 22
       # OPENVPN_HOST: localhost
       # OPENVPN_PORT: 1194
-      HTTPS_HOST: caddy
+      # HTTPS_HOST: caddy
+      HTTPS_HOST: traefik
       HTTPS_PORT: 443
     ports:
       - "443:8443"
@@ -23,7 +24,8 @@ services:
       - caddy
     healthcheck:
       # test: ["CMD-SHELL", "wget", "--no-check-certificate", "https://caddy:8443"]
-      test: ["CMD", "/usr/bin/curl", "http://caddy"]
+      # test: ["CMD", "/usr/bin/curl", "http://caddy"]
+      test: ["CMD", "/usr/bin/wget", "--spider", "http://traefik:8080/ping"]
       # interval: 30s
       # timeout: 5s
       # retries: 5
