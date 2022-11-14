@@ -17,9 +17,14 @@ services:
       traefik.http.routers.pandoc.entrypoints: websecure
       traefik.http.routers.pandoc.tls.certresolver: tls
       traefik.http.services.pandoc.loadbalancer.server.port: 80
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.pandoc.rule: Host(`pandoc.marcpartensky.com`)
+        traefik.http.routers.pandoc.entrypoints: websecure
+        traefik.http.routers.pandoc.tls.certresolver: tls
+        traefik.http.services.pandoc.loadbalancer.server.port: 80
     networks:
-      - caddy
-    depends_on:
       - caddy
 
 volumes:
