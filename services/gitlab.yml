@@ -25,6 +25,7 @@ services:
       traefik.http.routers.gitlab.entrypoints: websecure
       traefik.http.routers.gitlab.tls.certresolver: tls
       traefik.http.services.gitlab.loadbalancer.server.port: 80
+    # shm_size: '512m'
     deploy:
       labels:
         traefik.enable: "true"
@@ -35,8 +36,8 @@ services:
       resources:
         reservations:
             cpus: "1"
-            memory: "512M"
-    shm_size: '512m'
+            # memory: "512M"
+            memory: "3G"
 
   gitlab-runner:
     image: gitlab/gitlab-runner:alpine
