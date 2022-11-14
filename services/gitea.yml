@@ -30,6 +30,13 @@ services:
       traefik.http.routers.gitea.entrypoints: websecure
       traefik.http.routers.gitea.tls.certresolver: tls
       traefik.http.services.gitea.loadbalancer.server.port: 3000
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.gitea.rule: Host(`git.marcpartensky.com`)
+        traefik.http.routers.gitea.entrypoints: websecure
+        traefik.http.routers.gitea.tls.certresolver: tls
+        traefik.http.services.gitea.loadbalancer.server.port: 3000
 
 volumes:
   gitea:
