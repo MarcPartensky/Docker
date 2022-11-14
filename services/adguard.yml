@@ -19,6 +19,9 @@ services:
       - 8853:8853/udp
       - 5443:5443/tcp # dnscrypt server
       - 5443:5443/udp
+    volumes:
+      - adguardhome:/opt/adguardhome/work
+      - ../data/adguard:/opt/adguardhome/conf
     networks:
       - caddy
     labels:
@@ -29,9 +32,14 @@ services:
       traefik.http.routers.adguardhome.entrypoints: websecure
       traefik.http.routers.adguardhome.tls.certresolver: tls
       traefik.http.services.adguardhome.loadbalancer.server.port: 3000
-    volumes:
-      - adguardhome:/opt/adguardhome/work
-      - ../data/adguard:/opt/adguardhome/conf
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.adguardhome.rule: Host(`adguardhome.marcpartensky.com`)
+        traefik.http.routers.adguardhome.entrypoints: websecure
+        traefik.http.routers.adguardhome.tls.certresolver: tls
+        traefik.http.services.adguardhome.loadbalancer.server.port: 3000
+        traefik.http.routers.duplicati.middlewares: ldap_auth
 
 volumes:
   adguardhome:
