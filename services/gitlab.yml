@@ -32,9 +32,10 @@ services:
         traefik.http.routers.gitlab.entrypoints: websecure
         traefik.http.routers.gitlab.tls.certresolver: tls
         traefik.http.services.gitlab.loadbalancer.server.port: 80
-      reservations:
-          cpus: "1"
-          memory: "512M"
+      resources:
+        reservations:
+            cpus: "1"
+            memory: "512M"
     shm_size: '512m'
 
   gitlab-runner:
