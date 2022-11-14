@@ -28,6 +28,13 @@ services:
       traefik.http.routers.portainer.entrypoints: websecure
       traefik.http.routers.portainer.tls.certresolver: tls
       traefik.http.services.portainer.loadbalancer.server.port: 9000
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.portainer.rule: Host(`docker.marcpartensky.com`)
+        traefik.http.routers.portainer.entrypoints: websecure
+        traefik.http.routers.portainer.tls.certresolver: tls
+        traefik.http.services.portainer.loadbalancer.server.port: 9000
 
 volumes:
   portainer:
