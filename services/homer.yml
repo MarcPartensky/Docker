@@ -18,7 +18,7 @@ services:
         traefik.http.routers.homer.rule: Host(`homer.marcpartensky.com`)
         traefik.http.routers.homer.entrypoints: websecure
         traefik.http.routers.homer.tls.certresolver: tls
-        traefik.http.services.homer.loadbalancer.server.port: 8000
+        traefik.http.services.homer.loadbalancer.server.port: 8080
 
 volumes:
   homer:
