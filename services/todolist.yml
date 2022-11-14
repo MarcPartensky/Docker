@@ -11,6 +11,7 @@ services:
       - todolist_api
     networks:
       - caddy
+    # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
     labels:
       caddy: todolist.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
@@ -19,7 +20,13 @@ services:
       traefik.http.routers.todolist.entrypoints: websecure
       traefik.http.routers.todolist.tls.certresolver: tls
       traefik.http.services.todolist.loadbalancer.server.port: 80
-    # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.todolist.rule: Host(`todolist.marcpartensky.com`)
+        traefik.http.routers.todolist.entrypoints: websecure
+        traefik.http.routers.todolist.tls.certresolver: tls
+        traefik.http.services.todolist.loadbalancer.server.port: 80
 
   todolist_api:
     image: marcpartensky/je-todoapp-spring-api
@@ -42,6 +49,13 @@ services:
       traefik.http.routers.todolist_api.entrypoints: websecure
       traefik.http.routers.todolist_api.tls.certresolver: tls
       traefik.http.services.todolist_api.loadbalancer.server.port: 8080
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.todolist_api.rule: Host(`api.todolist.marcpartensky.com`)
+        traefik.http.routers.todolist_api.entrypoints: websecure
+        traefik.http.routers.todolist_api.tls.certresolver: tls
+        traefik.http.services.todolist_api.loadbalancer.server.port: 8080
 
   todolist_postgres:
     image: postgres
