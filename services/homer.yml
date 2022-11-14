@@ -12,6 +12,13 @@ services:
     labels:
       caddy: homer.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.homer.rule: Host(`homer.marcpartensky.com`)
+        traefik.http.routers.homer.entrypoints: websecure
+        traefik.http.routers.homer.tls.certresolver: tls
+        traefik.http.services.homer.loadbalancer.server.port: 8000
 
 volumes:
   homer:
