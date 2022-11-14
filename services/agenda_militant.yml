@@ -13,6 +13,13 @@ services:
       traefik.http.routers.agenda_militant.entrypoints: websecure
       traefik.http.routers.agenda_militant.tls.certresolver: tls
       traefik.http.services.agenda_militant.loadbalancer.server.port: 8080
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.agenda_militant.rule: Host(`agenda.militant.marcpartensky.com`)
+        traefik.http.routers.agenda_militant.entrypoints: websecure
+        traefik.http.routers.agenda_militant.tls.certresolver: tls
+        traefik.http.services.agenda_militant.loadbalancer.server.port: 8080
 networks:
   caddy:
     external: true
