@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   valentin_website:
-    image: valentincolin/website
+    image: marcpartensky/valentin-website
     restart: unless-stopped
     environment:
       PRODUCTION: "False"
