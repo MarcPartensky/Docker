@@ -16,6 +16,13 @@ services:
       traefik.http.routers.keycloak.entrypoints: websecure
       traefik.http.routers.keycloak.tls.certresolver: tls
       traefik.http.services.keycloak.loadbalancer.server.port: 8080
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.keycloak.rule: Host(`keycloak.marcpartensky.com`)
+        traefik.http.routers.keycloak.entrypoints: websecure
+        traefik.http.routers.keycloak.tls.certresolver: tls
+        traefik.http.services.keycloak.loadbalancer.server.port: 8080
 
 networks:
   caddy:
