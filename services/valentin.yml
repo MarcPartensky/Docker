@@ -5,24 +5,21 @@ services:
     image: valentincolin/website
     restart: unless-stopped
     environment:
-      PRODUCTION: "True"
-    build:
-      context: ./
-      dockerfile: Dockerfile
+      PRODUCTION: "False"
     networks:
       - caddy
     labels:
       caddy: valentin-colin.fr
       caddy.reverse_proxy: "{{upstreams 80}}"
       traefik.enable: "true"
-      traefik.http.routers.valentincolin_website.rule: Host(`valentin-colin.com`)
+      traefik.http.routers.valentincolin_website.rule: Host(`valentin-colin.fr`)
       traefik.http.routers.valentincolin_website.entrypoints: websecure
       traefik.http.routers.valentincolin_website.tls.certresolver: tls
       traefik.http.services.valentincolin_website.loadbalancer.server.port: 80
-    depoy:
+    deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.valentincolin_website.rule: Host(`valentin-colin.com`)
+        traefik.http.routers.valentincolin_website.rule: Host(`valentin-colin.fr`)
         traefik.http.routers.valentincolin_website.entrypoints: websecure
         traefik.http.routers.valentincolin_website.tls.certresolver: tls
         traefik.http.services.valentincolin_website.loadbalancer.server.port: 80
