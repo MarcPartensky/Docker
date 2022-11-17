@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  cowrie:
+    image: rayson/cowrie:20160907-1
+    ports:
+      - "22:2222/tcp"
+    volumes:
+      - ./data/cowrie/cowrie.cfg:/opt/cowrie/cowrie.cfg:Z
+      - cowrie:/opt/cowrie/data:Z
+      - cowrie-log:/opt/cowrie/log:Z
+
+volumes:
+  cowrie-data:
+  cowrie-log:
