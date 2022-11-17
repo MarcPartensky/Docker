@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  focalboard:
+    image: mattermost/focalboard
+    volumes:
+      - focalboard:/opt/focalboard/data
+    networks:
+        - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.matrix.rule: Host(`matrix.marcpartensky.com`)
+        traefik.http.routers.matrix.entrypoints: websecure
+        traefik.http.routers.matrix.tls.certresolver: tls
+        traefik.http.services.matrix.loadbalancer.server.port: 8008
+
+volumes:
+  focalboard:
+networks:
+  caddy:
+    external: true
