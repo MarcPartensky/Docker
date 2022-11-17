@@ -2,10 +2,13 @@ version: "3.9"
 services:
   cowrie:
     image: rayson/cowrie:20160907-1
+    user: cowrie
     ports:
       - "22:2222/tcp"
+      - "22:2223/tcp"
+    environment:
+      COWRIE_TELNET_ENABLED: true
     volumes:
-      - ./data/cowrie/cowrie.cfg:/opt/cowrie/cowrie.cfg:Z
       - cowrie:/opt/cowrie/data:Z
       - cowrie-log:/opt/cowrie/log:Z
 
