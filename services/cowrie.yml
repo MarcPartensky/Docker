@@ -5,9 +5,9 @@ services:
     user: cowrie
     ports:
       - "22:2222/tcp"
-      - "22:2223/tcp"
+      - "23:2223/tcp"
     environment:
-      COWRIE_TELNET_ENABLED: true
+      COWRIE_TELNET_ENABLED: "yes"
     volumes:
       - cowrie:/opt/cowrie/data:Z
       - cowrie-log:/opt/cowrie/log:Z
