@@ -10,5 +10,5 @@ services:
       - cowrie-log:/opt/cowrie/log:Z
 
 volumes:
-  cowrie-data:
+  cowrie:
   cowrie-log:
