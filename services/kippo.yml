@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  kippo:
+    image: tomdesinto/kippo
+    ports:
+      - "22:22"
