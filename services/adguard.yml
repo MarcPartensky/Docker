@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  adguardhome:
+  adguard:
     image: adguard/adguardhome
     restart: unless-stopped
     ports:
@@ -20,29 +20,29 @@ services:
       - 5443:5443/tcp # dnscrypt server
       - 5443:5443/udp
     volumes:
-      - adguardhome:/opt/adguardhome/work
+      - adguard:/opt/adguardhome/work
       - ../data/adguard:/opt/adguardhome/conf
     networks:
       - caddy
     labels:
-      caddy: adguardhome.marcpartensky.com
+      caddy: adguard.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 3000}}"
       traefik.enable: "true"
-      traefik.http.routers.adguardhome.rule: Host(`adguardhome.marcpartensky.com`)
-      traefik.http.routers.adguardhome.entrypoints: websecure
-      traefik.http.routers.adguardhome.tls.certresolver: tls
-      traefik.http.services.adguardhome.loadbalancer.server.port: 3000
+      traefik.http.routers.adguard.rule: Host(`adguard.marcpartensky.com`)
+      traefik.http.routers.adguard.entrypoints: websecure
+      traefik.http.routers.adguard.tls.certresolver: tls
+      traefik.http.services.adguard.loadbalancer.server.port: 3000
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.adguardhome.rule: Host(`adguardhome.marcpartensky.com`)
-        traefik.http.routers.adguardhome.entrypoints: websecure
-        traefik.http.routers.adguardhome.tls.certresolver: tls
-        traefik.http.services.adguardhome.loadbalancer.server.port: 3000
-        traefik.http.routers.duplicati.middlewares: ldap_auth
+        traefik.http.routers.adguard.rule: Host(`adguard.marcpartensky.com`)
+        traefik.http.routers.adguard.entrypoints: websecure
+        traefik.http.routers.adguard.tls.certresolver: tls
+        traefik.http.services.adguard.loadbalancer.server.port: 3000
+        traefik.http.routers.adguard.middlewares: ldap_auth
 
 volumes:
-  adguardhome:
+  adguard:
 
 networks:
   caddy:
