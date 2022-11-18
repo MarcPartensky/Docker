@@ -3,8 +3,6 @@ version: "3.9"
 services:
   webshot:
     image: flowko1/website-shot
-    ports:
-      - '3000:3000'
     volumes:
       - webshot:/usr/src/website-shot/screenshots
     # environment:
