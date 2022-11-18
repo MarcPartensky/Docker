@@ -28,6 +28,23 @@ services:
       traefik.http.routers.registry.entrypoints: websecure
       traefik.http.routers.registry.tls.certresolver: "tls"
       traefik.http.services.registry.loadbalancer.server.port: 80
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.registry.rule: Host(`registry.marcpartensky.com`)
+        traefik.http.routers.registry.entrypoints: websecure
+        traefik.http.routers.registry.tls.certresolver: "tls"
+        traefik.http.services.registry.loadbalancer.server.port: 80
+
+  registry_browser:
+    image: klausmeyer/docker-registry-browser
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.registry_browser.rule: Host(`ui.registry.marcpartensky.com`)
+        traefik.http.routers.registry_browser.entrypoints: websecure
+        traefik.http.routers.registry_browser.tls.certresolver: "tls"
+        traefik.http.services.registry_browser.loadbalancer.server.port: 8080
 
 volumes:
   registry_data:
