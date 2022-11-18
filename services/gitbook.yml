@@ -5,9 +5,6 @@ services:
     # image: billryan/gitbook
     # image: yanqd0/gitbook
     restart: unless-stopped
-    ports:
-      - "4001:4001"
-      - "35729:35729"
     # volumes:
     #   - ../data/gitbook:/gitbook
     environment:
