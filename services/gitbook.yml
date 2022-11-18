@@ -1,16 +1,18 @@
 version: "3.9"
 services:
   gitbook:
-    image: billryan/gitbook
+    image: marcpartensky/gitbook
+    # image: billryan/gitbook
+    # image: yanqd0/gitbook
     restart: unless-stopped
     ports:
       - "4001:4001"
       - "35729:35729"
-    volumes:
-      - ../data/gitbook:/gitbook
+    # volumes:
+    #   - ../data/gitbook:/gitbook
     environment:
-      BOOK_URL: https://github.com/iansmith123/example
-    command: ['/gitbook/start.sh']
+      # BOOK_URL: https://github.com/marcpartensky/docker
+      BOOK_URL: https://github.com/marcpartensky/markdown
     networks:
       - caddy
     deploy:
