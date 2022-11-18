@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  swarm_visualizer:
+    image: dockersamples/visualizer
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    logging:
+      options:
+        max-size: 1g
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.swarm_visualizer.rule: Host(`swarm.marcpartensky.com`)
+        traefik.http.routers.swarm_visualizer.entrypoints: websecure
+        traefik.http.routers.swarm_visualizer.tls.certresolver: tls
+        traefik.http.services.swarm_visualizer.loadbalancer.server.port: 8080
+
+networks:
+  caddy:
+    external: true
