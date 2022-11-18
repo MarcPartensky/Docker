@@ -1,0 +1,29 @@
+# https://github.com/Flowko/website-shot
+version: "3.9"
+services:
+  webshot:
+    image: flowko1/website-shot
+    ports:
+      - '3000:3000'
+    volumes:
+      - webshot:/usr/src/website-shot/screenshots
+    # environment:
+    #   PASSWORD_PROTECT: 1
+    #   PASSWORD: yourpassword
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.webshot.rule: Host(`webshot.marcpartensky.com`)
+        traefik.http.routers.webshot.entrypoints: websecure
+        traefik.http.routers.webshot.tls.certresolver: tls
+        traefik.http.services.webshot.loadbalancer.server.port: 3000
+        # traefik.http.routers.duplicati.middlewares: ldap_auth
+
+
+networks:
+  caddy:
+    external: true
+volumes:
+  webshot:
