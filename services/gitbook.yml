@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  gitbook:
+    image: billryan/gitbook
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+      - "35729:35729"
+    volumes:
+      - ../data/gitbook:/gitbook
+    environment:
+      BOOK_URL: https://github.com/iansmith123/example
+    command: ['/gitbook/start.sh']
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.gitbook.rule: Host(`gitbook.marcpartensky.com`)
+        traefik.http.routers.gitbook.entrypoints: websecure
+        traefik.http.routers.gitbook.tls.certresolver: tls
+        traefik.http.services.gitbook.loadbalancer.server.port: 4000
+
+networks:
+  caddy:
+    external: true
