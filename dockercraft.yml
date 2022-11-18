@@ -1,0 +1,8 @@
+version: "3.3"
+services:
+  dockercraft:
+    image: gaetan/dockercraft
+    ports:
+      - "25567:25565"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:Z
