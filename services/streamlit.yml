@@ -3,10 +3,18 @@ services:
   streamlit:
     image: aminehy/docker-streamlit-app:latest
     # command: "streamlit run src/main.py"
-    ports:
-      - "8501:8501"
     volumes:
-      - streamlit:/usr/src/app/src
+      - ../data/streamlit:/usr/src/app/src
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.streamlit.rule: Host(`streamlit.marcpartensky.com`)
+        traefik.http.routers.streamlit.entrypoints: websecure
+        traefik.http.routers.streamlit.tls.certresolver: tls
+        traefik.http.services.streamlit.loadbalancer.server.port: 8501
 
-volumes:
-  - streamlit
+networks:
+  caddy:
+    external: true
