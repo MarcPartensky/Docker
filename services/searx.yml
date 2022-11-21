@@ -5,7 +5,7 @@ services:
     image: searx/searx
     restart: unless-stopped
     volumes:
-      - searx:/etc/searx
+      - ../data/searx:/etc/searx
     environment:
       BASE_URL: https://searx.marcpartensky.com
     networks:
@@ -26,8 +26,8 @@ services:
         traefik.http.routers.searx.tls.certresolver: tls
         traefik.http.services.searx.loadbalancer.server.port: 8080
 
-volumes:
-  searx:
+# volumes:
+#   searx:
 
 networks:
   caddy:
