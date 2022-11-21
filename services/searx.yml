@@ -17,14 +17,14 @@ services:
       traefik.http.routers.searx.rule: Host(`searx.marcpartensky.com`)
       traefik.http.routers.searx.entrypoints: websecure
       traefik.http.routers.searx.tls.certresolver: tls
-      traefik.http.services.searx.loadbalancer.server.port: 80
+      traefik.http.services.searx.loadbalancer.server.port: 8080
     deploy:
       labels:
         traefik.enable: "true"
         traefik.http.routers.searx.rule: Host(`searx.marcpartensky.com`)
         traefik.http.routers.searx.entrypoints: websecure
         traefik.http.routers.searx.tls.certresolver: tls
-        traefik.http.services.searx.loadbalancer.server.port: 80
+        traefik.http.services.searx.loadbalancer.server.port: 8080
 
 volumes:
   searx:
