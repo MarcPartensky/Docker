@@ -13,7 +13,7 @@ services:
         traefik.http.routers.streamlit.rule: Host(`streamlit.marcpartensky.com`)
         traefik.http.routers.streamlit.entrypoints: websecure
         traefik.http.routers.streamlit.tls.certresolver: tls
-        traefik.http.services.streamlit.loadbalancer.server.port: 8501
+        traefik.http.services.streamlit.loadbalancer.server.port: 8080
 
 networks:
   caddy:
