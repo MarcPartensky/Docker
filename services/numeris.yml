@@ -24,7 +24,7 @@ services:
     networks:
       - numeris_mysql
     volumes:
-    - ./var/mysql:/var/lib/mysql
+    - numeris_mysql:/var/lib/mysql
     env_file:
       - ../data/secrets/numeris.env
 
@@ -64,5 +64,6 @@ networks:
     external: true
 
 volumes:
+  numeris_mysql:
   caddy_data:
   mysql:
