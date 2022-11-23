@@ -23,10 +23,10 @@ services:
     restart: unless-stopped
     networks:
       - mysql
-    env_file:
-      - .env
     volumes:
     - ./var/mysql:/var/lib/mysql
+    env_file:
+      - ../data/secrets/numeris.env
 
   numeris_back:
     image: numerisisep/numeris-back
