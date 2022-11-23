@@ -9,9 +9,14 @@ services:
     networks:
       - caddy
       - mysql
-    labels:
-      caddy: phpmyadmin.numeris-isep.fr
-      caddy.reverse_proxy: "{{upstreams 80}}"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.numeris_phpmyadmin.rule: Host(`phpmyadmin.numeris.marcpartensky.com`)
+        traefik.http.routers.numeris_phpmyadmin.entrypoints: websecure
+        traefik.http.routers.numeris_phpmyadmin.tls.certresolver: tls
+        traefik.http.services.numeris_phpmyadmin.loadbalancer.server.port: 80
+        traefik.http.routers.numeris_phpmyadmin.middlewares: ldap_auth
 
   numeris_mysql:
     image: mysql:5.7
@@ -34,18 +39,26 @@ services:
     #   - .env:/home/numeris/.env
     depends_on:
       - mysql
-    labels:
-      caddy: api.numeris-isep.fr
-      caddy.reverse_proxy: "{{upstreams 80}}"
-        # caddy.reverse_proxy.header_down: -Access-Control-Allow-Origin
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.numeris_back.rule: Host(`api.numeris.marcpartensky.com`)
+        traefik.http.routers.numeris_back.entrypoints: websecure
+        traefik.http.routers.numeris_back.tls.certresolver: tls
+        traefik.http.services.numeris_back.loadbalancer.server.port: 80
 
   numeris_front:
     image: numerisisep/numeris-front
     networks:
       - caddy
-    labels:
-      caddy: numeris-isep.fr
-      caddy.reverse_proxy: "{{upstreams 80}}"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.numeris_front.rule: Host(`numeris.marcpartensky.com`)
+        traefik.http.routers.numeris_front.entrypoints: websecure
+        traefik.http.routers.numeris_front.tls.certresolver: tls
+        traefik.http.services.numeris_front.loadbalancer.server.port: 80
+        traefik.http.routers.numeris_front.middlewares: ldap_auth
 
 networks:
   mysql:
