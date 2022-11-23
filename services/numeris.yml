@@ -1,0 +1,57 @@
+version: "3.9"
+services:
+
+  numeris_phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: unless-stopped
+    links:
+      - mysql:db
+    networks:
+      - caddy
+      - mysql
+    labels:
+      caddy: phpmyadmin.numeris-isep.fr
+      caddy.reverse_proxy: "{{upstreams 80}}"
+
+  numeris_mysql:
+    image: mysql:5.7
+    restart: unless-stopped
+    networks:
+      - mysql
+    env_file:
+      - .env
+    volumes:
+    - ./var/mysql:/var/lib/mysql
+
+  numeris_back:
+    image: numerisisep/numeris-back
+    networks:
+      - caddy
+      - mysql
+    env_file:
+      - ../data/secrets/numeris.env
+    # volumes:
+    #   - .env:/home/numeris/.env
+    depends_on:
+      - mysql
+    labels:
+      caddy: api.numeris-isep.fr
+      caddy.reverse_proxy: "{{upstreams 80}}"
+        # caddy.reverse_proxy.header_down: -Access-Control-Allow-Origin
+
+  numeris_front:
+    image: numerisisep/numeris-front
+    networks:
+      - caddy
+    labels:
+      caddy: numeris-isep.fr
+      caddy.reverse_proxy: "{{upstreams 80}}"
+
+networks:
+  mysql:
+  caddy:
+    external: true
+
+volumes:
+  caddy_data:
+  mysql:
