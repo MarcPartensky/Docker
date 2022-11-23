@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql
+    restart: unless-stopped
+    networks:
+      - mysql
+    volumes:
+    - mysql:/var/lib/mysql
+    env_file:
+      - ../data/secrets/mysql.env
