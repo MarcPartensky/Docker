@@ -5,7 +5,7 @@ services:
     image: phpmyadmin/phpmyadmin:latest
     restart: unless-stopped
     links:
-      - mysql:db
+      - numeris_mysql:db
     networks:
       - caddy
       - numeris_mysql
