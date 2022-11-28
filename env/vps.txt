@@ -16,8 +16,6 @@ jenkins
 seafile
 matrix
 etherpad
-monero-miner
-monero-node
 pritunl
 pritunl-mongo
 fail2ban
