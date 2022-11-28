@@ -1,4 +1,4 @@
-caddy
+traefik
 website
 arch
 open-web-calendar
