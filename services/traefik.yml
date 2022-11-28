@@ -55,6 +55,14 @@ services:
       placement:
         constraints:
           - node.role == manager
+      # mode: global
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        order: start-first
       labels:
         traefik.enable: "true"
         traefik.port: 8080
