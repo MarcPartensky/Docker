@@ -1,7 +1,6 @@
 traefik
 website
 valentin
-arch
 open-web-calendar
 oxivia
 wordpress-oxivia
