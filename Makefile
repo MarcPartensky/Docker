@@ -16,3 +16,6 @@ networks:
 	docker network create --driver overlay --attachable caddy
 	docker network create --driver overlay --attachable ldap
 	docker network create --driver overlay --attachable postgres
+node:
+	docker node update --label-add net=web contabo
+	docker node update --label-add net=none tower
