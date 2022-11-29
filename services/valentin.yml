@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  valentin_website:
+  website:
     image: marcpartensky/valentin-website
     restart: unless-stopped
     environment:
@@ -17,6 +17,9 @@ services:
       traefik.http.routers.valentincolin_website.tls.certresolver: tls
       traefik.http.services.valentincolin_website.loadbalancer.server.port: 80
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         traefik.enable: "true"
         traefik.http.routers.valentincolin_website.rule: Host(`valentin-colin.fr`)
