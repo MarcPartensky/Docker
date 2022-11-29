@@ -13,5 +13,6 @@ data/heimdall
 data/pihole/etc-pihole
 data/pxe
 data/postgres
+data/wireguard
 data.tar.gz
 services/template.yml
