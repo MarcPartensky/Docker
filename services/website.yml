@@ -20,7 +20,7 @@ services:
     depends_on:
       - redis
     volumes:
-      - website_media:/app/media
+      - media:/app/media
     networks:
       - postgres
       - website
@@ -35,6 +35,11 @@ services:
       traefik.http.routers.website.tls.certresolver: tls
       traefik.http.services.website.loadbalancer.server.port: 80
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
       # mode: global
       update_config:
         parallelism: 1
@@ -61,9 +66,13 @@ services:
       - website
     healthcheck:
        test: ["CMD", "redis-cli","ping"]
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 
 volumes:
-  website_media:
+  media:
 
 networks:
   website:
