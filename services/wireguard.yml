@@ -17,8 +17,8 @@ services:
       INTERNAL_SUBNET: 10.13.13.0 #optional
       ALLOWEDIPS: 0.0.0.0/0 #optional
     volumes:
+      # - /usr/src:/usr/src # location of kernel headers
       - ../data/wireguard/config:/config
-      - /usr/src:/usr/src # location of kernel headers
       - /lib/modules:/lib/modules
     ports:
       - 51820:51820/udp
