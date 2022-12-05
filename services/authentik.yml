@@ -76,18 +76,18 @@ services:
     networks:
       - authentik
 
-  authentik_geoipupdate:
-    image: maxmindinc/geoipupdate:latest
-    restart: unless-stopped
-    volumes:
-      - authentik_geoip:/usr/share/GeoIP
-    environment:
-      GEOIPUPDATE_EDITION_IDS: "GeoLite2-City"
-      GEOIPUPDATE_FREQUENCY: "8"
-    # env_file:
-    #   - ../data/secrets/authentik.env
-    networks:
-      - authentik
+  # authentik_geoipupdate:
+  #   image: maxmindinc/geoipupdate:latest
+  #   restart: unless-stopped
+  #   volumes:
+  #     - authentik_geoip:/usr/share/GeoIP
+  #   environment:
+  #     GEOIPUPDATE_EDITION_IDS: "GeoLite2-City"
+  #     GEOIPUPDATE_FREQUENCY: "8"
+  #   # env_file:
+  #   #   - ../data/secrets/authentik.env
+  #   networks:
+  #     - authentik
 
 volumes:
   authentik_postgres:
