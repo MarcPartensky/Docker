@@ -391,6 +391,13 @@ services:
         traefik.http.routers.nginx-mailcow.entrypoints: websecure
         traefik.http.routers.nginx-mailcow.tls.certresolver: tls
         traefik.http.services.nginx-mailcow.loadbalancer.server.port: 80
+      deploy:
+        labels:
+          traefik.enable: true
+          traefik.http.routers.nginx-mailcow.rule: Host(`mail.marcpartensky.com`)
+          traefik.http.routers.nginx-mailcow.entrypoints: websecure
+          traefik.http.routers.nginx-mailcow.tls.certresolver: tls
+          traefik.http.services.nginx-mailcow.loadbalancer.server.port: 80
 
       networks:
         caddy:
