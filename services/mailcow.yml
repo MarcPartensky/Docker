@@ -12,7 +12,7 @@ services:
       tty: true
       networks:
         mailcow:
-          ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
+          # ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
           aliases:
             - unbound
 
@@ -48,7 +48,7 @@ services:
         - net.core.somaxconn=4096
       networks:
         mailcow:
-          ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
+          # ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
           aliases:
             - redis
 
@@ -205,7 +205,7 @@ services:
         ofelia.job-exec.sogo_backup.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit 0\""
       networks:
         mailcow:
-          ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
+          # ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
           aliases:
             - sogo
 
@@ -318,7 +318,7 @@ services:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow:
-          ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
+          # ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
           aliases:
             - postfix
 
