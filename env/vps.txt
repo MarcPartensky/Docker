@@ -2,6 +2,7 @@ traefik
 website
 valentin
 open-web-calendar
+adguard
 oxivia
 wordpress-oxivia
 servant
