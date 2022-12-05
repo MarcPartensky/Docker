@@ -5,10 +5,10 @@ services:
       image: mailcow/unbound:1.15
       restart: unless-stopped
       environment:
-        - TZ=${TZ}
+        TZ: ${TZ}
       volumes:
-        - ./data/hooks/unbound:/hooks:Z
-        - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
+        - ../data/mailcow/hooks/unbound:/hooks:Z
+        - ../data/mailcow/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
       tty: true
       networks:
         mailcow-network:
@@ -25,16 +25,11 @@ services:
       volumes:
         - mysql-vol-1:/var/lib/mysql/:Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
-        - ./data/conf/mysql/:/etc/mysql/conf.d/:ro,Z
-      environment:
-        - TZ=${TZ}
-        - MYSQL_ROOT_PASSWORD=${DBROOT}
-        - MYSQL_DATABASE=${DBNAME}
-        - MYSQL_USER=${DBUSER}
-        - MYSQL_PASSWORD=${DBPASS}
-        - MYSQL_INITDB_SKIP_TZINFO=1
-      ports:
-        - "${SQL_PORT:-127.0.0.1:13306}:3306"
+        - ../data/mailcow/conf/mysql/:/etc/mysql/conf.d/:ro,Z
+      env_file:
+        - ../data/secrets/mailcow.env
+      # ports:
+      #   - "${SQL_PORT:-127.0.0.1:13306}:3306"
       networks:
         mailcow-network:
           aliases:
@@ -45,10 +40,10 @@ services:
       restart: unless-stopped
       volumes:
         - redis-vol-1:/data/:Z
-      ports:
-        - "${REDIS_PORT:-127.0.0.1:7654}:6379"
-      environment:
-        - TZ=${TZ}
+      # ports:
+      #   - "${REDIS_PORT:-127.0.0.1:7654}:6379"
+      env_file:
+        - ../data/secrets/mailcow.env
       sysctls:
         - net.core.somaxconn=4096
       networks:
@@ -62,11 +57,8 @@ services:
       restart: unless-stopped
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      environment:
-        - TZ=${TZ}
-        - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
-        - ./data/conf/clamav/:/etc/clamav/:Z
+        - ../data/mailcow/conf/clamav/:/etc/clamav/:Z
       networks:
         mailcow-network:
           aliases:
@@ -78,21 +70,23 @@ services:
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
+      env_file:
+        - ../data/secrets/mailcow.env
       environment:
-        - TZ=${TZ}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        TZ: ${TZ}
+        IPV4_NETWORK: ${IPV4_NETWORK:-172.22.1}
+        IPV6_NETWORK: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+        REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+        REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
       volumes:
-        - ./data/hooks/rspamd:/hooks:Z
-        - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
-        - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:Z
-        - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:Z
-        - ./data/conf/rspamd/plugins.d/:/etc/rspamd/plugins.d:Z
-        - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro,Z
-        - ./data/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local:Z
-        - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
+        - ../data/mailcow/hooks/rspamd:/hooks:Z
+        - ../data/mailcow/conf/rspamd/custom/:/etc/rspamd/custom:z
+        - ../data/mailcow/conf/rspamd/override.d/:/etc/rspamd/override.d:Z
+        - ../data/mailcow/conf/rspamd/local.d/:/etc/rspamd/local.d:Z
+        - ../data/mailcow/conf/rspamd/plugins.d/:/etc/rspamd/plugins.d:Z
+        - ../data/mailcow/conf/rspamd/lua/:/etc/rspamd/lua/:ro,Z
+        - ../data/mailcow/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local:Z
+        - ../data/mailcow/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
         - rspamd-vol-1:/var/lib/rspamd:z
       hostname: rspamd
       dns:
@@ -104,61 +98,63 @@ services:
 
     php-fpm-mailcow:
       image: mailcow/phpfpm:1.78
+      restart: unless-stopped
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
       volumes:
-        - ./data/hooks/phpfpm:/hooks:Z
-        - ./data/web:/web:z
-        - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
-        - ./data/conf/rspamd/custom/:/rspamd_custom_maps:z
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
-        - ./data/conf/sogo/:/etc/sogo/:z
-        - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
-        - ./data/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
-        - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
-        - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
-        - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
-        - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
-        - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:z
-        - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:z
-        - ./data/assets/templates:/tpls:z
-        - ./data/conf/nginx/:/etc/nginx/conf.d/:z
+        - ../data/mailcow/hooks/phpfpm:/hooks:Z
+        - ../data/mailcow/web:/web:z
+        - ../data/mailcow/conf/rspamd/dynmaps:/dynmaps:ro,z
+        - ../data/mailcow/conf/rspamd/custom/:/rspamd_custom_maps:z
+        - ../data/mailcow/conf/sogo/:/etc/sogo/:z
+        - ../data/mailcow/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ../data/mailcow/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
+        - ../data/mailcow/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
+        - ../data/mailcow/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
+        - ../data/mailcow/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
+        - ../data/mailcow/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
+        - ../data/mailcow/conf/dovecot/global_sieve_before:/global_sieve/before:z
+        - ../data/mailcow/conf/dovecot/global_sieve_after:/global_sieve/after:z
+        - ../data/mailcow/assets/templates:/tpls:z
+        - ../data/mailcow/conf/nginx/:/etc/nginx/conf.d/:z
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      environment:
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - LOG_LINES=${LOG_LINES:-9999}
-        - TZ=${TZ}
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
-        - IMAP_PORT=${IMAP_PORT:-143}
-        - IMAPS_PORT=${IMAPS_PORT:-993}
-        - POP_PORT=${POP_PORT:-110}
-        - POPS_PORT=${POPS_PORT:-995}
-        - SIEVE_PORT=${SIEVE_PORT:-4190}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
-        - SUBMISSION_PORT=${SUBMISSION_PORT:-587}
-        - SMTPS_PORT=${SMTPS_PORT:-465}
-        - SMTP_PORT=${SMTP_PORT:-25}
-        - API_KEY=${API_KEY:-invalid}
-        - API_KEY_READ_ONLY=${API_KEY_READ_ONLY:-invalid}
-        - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
-        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
-        - SKIP_SOLR=${SKIP_SOLR:-y}
-        - SKIP_CLAMD=${SKIP_CLAMD:-n}
-        - SKIP_SOGO=${SKIP_SOGO:-n}
-        - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
-        - MASTER=${MASTER:-y}
-        - DEV_MODE=${DEV_MODE:-n}
-        - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
-      restart: unless-stopped
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+      #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
+      #   LOG_LINES: ${LOG_LINES:-9999}
+      #   TZ: ${TZ}
+      #   DBNAME: ${DBNAME}
+      #   DBUSER: ${DBUSER}
+      #   DBPASS: ${DBPASS}
+      #   MAILCOW_HOSTNAME: ${MAILCOW_HOSTNAME}
+      #   MAILCOW_PASS_SCHEME: ${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
+      #   IMAP_PORT: ${IMAP_PORT:-143}
+      #   IMAPS_PORT: ${IMAPS_PORT:-993}
+      #   POP_PORT: ${POP_PORT:-110}
+      #   POPS_PORT: ${POPS_PORT:-995}
+      #   SIEVE_PORT: ${SIEVE_PORT:-4190}
+      #   IPV4_NETWORK: ${IPV4_NETWORK:-172.22.1}
+      #   IPV6_NETWORK: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+      #   SUBMISSION_PORT: ${SUBMISSION_PORT:-587}
+      #   SMTPS_PORT: ${SMTPS_PORT:-465}
+      #   SMTP_PORT: ${SMTP_PORT:-25}
+      #   API_KEY: ${API_KEY:-invalid}
+      #   API_KEY_READ_ONLY: ${API_KEY_READ_ONLY:-invalid}
+      #   API_ALLOW_FROM: ${API_ALLOW_FROM:-invalid}
+      #   COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+      #   SKIP_SOLR: ${SKIP_SOLR:-y}
+      #   SKIP_CLAMD: ${SKIP_CLAMD:-n}
+      #   SKIP_SOGO: ${SKIP_SOGO:-n}
+      #   ALLOW_ADMIN_EMAIL_LOGIN: ${ALLOW_ADMIN_EMAIL_LOGIN:-n}
+      #   MASTER: ${MASTER:-y}
+      #   DEV_MODE: ${DEV_MODE:-n}
+      #   WEBAUTHN_ONLY_TRUSTED_VENDORS: ${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
       networks:
         mailcow-network:
           aliases:
@@ -167,34 +163,36 @@ services:
     sogo-mailcow:
       image: mailcow/sogo:1.106
       restart: unless-stopped
-      environment:
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - TZ=${TZ}
-        - LOG_LINES=${LOG_LINES:-9999}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
-        - ACL_ANYONE=${ACL_ANYONE:-disallow}
-        - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - SOGO_EXPIRE_SESSION=${SOGO_EXPIRE_SESSION:-480}
-        - SKIP_SOGO=${SKIP_SOGO:-n}
-        - MASTER=${MASTER:-y}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+      # environment:
+      #   DBNAME: ${DBNAME}
+      #   DBUSER: ${DBUSER}
+      #   DBPASS: ${DBPASS}
+      #   TZ: ${TZ}
+      #   LOG_LINES: ${LOG_LINES:-9999}
+      #   MAILCOW_HOSTNAME: ${MAILCOW_HOSTNAME}
+      #   MAILCOW_PASS_SCHEME: ${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
+      #   ACL_ANYONE: ${ACL_ANYONE:-disallow}
+      #   ALLOW_ADMIN_EMAIL_LOGIN: ${ALLOW_ADMIN_EMAIL_LOGIN:-n}
+      #   IPV4_NETWORK: ${IPV4_NETWORK:-172.22.1}
+      #   SOGO_EXPIRE_SESSION: ${SOGO_EXPIRE_SESSION:-480}
+      #   SKIP_SOGO: ${SKIP_SOGO:-n}
+      #   MASTER: ${MASTER:-y}
+      #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+      #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
-        - ./data/hooks/sogo:/hooks:Z
-        - ./data/conf/sogo/:/etc/sogo/:z
-        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:Z
-        - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
-        - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
-        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
+        - ../data/mailcow/hooks/sogo:/hooks:Z
+        - ../data/mailcow/conf/sogo/:/etc/sogo/:z
+        - ../data/mailcow/web/inc/init_db.inc.php:/init_db.inc.php:Z
+        - ../data/mailcow/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
+        - ../data/mailcow/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
+        - ../data/mailcow/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
         - sogo-web-vol-1:/sogo_web:z
         - sogo-userdata-backup-vol-1:/sogo_backup:Z
+      env_file:
+        - ../data/secrets/mailcow.env
       labels:
         ofelia.enabled: "true"
         ofelia.job-exec.sogo_sessions.schedule: "@every 1m"
@@ -221,38 +219,40 @@ services:
       cap_add:
         - NET_BIND_SERVICE
       volumes:
-        - ./data/hooks/dovecot:/hooks:Z
-        - ./data/conf/dovecot:/etc/dovecot:z
-        - ./data/assets/ssl:/etc/ssl/mail/:ro,z
-        - ./data/conf/sogo/:/etc/sogo/:z
-        - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
+        - ../data/mailcow/hooks/dovecot:/hooks:Z
+        - ../data/mailcow/conf/dovecot:/etc/dovecot:z
+        - ../data/mailcow/assets/ssl:/etc/ssl/mail/:ro,z
+        - ../data/mailcow/conf/sogo/:/etc/sogo/:z
+        - ../data/mailcow/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
+        - ../data/mailcow/conf/rspamd/custom/:/etc/rspamd/custom:z
+        - ../data/mailcow/assets/templates:/templates:z
         - vmail-vol-1:/var/vmail:Z
         - vmail-index-vol-1:/var/vmail_index:Z
         - crypt-vol-1:/mail_crypt/:z
-        - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
-        - ./data/assets/templates:/templates:z
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
-      environment:
-        - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
-        - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
-        - LOG_LINES=${LOG_LINES:-9999}
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - TZ=${TZ}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
-        - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-7200}
-        - ACL_ANYONE=${ACL_ANYONE:-disallow}
-        - SKIP_SOLR=${SKIP_SOLR:-y}
-        - MAILDIR_SUB=${MAILDIR_SUB:-}
-        - MASTER=${MASTER:-y}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   DOVECOT_MASTER_USER: ${DOVECOT_MASTER_USER:-}
+      #   DOVECOT_MASTER_PASS: ${DOVECOT_MASTER_PASS:-}
+      #   LOG_LINES: ${LOG_LINES:-9999}
+      #   DBNAME: ${DBNAME}
+      #   DBUSER: ${DBUSER}
+      #   DBPASS: ${DBPASS}
+      #   TZ: ${TZ}
+      #   MAILCOW_HOSTNAME: ${MAILCOW_HOSTNAME}
+      #   MAILCOW_PASS_SCHEME: ${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
+      #   IPV4_NETWORK: ${IPV4_NETWORK:-172.22.1}
+      #   ALLOW_ADMIN_EMAIL_LOGIN: ${ALLOW_ADMIN_EMAIL_LOGIN:-n}
+      #   MAILDIR_GC_TIME: ${MAILDIR_GC_TIME:-7200}
+      #   ACL_ANYONE: ${ACL_ANYONE:-disallow}
+      #   SKIP_SOLR: ${SKIP_SOLR:-y}
+      #   MAILDIR_SUB: ${MAILDIR_SUB:-}
+      #   MASTER: ${MASTER:-y}
+      #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+      #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
+      #   COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
@@ -297,22 +297,24 @@ services:
       depends_on:
         - mysql-mailcow
       volumes:
-        - ./data/hooks/postfix:/hooks:Z
-        - ./data/conf/postfix:/opt/postfix/conf:z
-        - ./data/assets/ssl:/etc/ssl/mail/:ro,z
+        - ../data/mailcow/hooks/postfix:/hooks:Z
+        - ../data/mailcow/conf/postfix:/opt/postfix/conf:z
+        - ../data/mailcow/assets/ssl:/etc/ssl/mail/:ro,z
         - postfix-vol-1:/var/spool/postfix:z
         - crypt-vol-1:/var/lib/zeyple:z
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
-      environment:
-        - LOG_LINES=${LOG_LINES:-9999}
-        - TZ=${TZ}
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   LOG_LINES: ${LOG_LINES:-9999}
+      #   TZ: ${TZ}
+      #   DBNAME: ${DBNAME}
+      #   DBUSER: ${DBUSER}
+      #   DBPASS: ${DBPASS}
+      #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+      #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
+      #   MAILCOW_HOSTNAME: ${MAILCOW_HOSTNAME}
       cap_add:
         - NET_BIND_SERVICE
       ports:
@@ -330,8 +332,10 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       restart: unless-stopped
-      environment:
-        - TZ=${TZ}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   - TZ=${TZ}
       networks:
         mailcow-network:
           aliases:
@@ -358,28 +362,36 @@ services:
         until ping redis -c1 > /dev/null; do sleep 1; done &&
         until ping rspamd -c1 > /dev/null; do sleep 1; done &&
         exec nginx -g 'daemon off;'"
-      environment:
-        - HTTPS_PORT=${HTTPS_PORT:-443}
-        - HTTP_PORT=${HTTP_PORT:-80}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - TZ=${TZ}
-        - SKIP_SOGO=${SKIP_SOGO:-n}
-        - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
-        - ADDITIONAL_SERVER_NAMES=${ADDITIONAL_SERVER_NAMES:-}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   HTTPS_PORT: ${HTTPS_PORT:-443}
+      #   HTTP_PORT: ${HTTP_PORT:-80}
+      #   MAILCOW_HOSTNAME: ${MAILCOW_HOSTNAME}
+      #   IPV4_NETWORK: ${IPV4_NETWORK:-172.22.1}
+      #   TZ: ${TZ}
+      #   SKIP_SOGO: ${SKIP_SOGO:-n}
+      #   ALLOW_ADMIN_EMAIL_LOGIN: ${ALLOW_ADMIN_EMAIL_LOGIN:-n}
+      #   ADDITIONAL_SERVER_NAMES: ${ADDITIONAL_SERVER_NAMES:-}
       volumes:
-        - ./data/web:/web:ro,z
-        - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
-        - ./data/assets/ssl/:/etc/ssl/mail/:ro,z
-        - ./data/conf/nginx/:/etc/nginx/conf.d/:z
-        - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ../data/mailcow/web:/web:ro,z
+        - ../data/mailcow/conf/rspamd/dynmaps:/dynmaps:ro,z
+        - ../data/mailcow/assets/ssl/:/etc/ssl/mail/:ro,z
+        - ../data/mailcow/conf/nginx/:/etc/nginx/conf.d/:z
+        - ../data/mailcow/conf/rspamd/meta_exporter:/meta_exporter:ro,z
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/:z
       # ports:
       #   - "${HTTPS_BIND:-:}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
       #   - "${HTTP_BIND:-:}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       labels:
-        caddy: mail.marcpartensky.com
+        caddy: mail.marcpartensky.com, mail.marc.wf, mail.marc.tf, m.marc.wf, m.marc.tf
         caddy.reverse_proxy: "{{upstreams 80}}"
+        traefik.enable: true
+        traefik.http.routers.nginx-mailcow.rule: Host(`mail.marcpartensky.com`)
+        traefik.http.routers.nginx-mailcow.entrypoints: websecure
+        traefik.http.routers.nginx-mailcow.tls.certresolver: tls
+        traefik.http.services.nginx-mailcow.loadbalancer.server.port: 80
+
       networks:
         caddy:
         mailcow-network:
@@ -393,31 +405,33 @@ services:
         - nginx-mailcow
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      environment:
-        - LOG_LINES=${LOG_LINES:-9999}
-        - ACME_CONTACT=${ACME_CONTACT:-}
-        - ADDITIONAL_SAN=${ADDITIONAL_SAN}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
-        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
-        - DIRECTORY_URL=${DIRECTORY_URL:-}
-        - ENABLE_SSL_SNI=${ENABLE_SSL_SNI:-n}
-        - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
-        - SKIP_HTTP_VERIFICATION=${SKIP_HTTP_VERIFICATION:-n}
-        - ONLY_MAILCOW_HOSTNAME=${ONLY_MAILCOW_HOSTNAME:-n}
-        - LE_STAGING=${LE_STAGING:-n}
-        - TZ=${TZ}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
-        - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   LOG_LINES: ${LOG_LINES:-9999}
+      #   ACME_CONTACT: ${ACME_CONTACT:-}
+      #   ADDITIONAL_SAN: ${ADDITIONAL_SAN}
+      #   MAILCOW_HOSTNAME: ${MAILCOW_HOSTNAME}
+      #   DBNAME: ${DBNAME}
+      #   DBUSER: ${DBUSER}
+      #   DBPASS: ${DBPASS}
+      #   SKIP_LETS_ENCRYPT: ${SKIP_LETS_ENCRYPT:-n}
+      #   COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+      #   DIRECTORY_URL: ${DIRECTORY_URL:-}
+      #   ENABLE_SSL_SNI: ${ENABLE_SSL_SNI:-n}
+      #   SKIP_IP_CHECK: ${SKIP_IP_CHECK:-n}
+      #   SKIP_HTTP_VERIFICATION: ${SKIP_HTTP_VERIFICATION:-n}
+      #   ONLY_MAILCOW_HOSTNAME: ${ONLY_MAILCOW_HOSTNAME:-n}
+      #   LE_STAGING: ${LE_STAGING:-n}
+      #   TZ: ${TZ}
+      #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+      #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
+      #   SNAT_TO_SOURCE: ${SNAT_TO_SOURCE:-n}
+      #   SNAT6_TO_SOURCE: ${SNAT6_TO_SOURCE:-n}
       volumes:
-        - ./data/web/.well-known/acme-challenge:/var/www/acme:z
-        - ./data/assets/ssl:/var/lib/acme/:z
-        - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
+        - ../data/mailcow/web/.well-known/acme-challenge:/var/www/acme:z
+        - ../data/mailcow/assets/ssl:/var/lib/acme/:z
+        - ../data/mailcow/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
       networks:
         mailcow-network:
@@ -435,14 +449,16 @@ services:
         - php-fpm-mailcow
         - redis-mailcow
       privileged: true
-      environment:
-        - TZ=${TZ}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
-        - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
-        - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   TZ: ${TZ}
+      #   IPV4_NETWORK: ${IPV4_NETWORK:-172.22.1}
+      #   IPV6_NETWORK: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+      #   SNAT_TO_SOURCE: ${SNAT_TO_SOURCE:-n}
+      #   SNAT6_TO_SOURCE: ${SNAT6_TO_SOURCE:-n}
+      #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+      #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
       network_mode: "host"
       volumes:
         - /lib/modules:/lib/modules:ro
@@ -458,52 +474,54 @@ services:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
         - postfix-vol-1:/var/spool/postfix:z
-        - ./data/assets/ssl:/etc/ssl/mail/:ro,z
-      environment:
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
-        - LOG_LINES=${LOG_LINES:-9999}
-        - TZ=${TZ}
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - DBROOT=${DBROOT}
-        - USE_WATCHDOG=${USE_WATCHDOG:-n}
-        - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
-        - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
-        - WATCHDOG_SUBJECT=${WATCHDOG_SUBJECT:-Watchdog ALERT}
-        - WATCHDOG_EXTERNAL_CHECKS=${WATCHDOG_EXTERNAL_CHECKS:-n}
-        - WATCHDOG_MYSQL_REPLICATION_CHECKS=${WATCHDOG_MYSQL_REPLICATION_CHECKS:-n}
-        - WATCHDOG_VERBOSE=${WATCHDOG_VERBOSE:-n}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}
-        - CHECK_UNBOUND=${CHECK_UNBOUND:-1}
-        - SKIP_CLAMD=${SKIP_CLAMD:-n}
-        - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
-        - SKIP_SOGO=${SKIP_SOGO:-n}
-        - HTTPS_PORT=${HTTPS_PORT:-443}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - EXTERNAL_CHECKS_THRESHOLD=${EXTERNAL_CHECKS_THRESHOLD:-1}
-        - NGINX_THRESHOLD=${NGINX_THRESHOLD:-5}
-        - UNBOUND_THRESHOLD=${UNBOUND_THRESHOLD:-5}
-        - REDIS_THRESHOLD=${REDIS_THRESHOLD:-5}
-        - MYSQL_THRESHOLD=${MYSQL_THRESHOLD:-5}
-        - MYSQL_REPLICATION_THRESHOLD=${MYSQL_REPLICATION_THRESHOLD:-1}
-        - SOGO_THRESHOLD=${SOGO_THRESHOLD:-3}
-        - POSTFIX_THRESHOLD=${POSTFIX_THRESHOLD:-8}
-        - CLAMD_THRESHOLD=${CLAMD_THRESHOLD:-15}
-        - DOVECOT_THRESHOLD=${DOVECOT_THRESHOLD:-12}
-        - DOVECOT_REPL_THRESHOLD=${DOVECOT_REPL_THRESHOLD:-20}
-        - PHPFPM_THRESHOLD=${PHPFPM_THRESHOLD:-5}
-        - RATELIMIT_THRESHOLD=${RATELIMIT_THRESHOLD:-1}
-        - FAIL2BAN_THRESHOLD=${FAIL2BAN_THRESHOLD:-1}
-        - ACME_THRESHOLD=${ACME_THRESHOLD:-1}
-        - RSPAMD_THRESHOLD=${RSPAMD_THRESHOLD:-5}
-        - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
-        - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
-        - MAILQ_CRIT=${MAILQ_CRIT:-30}
+        - ../data/mailcow/assets/ssl:/etc/ssl/mail/:ro,z
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   IPV6_NETWORK: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+      #   LOG_LINES: ${LOG_LINES:-9999}
+      #   TZ: ${TZ}
+      #   DBNAME: ${DBNAME}
+      #   DBUSER: ${DBUSER}
+      #   DBPASS: ${DBPASS}
+      #   DBROOT: ${DBROOT}
+      #   USE_WATCHDOG: ${USE_WATCHDOG:-n}
+      #   WATCHDOG_NOTIFY_EMAIL: ${WATCHDOG_NOTIFY_EMAIL}
+      #   WATCHDOG_NOTIFY_BAN: ${WATCHDOG_NOTIFY_BAN:-y}
+      #   WATCHDOG_SUBJECT: ${WATCHDOG_SUBJECT:-Watchdog ALERT}
+      #   WATCHDOG_EXTERNAL_CHECKS: ${WATCHDOG_EXTERNAL_CHECKS:-n}
+      #   WATCHDOG_MYSQL_REPLICATION_CHECKS: ${WATCHDOG_MYSQL_REPLICATION_CHECKS:-n}
+      #   WATCHDOG_VERBOSE: ${WATCHDOG_VERBOSE:-n}
+      #   MAILCOW_HOSTNAME: ${MAILCOW_HOSTNAME}
+      #   COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+      #   IPV4_NETWORK: ${IPV4_NETWORK:-172.22.1}
+      #   IP_BY_DOCKER_API: ${IP_BY_DOCKER_API:-0}
+      #   CHECK_UNBOUND: ${CHECK_UNBOUND:-1}
+      #   SKIP_CLAMD: ${SKIP_CLAMD:-n}
+      #   SKIP_LETS_ENCRYPT: ${SKIP_LETS_ENCRYPT:-n}
+      #   SKIP_SOGO: ${SKIP_SOGO:-n}
+      #   HTTPS_PORT: ${HTTPS_PORT:-443}
+      #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
+      #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
+      #   EXTERNAL_CHECKS_THRESHOLD: ${EXTERNAL_CHECKS_THRESHOLD:-1}
+      #   NGINX_THRESHOLD: ${NGINX_THRESHOLD:-5}
+      #   UNBOUND_THRESHOLD: ${UNBOUND_THRESHOLD:-5}
+      #   REDIS_THRESHOLD: ${REDIS_THRESHOLD:-5}
+      #   MYSQL_THRESHOLD: ${MYSQL_THRESHOLD:-5}
+      #   MYSQL_REPLICATION_THRESHOLD: ${MYSQL_REPLICATION_THRESHOLD:-1}
+      #   SOGO_THRESHOLD: ${SOGO_THRESHOLD:-3}
+      #   POSTFIX_THRESHOLD: ${POSTFIX_THRESHOLD:-8}
+      #   CLAMD_THRESHOLD: ${CLAMD_THRESHOLD:-15}
+      #   DOVECOT_THRESHOLD: ${DOVECOT_THRESHOLD:-12}
+      #   DOVECOT_REPL_THRESHOLD: ${DOVECOT_REPL_THRESHOLD:-20}
+      #   PHPFPM_THRESHOLD: ${PHPFPM_THRESHOLD:-5}
+      #   RATELIMIT_THRESHOLD: ${RATELIMIT_THRESHOLD:-1}
+      #   FAIL2BAN_THRESHOLD: ${FAIL2BAN_THRESHOLD:-1}
+      #   ACME_THRESHOLD: ${ACME_THRESHOLD:-1}
+      #   RSPAMD_THRESHOLD: ${RSPAMD_THRESHOLD:-5}
+      #   OLEFY_THRESHOLD: ${OLEFY_THRESHOLD:-5}
+      #   MAILQ_THRESHOLD: ${MAILQ_THRESHOLD:-20}
+      #   ILQ_CRIT: ${MAILQ_CRIT:-30}
       networks:
         mailcow-network:
           aliases:
@@ -517,9 +535,11 @@ services:
         # oom_kill_disable: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      environment:
-        - DBROOT=${DBROOT}
-        - TZ=${TZ}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   - DBROOT=${DBROOT}
+      #   - TZ=${TZ}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
@@ -534,10 +554,12 @@ services:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data:Z
       ports:
         - "${SOLR_PORT:-127.0.0.1:18983}:8983"
-      environment:
-        - TZ=${TZ}
-        - SOLR_HEAP=${SOLR_HEAP:-1024}
-        - SKIP_SOLR=${SKIP_SOLR:-y}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   - TZ=${TZ}
+      #   - SOLR_HEAP=${SOLR_HEAP:-1024}
+      #   - SKIP_SOLR=${SKIP_SOLR:-y}
       networks:
         mailcow-network:
           aliases:
@@ -546,16 +568,18 @@ services:
     olefy-mailcow:
       image: mailcow/olefy:1.8.1
       restart: unless-stopped
-      environment:
-        - TZ=${TZ}
-        - OLEFY_BINDADDRESS=0.0.0.0
-        - OLEFY_BINDPORT=10055
-        - OLEFY_TMPDIR=/tmp
-        - OLEFY_PYTHON_PATH=/usr/bin/python3
-        - OLEFY_OLEVBA_PATH=/usr/bin/olevba3
-        - OLEFY_LOGLVL=20
-        - OLEFY_MINLENGTH=500
-        - OLEFY_DEL_TMP=1
+      # environment:
+      #   TZ: ${TZ}
+      #   OLEFY_BINDADDRESS: 0.0.0.0
+      #   OLEFY_BINDPORT: 10055
+      #   OLEFY_TMPDIR: /tmp
+      #   OLEFY_PYTHON_PATH: /usr/bin/python3
+      #   OLEFY_OLEVBA_PATH: /usr/bin/olevba3
+      #   OLEFY_LOGLVL: 20
+      #   OLEFY_MINLENGTH: 500
+      #   OLEFY_DEL_TMP: 1
+      env_file:
+        - ../data/secrets/mailcow.env
       networks:
         mailcow-network:
           aliases:
@@ -565,8 +589,10 @@ services:
       image: mcuadros/ofelia:latest
       restart: unless-stopped
       command: daemon --docker
-      environment:
-        - TZ=${TZ}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   - TZ=${TZ}
       depends_on:
         - sogo-mailcow
         - dovecot-mailcow
@@ -601,8 +627,10 @@ services:
         - watchdog-mailcow
         - dockerapi-mailcow
         - solr-mailcow
-      environment:
-        - TZ=${TZ}
+      env_file:
+        - ../data/secrets/mailcow.env
+      # environment:
+      #   - TZ=${TZ}
       security_opt:
         - label=disable
       privileged: true
@@ -613,20 +641,20 @@ services:
 
 networks:
   mailcow-network:
-    driver: overlay
-    # driver: bridge
-    # driver_opts:
-    #   com.docker.network.bridge.name: br-mailcow
-    # # enable_ipv6: true
-    # ipam:
-    #   driver: default
-    #   config:
-    #     - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
-    #     - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+    # driver: overlay
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-mailcow
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
+        - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
   caddy:
     external: true
-    driver: overlay
-    attachable: true
+    # driver: overlay
+    # attachable: true
 
 volumes:
   vmail-vol-1:
