@@ -1,7 +1,7 @@
 version: '3.9'
 services:
 
-    unbound-mailcow:
+    unbound:
       image: mailcow/unbound:1.15
       restart: unless-stopped
       environment:
@@ -11,16 +11,16 @@ services:
         - ../data/mailcow/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
       tty: true
       networks:
-        mailcow-network:
+        mailcow:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
           aliases:
             - unbound
 
-    mysql-mailcow:
+    mysql:
       image: mariadb:10.5
       restart: unless-stopped
       depends_on:
-        - unbound-mailcow
+        - unbound
       stop_grace_period: 45s
       volumes:
         - mysql-vol-1:/var/lib/mysql/:Z
@@ -31,11 +31,11 @@ services:
       # ports:
       #   - "${SQL_PORT:-127.0.0.1:13306}:3306"
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - mysql
 
-    redis-mailcow:
+    redis:
       image: redis:6-alpine
       restart: unless-stopped
       volumes:
@@ -47,12 +47,12 @@ services:
       sysctls:
         - net.core.somaxconn=4096
       networks:
-        mailcow-network:
+        mailcow:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
           aliases:
             - redis
 
-    clamd-mailcow:
+    clamd:
       image: mailcow/clamd:1.43
       restart: unless-stopped
       dns:
@@ -60,16 +60,16 @@ services:
       volumes:
         - ../data/mailcow/conf/clamav/:/etc/clamav/:Z
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - clamd
 
-    rspamd-mailcow:
+    rspamd:
       image: mailcow/rspamd:1.79
       restart: unless-stopped
       stop_grace_period: 30s
       depends_on:
-        - dovecot-mailcow
+        - dovecot
       env_file:
         - ../data/secrets/mailcow.env
       environment:
@@ -92,16 +92,16 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - rspamd
 
-    php-fpm-mailcow:
+    php-fpm:
       image: mailcow/phpfpm:1.78
       restart: unless-stopped
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
-        - redis-mailcow
+        - redis
       volumes:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
@@ -156,11 +156,11 @@ services:
       #   DEV_MODE: ${DEV_MODE:-n}
       #   WEBAUTHN_ONLY_TRUSTED_VENDORS: ${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - phpfpm
 
-    sogo-mailcow:
+    sogo:
       image: mailcow/sogo:1.106
       restart: unless-stopped
       # environment:
@@ -204,16 +204,16 @@ services:
         ofelia.job-exec.sogo_backup.schedule: "@every 24h"
         ofelia.job-exec.sogo_backup.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit 0\""
       networks:
-        mailcow-network:
+        mailcow:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
           aliases:
             - sogo
 
-    dovecot-mailcow:
+    dovecot:
       image: mailcow/dovecot:1.159
       restart: unless-stopped
       depends_on:
-        - mysql-mailcow
+        - mysql
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
@@ -280,22 +280,15 @@ services:
         ofelia.job-exec.dovecot_fts.command: "/usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true"
         ofelia.job-exec.dovecot_repl_health.schedule: "@every 5m"
         ofelia.job-exec.dovecot_repl_health.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/repl_health.sh\""
-      ulimits:
-        nproc: 65535
-        nofile:
-          soft: 20000
-          hard: 40000
-      networks:
-        mailcow-network:
-          ipv4_address: ${IPV4_NETWORK:-172.22.1}.250
-          aliases:
-            - dovecot
-
-    postfix-mailcow:
+      # ulimits:
+      #   nproc: 65535
+      #   nofile:
+      #     soft: 20000
+    postfix:
       image: mailcow/postfix:1.66
       restart: unless-stopped
       depends_on:
-        - mysql-mailcow
+        - mysql
       volumes:
         - ../data/mailcow/hooks/postfix:/hooks:Z
         - ../data/mailcow/conf/postfix:/opt/postfix/conf:z
@@ -324,12 +317,12 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
-        mailcow-network:
+        mailcow:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
           aliases:
             - postfix
 
-    memcached-mailcow:
+    memcached:
       image: memcached:alpine
       restart: unless-stopped
       env_file:
@@ -337,17 +330,17 @@ services:
       # environment:
       #   - TZ=${TZ}
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - memcached
 
-    nginx-mailcow:
+    nginx:
       image: nginx:mainline-alpine
       restart: unless-stopped
       depends_on:
-        - sogo-mailcow
-        - php-fpm-mailcow
-        - redis-mailcow
+        - sogo
+        - php-fpm
+        - redis
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
@@ -386,30 +379,30 @@ services:
       labels:
         caddy: mail.marcpartensky.com, mail.marc.wf, mail.marc.tf, m.marc.wf, m.marc.tf
         caddy.reverse_proxy: "{{upstreams 80}}"
-        traefik.enable: true
-        traefik.http.routers.nginx-mailcow.rule: Host(`mail.marcpartensky.com`)
-        traefik.http.routers.nginx-mailcow.entrypoints: websecure
-        traefik.http.routers.nginx-mailcow.tls.certresolver: tls
-        traefik.http.services.nginx-mailcow.loadbalancer.server.port: 80
+        traefik.enable: "true"
+        traefik.http.routers.nginx.rule: Host(`mail.marcpartensky.com`)
+        traefik.http.routers.nginx.entrypoints: websecure
+        traefik.http.routers.nginx.tls.certresolver: tls
+        traefik.http.services.nginx.loadbalancer.server.port: 80
       deploy:
         labels:
-          traefik.enable: true
-          traefik.http.routers.nginx-mailcow.rule: Host(`mail.marcpartensky.com`)
-          traefik.http.routers.nginx-mailcow.entrypoints: websecure
-          traefik.http.routers.nginx-mailcow.tls.certresolver: tls
-          traefik.http.services.nginx-mailcow.loadbalancer.server.port: 80
+          traefik.enable: "true"
+          traefik.http.routers.nginx.rule: Host(`mail.marcpartensky.com`)
+          traefik.http.routers.nginx.entrypoints: websecure
+          traefik.http.routers.nginx.tls.certresolver: tls
+          traefik.http.services.nginx.loadbalancer.server.port: 80
 
       networks:
         caddy:
-        mailcow-network:
+        mailcow:
           aliases:
             - nginx
 
-    acme-mailcow:
+    acme:
       image: mailcow/acme:1.81
       restart: unless-stopped
       depends_on:
-        - nginx-mailcow
+        - nginx
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       env_file:
@@ -441,20 +434,20 @@ services:
         - ../data/mailcow/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - acme
 
-    netfilter-mailcow:
+    netfilter:
       image: mailcow/netfilter:1.46
       restart: unless-stopped
       stop_grace_period: 30s
       depends_on:
-        - dovecot-mailcow
-        - postfix-mailcow
-        - sogo-mailcow
-        - php-fpm-mailcow
-        - redis-mailcow
+        - dovecot
+        - postfix
+        - sogo
+        - php-fpm
+        - redis
       privileged: true
       env_file:
         - ../data/secrets/mailcow.env
@@ -470,7 +463,7 @@ services:
       volumes:
         - /lib/modules:/lib/modules:ro
 
-    watchdog-mailcow:
+    watchdog:
       image: mailcow/watchdog:1.96
       restart: unless-stopped
       dns:
@@ -530,11 +523,11 @@ services:
       #   MAILQ_THRESHOLD: ${MAILQ_THRESHOLD:-20}
       #   ILQ_CRIT: ${MAILQ_CRIT:-30}
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - watchdog
 
-    dockerapi-mailcow:
+    dockerapi:
       image: mailcow/dockerapi:1.41
       restart: unless-stopped
       security_opt:
@@ -550,11 +543,11 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - dockerapi
 
-    solr-mailcow:
+    solr:
       image: mailcow/solr:1.8.1
       restart: unless-stopped
       volumes:
@@ -568,11 +561,11 @@ services:
       #   - SOLR_HEAP=${SOLR_HEAP:-1024}
       #   - SKIP_SOLR=${SKIP_SOLR:-y}
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - solr
 
-    olefy-mailcow:
+    olefy:
       image: mailcow/olefy:1.8.1
       restart: unless-stopped
       # environment:
@@ -588,11 +581,11 @@ services:
       env_file:
         - ../data/secrets/mailcow.env
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - olefy
 
-    ofelia-mailcow:
+    ofelia:
       image: mcuadros/ofelia:latest
       restart: unless-stopped
       command: daemon --docker
@@ -601,8 +594,8 @@ services:
       # environment:
       #   - TZ=${TZ}
       depends_on:
-        - sogo-mailcow
-        - dovecot-mailcow
+        - sogo
+        - dovecot
       labels:
         ofelia.enabled: "true"
       security_opt:
@@ -610,30 +603,30 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
-        mailcow-network:
+        mailcow:
           aliases:
             - ofelia
 
-    ipv6nat-mailcow:
+    ipv6nat:
       image: robbertkl/ipv6nat
       restart: unless-stopped
       depends_on:
-        - unbound-mailcow
-        - mysql-mailcow
-        - redis-mailcow
-        - clamd-mailcow
-        - rspamd-mailcow
-        - php-fpm-mailcow
-        - sogo-mailcow
-        - dovecot-mailcow
-        - postfix-mailcow
-        - memcached-mailcow
-        - nginx-mailcow
-        - acme-mailcow
-        - netfilter-mailcow
-        - watchdog-mailcow
-        - dockerapi-mailcow
-        - solr-mailcow
+        - unbound
+        - mysql
+        - redis
+        - clamd
+        - rspamd
+        - php-fpm
+        - sogo
+        - dovecot
+        - postfix
+        - memcached
+        - nginx
+        - acme
+        - netfilter
+        - watchdog
+        - dockerapi
+        - solr
       env_file:
         - ../data/secrets/mailcow.env
       # environment:
@@ -647,14 +640,15 @@ services:
         - /lib/modules:/lib/modules:ro
 
 networks:
-  mailcow-network:
+  mailcow:
     # driver: overlay
-    driver: bridge
+    # # driver: bridge
     driver_opts:
       com.docker.network.bridge.name: br-mailcow
-    enable_ipv6: true
+    # enable_ipv6: true
     ipam:
-      driver: default
+    #   driver: default
+    # driver: overlay
       config:
         - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
         - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
