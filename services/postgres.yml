@@ -8,6 +8,7 @@ services:
       - postgres:/var/lib/postgresql/data
     env_file:
       - ../data/secrets/postgres.env
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"] # log level verbose
     networks:
       - postgres
 
@@ -16,6 +17,4 @@ volumes:
 
 networks:
   postgres:
-    external: true
-  caddy:
     external: true
