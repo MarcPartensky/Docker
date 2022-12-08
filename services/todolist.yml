@@ -1,14 +1,14 @@
 version: "3.9"
 
 services:
-  todolist:
+  front:
     image: marcpartensky/je-todoapp-react
     restart: unless-stopped
     environment:
       PORT: 80
       SPRING_API_URL: https://api.todolist.marcpartensky.com
     depends_on:
-      - todolist_api
+      - back
     networks:
       - caddy
     # entrypoint: ["/bin/sh", "-c", "'SPRING_API_URL=https://api.todolist.marcpartensky.com serve -s build'"]
@@ -16,60 +16,59 @@ services:
       caddy: todolist.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams}}"
       traefik.enable: "true"
-      traefik.http.routers.todolist.rule: Host(`todolist.marcpartensky.com`)
-      traefik.http.routers.todolist.entrypoints: websecure
-      traefik.http.routers.todolist.tls.certresolver: tls
-      traefik.http.services.todolist.loadbalancer.server.port: 80
+      traefik.http.routers.front.rule: Host(`todolist.marcpartensky.com`)
+      traefik.http.routers.front.entrypoints: websecure
+      traefik.http.routers.front.tls.certresolver: tls
+      traefik.http.services.front.loadbalancer.server.port: 80
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.todolist.rule: Host(`todolist.marcpartensky.com`)
-        traefik.http.routers.todolist.entrypoints: websecure
-        traefik.http.routers.todolist.tls.certresolver: tls
-        traefik.http.services.todolist.loadbalancer.server.port: 80
+        traefik.http.routers.front.rule: Host(`todolist.marcpartensky.com`)
+        traefik.http.routers.front.entrypoints: websecure
+        traefik.http.routers.front.tls.certresolver: tls
+        traefik.http.services.front.loadbalancer.server.port: 80
 
-  todolist_api:
+  back:
     image: marcpartensky/je-todoapp-spring-api
     restart: unless-stopped
     env_file:
       - ../data/secrets/todolist.env
     environment:
-      PORT: 80
-      POSTGRES_HOST: todolist_postgres
+      # PORT: 80
+      POSTGRES_HOST: postgres
     depends_on:
-      - todolist_postgres
+      - postgres
     networks:
       - caddy
       - todolist
     labels:
       caddy: api.todolist.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams http 8080}}"
+      caddy.reverse_proxy: "{{ upstreams 8080 }}"
       traefik.enable: "true"
-      traefik.http.routers.todolist_api.rule: Host(`api.todolist.marcpartensky.com`)
-      traefik.http.routers.todolist_api.entrypoints: websecure
-      traefik.http.routers.todolist_api.tls.certresolver: tls
-      traefik.http.services.todolist_api.loadbalancer.server.port: 8080
+      traefik.http.routers.back.rule: Host(`api.todolist.marcpartensky.com`)
+      traefik.http.routers.back.entrypoints: websecure
+      traefik.http.routers.back.tls.certresolver: tls
+      traefik.http.services.back.loadbalancer.server.port: 8080
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.todolist_api.rule: Host(`api.todolist.marcpartensky.com`)
-        traefik.http.routers.todolist_api.entrypoints: websecure
-        traefik.http.routers.todolist_api.tls.certresolver: tls
-        traefik.http.services.todolist_api.loadbalancer.server.port: 8080
+        traefik.http.routers.back.rule: Host(`api.todolist.marcpartensky.com`)
+        traefik.http.routers.back.entrypoints: websecure
+        traefik.http.routers.back.tls.certresolver: tls
+        traefik.http.services.back.loadbalancer.server.port: 8080
 
-  todolist_postgres:
-    image: postgres
+  postgres:
+    image: postgres:15
     restart: unless-stopped
     volumes:
-      - todolist_postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     env_file:
       - ../data/secrets/todolist.env
     networks:
-      - caddy
       - todolist
 
 volumes:
-  todolist_postgres:
+  postgres:
 
 networks:
   todolist:
