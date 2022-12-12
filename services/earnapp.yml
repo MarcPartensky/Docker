@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  image: fazalfarhan01/earnapp:lite
+  volumes:
+      - earnapp:/etc/earnapp
+  environment:
+    EARNAPP_UUID: $EARNAPP_DEVICE_ID
