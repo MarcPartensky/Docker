@@ -6,6 +6,8 @@ services:
     volumes:
       - ../data/postgres:/docker-entrypoint-initdb.d
       - postgres:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:5432:5432
     env_file:
       - ../data/secrets/postgres.env
     command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"] # log level verbose
