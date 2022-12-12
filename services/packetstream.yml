@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  client:
+    image: packetstream/psclient:latest
+    environment:
+      CID: 4bYb
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   command: --cleanup --include-stopped --revive-stopped --interval 60 ${_COMPOSE_PROJECT_NAME}_Packetstream_PsClient_${_COMPOSE_PROJECT_STACK_ID}
+  #   volumes:
+  #       - /var/run/docker.sock:/var/run/docker.sock
