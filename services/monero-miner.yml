@@ -11,3 +11,10 @@ services:
     #   -u $WALLET \
     #   -k  \
     #   --cpu-priority=2
+    deploy:
+      resources:
+        reservations:
+            cpus: "4"
+            # memory: "512M"
+            memory: "5G"
+
