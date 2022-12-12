@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  traffmonetizer:
+    image: marcpartensky/traffmonetizer
+    env_file:
+      - ../data/secrets/traffmonetizer.env
