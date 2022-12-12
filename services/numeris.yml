@@ -7,10 +7,10 @@ services:
     env_file:
       - ../data/secrets/numeris.env
     links:
-      - numeris_mysql:db
+      - numeris:db
     networks:
       - caddy
-      - numeris_mysql
+      - numeris
     deploy:
       labels:
         traefik.enable: "true"
@@ -24,9 +24,9 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     networks:
-      - numeris_mysql
+      - numeris
     volumes:
-    - numeris_mysql:/var/lib/mysql
+    - numeris:/var/lib/mysql
     env_file:
       - ../data/secrets/numeris.env
 
@@ -34,7 +34,7 @@ services:
     image: numerisisep/numeris-back:prod
     networks:
       - caddy
-      - numeris_mysql
+      - numeris
     env_file:
       - ../data/secrets/numeris.env
     # volumes:
@@ -61,11 +61,11 @@ services:
         traefik.http.routers.front.middlewares: ldap_auth
 
 networks:
-  numeris_mysql:
+  numeris:
   caddy:
     external: true
 
 volumes:
-  numeris_mysql:
+  numeris:
   caddy_data:
   mysql:
