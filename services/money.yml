@@ -4,14 +4,17 @@ services:
     image: repocket/repocket
     env_file:
       - ../data/secrets/repocket.env
+
   traffmonetizer:
     image: marcpartensky/traffmonetizer
     env_file:
       - ../data/secrets/traffmonetizer.env
+
   packetstream:
     image: packetstream/psclient:latest
     environment:
       CID: 4bYb
+
   peer2profit:
     image: peer2profit/peer2profit_x86_64:latest
     environment:
