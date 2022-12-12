@@ -19,3 +19,10 @@ services:
     image: peer2profit/peer2profit_x86_64:latest
     environment:
       P2P_EMAIL: marc@marcpartensky.com
+
+# earnapp:
+#   image: fazalfarhan01/earnapp:lite
+#   volumes:
+#     - earnapp:/etc/earnapp
+#   environment:
+#     EARNAPP_UUID: $EARNAPP_DEVICE_ID
