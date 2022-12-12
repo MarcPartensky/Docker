@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  repocket:
+    image: repocket/repocket
+    env_file:
+      - ../data/secrets/repocket.env
