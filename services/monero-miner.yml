@@ -13,7 +13,11 @@ services:
     #   --cpu-priority=2
     deploy:
       resources:
-        reservations:
+        # reservations:
+        #     cpus: "2"
+        #     # memory: "512M"
+        #     memory: "5G"
+        limits:
             cpus: "4"
             # memory: "512M"
             memory: "5G"
