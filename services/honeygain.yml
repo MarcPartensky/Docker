@@ -3,4 +3,4 @@ services:
   honeygain:
     image: marcpartensky/honeygain
     env_file:
-      - ../data/secrets/hongeygain.env
+      - ../data/secrets/honeygain.env
