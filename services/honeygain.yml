@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  honeygain:
+    image: marcpartensky/honeygain
+    env_file:
+      - ../data/secrets/hongeygain.env
