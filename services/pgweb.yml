@@ -10,10 +10,6 @@ services:
       - caddy
     # depends_on:
     #   - postgres
-    # healthcheck:
-    #   test: ["CMD", "wget", "-q", "localhost:8081", "-O", "/dev/null"]
-    # healthcheck:
-    #   test: ["CMD", "nc", "-vz", "127.0.0.1", "8081"]
     labels:
       caddy: pgweb.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8081}}"
