@@ -20,8 +20,6 @@ services:
       # - /etc/localtime:/etc/localtime:ro
     ports:
       - "7012:22"
-    depends_on:
-      - gitea_postgres
     labels:
       caddy: gitea.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 3000}}"
@@ -44,5 +42,7 @@ volumes:
 
 networks:
   gitea:
+  postgre:
+    external: true
   caddy:
     external: true
