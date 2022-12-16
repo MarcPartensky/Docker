@@ -13,9 +13,10 @@ export:
 	gpg --encrypt --recipient 'marc.partensky@gmail.com' data.tgz
 	rm data.tgz
 networks:
-	docker network create --driver overlay --attachable caddy
-	docker network create --driver overlay --attachable ldap
-	docker network create --driver overlay --attachable postgres
+	docker network create --driver overlay --attachable caddy || true
+	docker network create --driver overlay --attachable ldap || true
+	docker network create --driver overlay --attachable postgres || true
+	docker network create --driver overlay --subnet 172.22.1.0/24 --gateway 172.22.1.1 --attachable mailcow || true
 node:
 	docker node update --label-add net=web contabo
 	docker node update --label-add net=none tower
