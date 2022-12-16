@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  homeassistant:
+    restart: unless-stopped
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - config:/config
+      - /etc/localtime:/etc/localtime:ro
+    privileged: true
+    network_mode: host
