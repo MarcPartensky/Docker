@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  pawns:
+    image: marcpartensky/pawns
+    env_file:
+      - ../data/secrets/pawns.env
+
