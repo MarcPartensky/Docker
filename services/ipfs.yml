@@ -12,10 +12,10 @@ services:
     networks:
       - caddy
     ports:
-      # - 80:80
+      # - 80:80 #dumb http client
       # - 443:443 #optional
       - 4001:4001
-      - 127.0.0.1:5001:5001
+      - 5001:5001
       - 8080:8080
     deploy:
       labels:
@@ -23,7 +23,7 @@ services:
         traefik.http.routers.ipfs.rule: Host(`ipfs.marcpartensky.com`)
         traefik.http.routers.ipfs.entrypoints: websecure
         traefik.http.routers.ipfs.tls.certresolver: tls
-        traefik.http.services.ipfs.loadbalancer.server.port: 80
+        traefik.http.services.ipfs.loadbalancer.server.port: 5001
         traefik.http.routers.ifps.middlewares: ldap_auth
 
 volumes:
