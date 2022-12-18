@@ -27,11 +27,15 @@ services:
         traefik.http.routers.ifps.middlewares: ldap_auth
         # traefik.frontend.redirect.regex: ^https://ipfs.marcpartensky.com$$
         # the middleware 'add-context' must be defined so that the regex rules can be attached to it
-        traefik.http.routers.ifps.middlewares: add-context
-
-        # here is the logic provided by gustavomtborges of this gist:
-        traefik.http.middlewares.add-context.redirectregex.regex: ^https:\\/\\/([^\\/]+)\\/?$$
-        traefik.http.middlewares.add-context.redirectregex.replacement: https://$$1/webui
+        # traefik.http.routers.ifps.middlewares: add-context
+        #
+        # # here is the logic provided by gustavomtborges of this gist:
+        # traefik.http.middlewares.add-context.redirectregex.regex: ^https:\\/\\/([^\\/]+)\\/?$$
+        # traefik.http.middlewares.add-context.redirectregex.replacement: https://$$1/webui
+        #
+        traefik.http.routers.service_nextcloud.middlewares: custom_repath
+        traefik.http.middlewares.custom_repath.replacepathregex.regex: ^/$$
+        traefik.http.middlewares.custom_repath.replacepathregex.replacement: /webui
 
 volumes:
   ipfs:
