@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  ipfs:
+    restart: unless-stopped
+    image: lscr.io/linuxserver/ipfs
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Paris
+    volumes:
+      - /path/to/data:/config
+    ports:
+      - 80:80
+      # - 443:443 #optional
+      - 4001:4001
+      - 127.0.0.1:5001:5001
+      - 8080:8080
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.ipfs.rule: Host(`ipfs.marcpartensky.com`)
+        traefik.http.routers.ipfs.entrypoints: websecure
+        traefik.http.routers.ipfs.tls.certresolver: tls
+        traefik.http.services.ipfs.loadbalancer.server.port: 80
