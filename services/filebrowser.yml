@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     # user: "${UID}:${GID}"
     volumes:
-      - /root/data
+      - /root:/data
       - config:/config
     # environment:
       # FB_BASEURL: /filebrowser
@@ -15,7 +15,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.filebrowser.rule: Host(`filebrowser.marcpartensky.com`)
+        traefik.http.routers.filebrowser.rule: Host(`file.marcpartensky.com`)
         traefik.http.routers.filebrowser.entrypoints: websecure
         traefik.http.routers.filebrowser.tls.certresolver: tls
         traefik.http.services.filebrowser.loadbalancer.server.port: 8080
