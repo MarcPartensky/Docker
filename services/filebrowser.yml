@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  filebrowser:
+    image: hurlenko/filebrowser
+    restart: unless-stopped
+    # user: "${UID}:${GID}"
+    volumes:
+      - data:/data
+      - config:/config
+    # environment:
+      # FB_BASEURL: /filebrowser
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.filebrowser.rule: Host(`filebrowser.marcpartensky.com`)
+        traefik.http.routers.filebrowser.entrypoints: websecure
+        traefik.http.routers.filebrowser.tls.certresolver: tls
+        traefik.http.services.filebrowser.loadbalancer.server.port: 8080
+        traefik.http.routers.filebrowser.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
+
+volumes:
+  data:
+  config:
