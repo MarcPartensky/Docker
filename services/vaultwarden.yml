@@ -1,11 +1,7 @@
 version: "3.9"
 services:
   ldap_sync:
-    # image:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: marcpartensky/vaultwarden-ldap
     environment:
       CONFIG_PATH: /config.toml
       RUST_BACKTRACE: 1
