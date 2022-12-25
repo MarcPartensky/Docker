@@ -22,8 +22,11 @@ services:
     image: vaultwarden/server
     environment:
       ADMIN_TOKEN: admin
-      SIGNUPS_ALLOWED: 'false'
-      INVITATIONS_ALLOWED: 'true'
+      SIGNUPS_ALLOWED: "false"
+      INVITATIONS_ALLOWED: "true"
+      WEBSOCKET_ENABLED: "true"
+    volumes:
+      - data:/data
     networks:
       - caddy
     labels:
@@ -49,6 +52,8 @@ services:
   #   environment:
   #     PHPLDAPADMIN_HTTPS: 'false'
   #     PHPLDAPADMIN_LDAP_HOSTS: ldap
+volumes:
+  data:
 
 networks:
   caddy:
