@@ -1,0 +1,5 @@
+version: "3.9"
+services:
+  nixos:
+    image: nixos/nix
+    restart: unless-stopped
