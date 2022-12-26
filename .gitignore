@@ -14,5 +14,6 @@ data/pihole/etc-pihole
 data/pxe
 data/postgres
 data/wireguard
+data/vaultwarden
 data.tar.gz
 services/template.yml
