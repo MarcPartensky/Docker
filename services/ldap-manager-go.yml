@@ -2,8 +2,28 @@ version: "3.9"
 services:
   ldap_manager_go:
     image: romnn/ldap-manager
-    command: --generate
-  # ports:
+    # command: --generate
+    environment:
+      HTTP_PORT: 80
+      LDAP_HOST: "ldap"
+      LDAP_PORT: 636
+      LDAP_ADMIN_PASSWORD: admin
+      LDAP_CONFIG_PASSWORD: config
+
+      LDAP_ORGANIZATION: Marc Partensky
+      LDAP_DOMAIN: marcpartensky.com
+      DAP_BASE_DN: dc=admin,dc=org
+
+      # DEFAULT_ADMIN_USERNAME: ldapadmin
+      # DEFAULT_ADMIN_PASSWORD: changeme
+      # FORCE_CREATE_ADMIN: "true"
+
+      LDAP_TLS: "false"
+      LDAP_USE_RFC2307BIS: "true"
+      
+      ISSUER: ldap@marcpartensky.com
+      AUDIENCE: marcpartensky.com
+      GENERATE: "true" # ports:
   #   - 9090:9090
    deploy:
       labels:
