@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  ldap_manager_go:
+    image: romnn/ldap-manager
+    command: --generate
+  # ports:
+  #   - 9090:9090
+   deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.ldap_manager_go.rule: Host(`ldapgo.marcpartensky.com`)
+        traefik.http.routers.ldap_manager_go.entrypoints: websecure
+        traefik.http.routers.ldap_manager_go.tls.certresolver: tls
+        traefik.http.services.ldap_manager_go.loadbalancer.server.port: 80
