@@ -15,7 +15,7 @@ services:
     # healthcheck:
     #   test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
 
-  mongo_express:
+  express:
     image: mongo-express
     restart: unless-stopped
     environment:
@@ -43,13 +43,14 @@ services:
         traefik.http.routers.mongo.entrypoints: websecure
         traefik.http.routers.mongo.tls.certresolver: tls
         traefik.http.services.mongo.loadbalancer.server.port: 8081
-        traefik.http.routers.duplicati.middlewares: ldap_auth
+        traefik.http.routers.mongo.middlewares: ldap_auth
 
 volumes:
   mongo:
 
 networks:
   mongo:
+    external: true
   caddy:
     external: true
     attachable: true
