@@ -19,8 +19,9 @@ services:
 
   vaultwarden:
     image: vaultwarden/server
+    env_file:
+      - ../data/secrets/vaultwarden.env
     environment:
-      ADMIN_TOKEN: admin
       SIGNUPS_ALLOWED: "false"
       INVITATIONS_ALLOWED: "true"
       WEBSOCKET_ENABLED: "true"
