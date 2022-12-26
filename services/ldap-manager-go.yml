@@ -3,12 +3,14 @@ services:
   ldap_manager_go:
     image: romnn/ldap-manager
     # command: --generate
+    env_file:
+     - ../data/secrets/ldap_manager_go.env
     environment:
       HTTP_PORT: 80
       LDAP_HOST: "ldap"
       LDAP_PORT: 636
-      LDAP_ADMIN_PASSWORD: admin
-      LDAP_CONFIG_PASSWORD: config
+      # LDAP_ADMIN_PASSWORD: admin
+      # LDAP_CONFIG_PASSWORD: config
 
       LDAP_ORGANIZATION: Marc Partensky
       LDAP_DOMAIN: marcpartensky.com
