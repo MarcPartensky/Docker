@@ -15,6 +15,7 @@ services:
     networks:
       - caddy
       - postgres
+      - ldap
       - nextcloud
         # depends_on:
         #   - nextcloud_mariadb
@@ -42,6 +43,8 @@ volumes:
 
 networks:
   nextcloud:
+  ldap:
+    external: true
   caddy:
     external: true
   postgres:
