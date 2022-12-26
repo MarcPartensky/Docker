@@ -16,6 +16,7 @@ networks:
 	docker network create --driver overlay --attachable caddy || true
 	docker network create --driver overlay --attachable ldap || true
 	docker network create --driver overlay --attachable postgres || true
+	docker network create --driver overlay --attachable mongo || true
 	docker network create --driver overlay --subnet 172.22.1.0/24 --gateway 172.22.1.1 --attachable mailcow || true
 node:
 	docker node update --label-add net=web contabo
