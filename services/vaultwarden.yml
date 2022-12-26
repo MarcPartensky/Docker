@@ -8,6 +8,9 @@ services:
     volumes:
       - ../data/vaultwarden/config.toml:/config.toml:ro
       # ./root.cert:/usr/src/vaultwarden_ldap/root.cert:ro
+    networks:
+      - vaultwarden
+      - ldap
     depends_on:
       - vaultwarden
     # networks:
@@ -25,6 +28,7 @@ services:
       - data:/data
     networks:
       - caddy
+      - vaultwarden
     labels:
       caddy: vault.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
@@ -52,5 +56,8 @@ volumes:
   data:
 
 networks:
+  vaultwarden:
+  ldap:
+    external: true
   caddy:
     external: true
