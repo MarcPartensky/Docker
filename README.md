@@ -9,7 +9,6 @@
 - https://ialab.marcpartensky.com
 - https://notebook.marcpartensky.com
 - https://searx.marcpartensky.com
-- https://cloud.marcpartensky.com
 - https://wordpress.marcpartensky.com
 - https://git.marcpartensky.com
 - https://gitlab.marcpartensky.com
@@ -21,9 +20,11 @@
 - https://swarm.marcpartensky.com
 - https://auth.marcpartensky.com
 - https://seafile.marcpartensky.com
+- https://cloud.marcpartensky.com
 - https://mail.marcpartensky.com
 - https://arch.marcpartensky.com
 - https://matrix.marcpartensky.com
+- https://vault.marcpartensky.com
 <!-- - https://dns.marcpartensky.com -->
 <!-- - https://glou.marcpartensky.com -->
 <!-- - https://minecraft.marcpartensky.com -->
