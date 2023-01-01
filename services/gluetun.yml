@@ -23,7 +23,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.services.gluetun.loadbalancer.server.port: 8200
+        traefik.http.services.gluetun.loadbalancer.server.port: 8000
         traefik.http.routers.gluetun.rule: Host(`gluetun.marcpartensky.com`)
         traefik.http.routers.gluetun.entrypoints: websecure
         traefik.http.routers.gluetun.tls.certresolver: tls
