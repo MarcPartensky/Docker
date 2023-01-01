@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  openvpn_client:
+    image: dperson/openvpn-client
+    device: /dev/net/tun
+    volumes:
+      - ../data/openvpn_client:/vpn
+      - 'vpn.server.name;username;password'
+    cap-add:
+      - NET_ADMIN
+    networks:
+      - vpn
+# sudo cp /path/to/vpn.crt /some/path/vpn-ca.crt
+networks:
+  vpn:
+    external: true
