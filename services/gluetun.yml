@@ -1,22 +1,32 @@
 version: "3.9"
 services:
-  openvpn_client:
+  gluetun:
     image: qmcgaw/gluetun
-  cap-add:
-    - NET_ADMIN
-  environment:
-    # VPN_SERVICE_PROVIDER: protonvpn
-    # VPN_SERVICE_PROVIDER: openvpn
-    OPENVPN_USER: marcpartensky
-    OPENVPN_PASSWORD: Lxxxxxxxxxyyyyyxxxxn
-    # SERVER_COUNTRIES: France
-    # FREE_ONLY: on # Only required when using ProtonVPN's free service
-  ports:
-    - 9091:9091
-    - 51413:51413
-    - 51413:51413/udp # Application container's ports to be published
-  networks:
-    - vpn
+    cap_add:
+      - NET_ADMIN
+    env_file:
+      - ../data/secrets/gluetun.env
+    # environment:
+    #   # VPN_SERVICE_PROVIDER: protonvpn
+    #   # VPN_SERVICE_PROVIDER: openvpn
+    #   OPENVPN_USER: marcpartensky
+    #   OPENVPN_PASSWORD: Lxxxxxxxxxyyyyyxxxxn
+    #   # SERVER_COUNTRIES: France
+    #   # FREE_ONLY: on # Only required when using ProtonVPN's free service
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp # Application container's ports to be published
+    networks:
+      - vpn
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.gluetun.loadbalancer.server.port: 8200
+        traefik.http.routers.gluetun.rule: Host(`gluetun.marcpartensky.com`)
+        traefik.http.routers.gluetun.entrypoints: websecure
+        traefik.http.routers.gluetun.tls.certresolver: tls
+        traefik.http.routers.gluetun.middlewares: ldap_auth 
 
 networks:
   vpn:
