@@ -19,6 +19,7 @@ services:
       - 51413:51413/udp # Application container's ports to be published
     networks:
       - vpn
+      - caddy
     deploy:
       labels:
         traefik.enable: "true"
@@ -30,4 +31,6 @@ services:
 
 networks:
   vpn:
+    external: true
+  caddy:
     external: true
