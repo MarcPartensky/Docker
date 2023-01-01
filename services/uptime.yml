@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  kuma:
+    image:  louislam/uptime-kuma:1
+    volumes:
+      - kuma:/app/data
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.kuma.loadbalancer.server.port: 3001
+        traefik.http.routers.kuma.rule: Host(`uptime.marcpartensky.com`)
+        traefik.http.routers.kuma.entrypoints: websecure
+        traefik.http.routers.kuma.tls.certresolver: tls
+        traefik.http.routers.kuma.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
+volumes:
+  kuma:
