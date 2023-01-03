@@ -5,12 +5,16 @@ services:
     cap-add:
       - NET_ADMIN
     ports:
-      - 9091
+      - 9091:9091
     environment:
       OPENVPN_PROVIDER: custom
       OPENVPN_CONFIG: france
       OPENVPN_USERNAME: user
       OPENVPN_PASSWORD: pass
       LOCAL_NETWORK: 192.168.0.0/16
-    -v /your/storage/path/:/data \
-    -v /your/config/path/:/config \
+    volumes:
+      - data:/data
+      - ../data/openvpnclient4/:/config
+
+volumes:
+  data:
