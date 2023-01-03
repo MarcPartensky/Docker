@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  openvpnclient:
+    image: haugene/transmission-openvpn
+    cap-add:
+      - NET_ADMIN
+    ports:
+      - 9091
+    environment:
+      OPENVPN_PROVIDER: custom
+      OPENVPN_CONFIG: france
+      OPENVPN_USERNAME: user
+      OPENVPN_PASSWORD: pass
+      LOCAL_NETWORK: 192.168.0.0/16
+    -v /your/storage/path/:/data \
+    -v /your/config/path/:/config \
