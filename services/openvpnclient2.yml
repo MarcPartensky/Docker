@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  openvpn_client2:
+    image: frauhottelmann/openvpn-client
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    command: --config /vpn/client.ovpn --askpass /vpn/client.pwd --auth-nocache --script-security 3 --data-ciphers AES-128-CBC
+    volumes:
+      - ../data/openvpn_client2:/vpn
+    networks:
+      - vpn
+    # network_mode: "bridge"
+networks:
+  vpn:
+    external: true
+
