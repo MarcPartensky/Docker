@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     # user: "${UID}:${GID}"
     volumes:
-      - /root:/data
-      - config:/config
+      - data:/data
+      - ../data/filebrowser:/config
     # environment:
       # FB_BASEURL: /filebrowser
     networks:
@@ -27,4 +27,3 @@ networks:
 
 volumes:
   data:
-  config:
