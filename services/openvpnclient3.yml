@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  openvpn-client:
+    image: ghcr.io/wfg/openvpn-client
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    volumes:
+      - ../data/openvpn_client3:/data/vpn
