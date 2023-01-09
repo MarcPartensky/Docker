@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  terminal:
+    image: raonigabriel/web-terminal:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.terminal.loadbalancer.server.port: 7681
+        traefik.http.routers.terminal.rule: Host(`terminal.marcpartensky.com`)
+        traefik.http.routers.terminal.entrypoints: websecure
+        traefik.http.routers.terminal.tls.certresolver: tls
+        traefik.http.routers.terminal.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
