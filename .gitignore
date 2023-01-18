@@ -16,5 +16,6 @@ data/postgres
 data/wireguard
 data/vaultwarden
 data/filebrowser
+data/openvpn_*
 data.tar.gz
 services/template.yml
