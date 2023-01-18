@@ -2,18 +2,10 @@ version: "3.9"
 
 services:
   ialab:
-    image: marcpartensky/ialab
-    user: nobody
-    restart: unless-stopped
-    environment:
-      FLASK_APP: server.py
-    # entrypoint: "gunicorn server:app"
-    # entrypoint: "gunicorn --chdir /app server:app"
-    volumes:
-      - ialab:/app
+    image: marcpartensky/ialab:latest
+    # volumes:
+    #   - ialab:/app
     networks:
-      - caddy
-    depends_on:
       - caddy
     labels:
       caddy: ialab.marcpartensky.com
@@ -22,18 +14,18 @@ services:
       traefik.http.routers.ialab.rule: Host(`ialab.marcpartensky.com`)
       traefik.http.routers.ialab.entrypoints: websecure
       traefik.http.routers.ialab.tls.certresolver: tls
-      traefik.http.services.ialab.loadbalancer.server.port: 8000
+      traefik.http.services.ialab.loadbalancer.server.port: 80
     deploy:
       labels:
         traefik.enable: "true"
         traefik.http.routers.ialab.rule: Host(`ialab.marcpartensky.com`)
         traefik.http.routers.ialab.entrypoints: websecure
         traefik.http.routers.ialab.tls.certresolver: tls
-        traefik.http.services.ialab.loadbalancer.server.port: 8000
+        traefik.http.services.ialab.loadbalancer.server.port: 80
 
-volumes:
-  ialab:
-
+# volumes:
+#   ialab:
+#
 networks:
   caddy:
     external: true
