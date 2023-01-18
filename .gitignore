@@ -15,5 +15,6 @@ data/pxe
 data/postgres
 data/wireguard
 data/vaultwarden
+data/filebrowser
 data.tar.gz
 services/template.yml
