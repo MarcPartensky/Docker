@@ -18,4 +18,6 @@ data/vaultwarden
 data/filebrowser
 data/openvpn_*
 data.tar.gz
+data.7z
+data.7z.gpg
 services/template.yml
