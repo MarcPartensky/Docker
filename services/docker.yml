@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  docker_api:
+    image: marcpartensky/docker-api
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - discord
+
+  # db:
+  #   image: postgres
+  #   container_name: docker-app-db
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_USER: docker_user
+  #     POSTGRES_PASSWORD: d3kTrklm54208
+  #     POSTGRES_DB: docker
+ 
+  dash:
+    image: marcpartensky/docker-node-api
+    # depends_on:
+    #   - db
+    env_file:
+      - ../data/secrets/dockerdash.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - caddy
+      - postgres
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.dockerdash.loadbalancer.server.port: 8080
+        traefik.http.routers.dockerdash.rule: Host(`dockerdash.marcpartensky.com`)
+        traefik.http.routers.dockerdash.entrypoints: websecure
+        traefik.http.routers.dockerdash.tls.certresolver: tls
+        # traefik.http.routers.dockerdash.middlewares: ldap_auth
+
+networks:
+  discord:
+  postgres:
+    external: true
+  caddy:
+    external: true
