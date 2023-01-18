@@ -9,9 +9,9 @@ mswarm: merge
 down:
 	docker stack rm vps
 export:
-	tar cvzf data.tgz data
-	gpg --encrypt --recipient 'marc.partensky@gmail.com' data.tgz
-	rm data.tgz
+	7z a -p data.7z data
+	gpg --encrypt --sign --recipient 'marc@marcpartensky.com' data.7z
+	# rm data.tgz
 networks:
 	docker network create --driver overlay --attachable caddy || true
 	docker network create --driver overlay --attachable ldap || true
