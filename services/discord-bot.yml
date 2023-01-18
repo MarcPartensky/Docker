@@ -11,7 +11,7 @@ services:
     depends_on:
       - docker_api
     env_file:
-      - ../data/secrets/esclave.env
+      - ../data/secrets/discord-bot.env
     deploy:
       replicas: 1
 
