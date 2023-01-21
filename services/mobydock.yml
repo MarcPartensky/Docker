@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  mobydock:
+    image: marcpartensky/docker-node-api
+    # depends_on:
+    #   - db
+    env_file:
+      - ../data/secrets/mobydock.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - caddy
+      - postgres
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.mobydock.loadbalancer.server.port: 8080
+        traefik.http.routers.mobydock.rule: Host(`mobydock.marcpartensky.com`)
+        traefik.http.routers.mobydock.entrypoints: websecure
+        traefik.http.routers.mobydock.tls.certresolver: tls
+        # traefik.http.routers.dockerdash.middlewares: ldap_auth
+
+networks:
+  discord:
+  postgres:
+    external: true
+  caddy:
+    external: true
