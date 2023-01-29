@@ -25,15 +25,15 @@ services:
       - postgres
       - website
       - caddy
-    labels:
-      caddy: marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 80}}"
-      # caddy.tls: "internal"
-      traefik.enable: "true"
-      traefik.http.routers.website.rule: Host(`marcpartensky.com`)
-      traefik.http.routers.website.entrypoints: websecure
-      traefik.http.routers.website.tls.certresolver: tls
-      traefik.http.services.website.loadbalancer.server.port: 80
+    # labels:
+    #   caddy: marcpartensky.com
+    #   caddy.reverse_proxy: "{{upstreams 80}}"
+    #   # caddy.tls: "internal"
+    #   traefik.enable: "true"
+    #   traefik.http.routers.website.rule: Host(`marcpartensky.com, marcpartensky.fr`)
+    #   traefik.http.routers.website.entrypoints: websecure
+    #   traefik.http.routers.website.tls.certresolver: tls
+    #   traefik.http.services.website.loadbalancer.server.port: 80
     deploy:
       placement:
         constraints:
@@ -54,7 +54,8 @@ services:
           memory: "500M"
       labels:
         traefik.enable: "true"
-        traefik.http.routers.website.rule: Host(`marcpartensky.com`)
+        traefik.http.routers.website.rule: >
+          Host(`marcpartensky.com`) || Host(`marcpartensky.fr`)
         traefik.http.routers.website.entrypoints: websecure
         traefik.http.routers.website.tls.certresolver: tls
         traefik.http.services.website.loadbalancer.server.port: 80
