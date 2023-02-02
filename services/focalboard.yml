@@ -3,9 +3,13 @@ services:
   focalboard:
     image: mattermost/focalboard
     volumes:
-      - focalboard:/opt/focalboard/data
+      - data:/data
+      - ../data/focalboard/config.json:/opt/focalboard/config.json
+    environment:
+      EXCLUDE_ENTERPRISE: "1"
     networks:
-        - caddy
+      - caddy
+      - postgres
     deploy:
       labels:
         traefik.enable: "true"
@@ -16,7 +20,9 @@ services:
         traefik.http.services.focalboard.loadbalancer.server.port: 8000
 
 volumes:
-  focalboard:
+  data:
 networks:
+  postgres:
+    external: true
   caddy:
     external: true
