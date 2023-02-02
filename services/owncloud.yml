@@ -6,14 +6,19 @@ services:
     networks:
       - caddy
       - postgres
+    volumes:
+      - data:/var/www/html/data
     deploy:
       labels:
         traefik.enable: "true"
         traefik.http.services.owncloud.loadbalancer.server.port: 80
-        traefik.http.routers.owncloud.rule: Host(`owncloud.marcpartensky.com`)
+        traefik.http.routers.owncloud.rule: >
+          Host(`owncloud.marcpartensky.com`) || Host(`owncloud.marcpartensky.fr`)
         traefik.http.routers.owncloud.entrypoints: websecure
         traefik.http.routers.owncloud.tls.certresolver: tls
 
+volumes:
+  data:
 networks:
   caddy:
     external: true
