@@ -16,6 +16,7 @@ data/postgres
 data/wireguard
 data/vaultwarden
 data/filebrowser
+data/focalboard
 data/openvpn_*
 data.tar.gz
 data.7z
