@@ -1,8 +1,19 @@
 version: '3.9'
-# x-common:
-#   dns:
-#     &dns
-#     - 10.22.1.254
+x-common:
+  dns: &dns
+    dns:
+      - 10.22.1.254
+  redis: &redis
+    ipv4_address: 10.22.1.249
+  sogo: &sogo
+    ipv4_address: 10.22.1.248
+  nginx: &nginx
+    ipv4_address: 10.22.1.252
+  postfix: &postfix
+    ipv4_address: 10.22.1.253
+  unbound: &unbound
+    ipv4_address: 10.22.1.254
+
 
 services:
 
@@ -17,6 +28,7 @@ services:
       tty: true
       networks:
         mailcow:
+          <<: *unbound
           ipv4_address: 10.22.1.254
           aliases:
             - unbound
@@ -60,6 +72,7 @@ services:
         - net.core.somaxconn=4096
       networks:
         mailcow:
+          <<: *redis
           ipv4_address: 10.22.1.249
           aliases:
             - redis
@@ -67,8 +80,7 @@ services:
     clamd:
       image: mailcow/clamd:1.43
       restart: unless-stopped
-      dns:
-        - 10.22.1.254
+      <<: *dns
       volumes:
         - ../data/mailcow/conf/clamav/:/etc/clamav/:Z
       networks:
@@ -101,8 +113,7 @@ services:
         - ../data/mailcow/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
         - rspamd-vol-1:/var/lib/rspamd:z
       hostname: rspamd
-      dns:
-        - 10.22.1.254
+      <<: *dns
       networks:
         mailcow:
           aliases:
@@ -132,8 +143,7 @@ services:
         - ../data/mailcow/conf/dovecot/global_sieve_after:/global_sieve/after:z
         - ../data/mailcow/assets/templates:/tpls:z
         - ../data/mailcow/conf/nginx/:/etc/nginx/conf.d/:z
-      dns:
-        - 10.22.1.254
+      <<: *dns
       env_file:
         - ../data/secrets/mailcow.env
       # environment:
@@ -191,8 +201,7 @@ services:
       #   MASTER: ${MASTER:-y}
       #   REDIS_SLAVEOF_IP: ${REDIS_SLAVEOF_IP:-}
       #   REDIS_SLAVEOF_PORT: ${REDIS_SLAVEOF_PORT:-}
-      dns:
-        - 10.22.1.254
+      <<: *dns
       volumes:
         - ../data/mailcow/hooks/sogo:/hooks:Z
         - ../data/mailcow/conf/sogo/:/etc/sogo/:z
@@ -217,7 +226,8 @@ services:
         ofelia.job-exec.sogo_backup.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit 0\""
       networks:
         mailcow:
-          # ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
+          <<: *sogo
+          ipv4_address: 10.22.1.248
           aliases:
             - sogo
 
@@ -226,8 +236,7 @@ services:
       restart: unless-stopped
       depends_on:
         - mysql
-      dns:
-        - 10.22.1.254
+      <<: *dns
       cap_add:
         - NET_BIND_SERVICE
       volumes:
@@ -326,11 +335,11 @@ services:
         - "${SMTP_PORT:-25}:25"
         - "${SMTPS_PORT:-465}:465"
         - "${SUBMISSION_PORT:-587}:587"
-      dns:
-        - 10.22.1.254
+      <<: *dns
       networks:
         mailcow:
-          # ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
+          <<: *postfix
+          ipv4_address: 10.22.1.253
           aliases:
             - postfix
 
@@ -353,8 +362,7 @@ services:
         - sogo
         - php-fpm
         - redis
-      dns:
-        - 10.22.1.254
+      <<: *dns
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/sogo.template > /etc/nginx/conf.d/sogo.active &&
@@ -403,10 +411,11 @@ services:
           traefik.http.routers.nginx.entrypoints: websecure
           traefik.http.routers.nginx.tls.certresolver: tls
           traefik.http.services.nginx.loadbalancer.server.port: 80
-
       networks:
         caddy:
         mailcow:
+          <<: *nginx
+          ipv4_address: 10.22.1.252
           aliases:
             - nginx
 
@@ -415,8 +424,7 @@ services:
       restart: unless-stopped
       depends_on:
         - nginx
-      dns:
-        - 10.22.1.254
+      <<: *dns
       env_file:
         - ../data/secrets/mailcow.env
       # environment:
@@ -478,8 +486,7 @@ services:
     watchdog:
       image: mailcow/watchdog:1.96
       restart: unless-stopped
-      dns:
-        - 10.22.1.254
+      <<: *dns
       tmpfs:
         - /tmp
       volumes:
@@ -545,8 +552,7 @@ services:
       security_opt:
         - label=disable
         # oom_kill_disable: true
-      dns:
-        - 10.22.1.254
+      <<: *dns
       env_file:
         - ../data/secrets/mailcow.env
       # environment:
@@ -652,8 +658,8 @@ services:
     #     - /lib/modules:/lib/modules:ro
 
 networks:
-  # mailcow:
-  #   external: true
+  caddy:
+    external: true
   mailcow:
     driver: overlay
     attachable: true
@@ -666,8 +672,6 @@ networks:
     # # driver: bridge
     driver_opts:
       com.docker.network.bridge.name: br-mailcow
-  caddy:
-    external: true
 
 volumes:
   vmail-vol-1:
