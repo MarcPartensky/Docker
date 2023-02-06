@@ -15,11 +15,21 @@ providers:
   file:
     filename: dynamic.yml
 certificatesResolvers:
+  # https://community.traefik.io/t/help-with-multiple-certificate-resolvers/15134
   tls:
     acme:
       tlsChallenge: {}
       email: marc.partensky@gmail.com
-      storage: /letsencrypt/acme.json
+      storage: /config/acme.json
+  cloudflare:
+    acme:
+      email: marc.partensky@gmail.com
+      storage: /config/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+
 ping: {} # mandatory for healthcheck
 log:
   level: debug
