@@ -24,7 +24,8 @@ services:
         traefik.http.routers.ipfs.rule: >
           Host(`ipfs.marcpartensky.com`) || Host(`ipfs.marcpartensky.fr`)
         # traefik.http.routers.ipfs.entrypoints: websecure
-        traefik.http.routers.ipfs.tls.certresolver: tls
+        # traefik.http.routers.ipfs.tls.certresolver: tls
+        traefik.http.routers.ipfs.tls.certresolver: cloudflare
         traefik.http.services.ipfs.loadbalancer.server.port: 5001
         traefik.http.routers.ifps.middlewares: ldap_auth
         # traefik.frontend.redirect.regex: ^https://ipfs.marcpartensky.com$$
