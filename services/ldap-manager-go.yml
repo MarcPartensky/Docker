@@ -16,7 +16,8 @@ services:
       # LDAP_CONFIG_PASSWORD: config
 
       LDAP_ORGANIZATION: Marc Partensky
-      LDAP_DOMAIN: marcpartensky.com
+      # LDAP_DOMAIN: marcpartensky.com
+      LDAP_DOMAIN: marcpartensky.fr
       DAP_BASE_DN: dc=admin,dc=org
 
       # DEFAULT_ADMIN_USERNAME: ldapadmin
