@@ -34,7 +34,8 @@ services:
         traefik.http.routers.ldap_manager.rule: >
           Host(`auth.marcpartensky.com`) || Host(`auth.marcpartensky.fr`)
         traefik.http.routers.ldap_manager.entrypoints: websecure
-        traefik.http.routers.ldap_manager.tls.certresolver: tls
+        # traefik.http.routers.ldap_manager.tls.certresolver: tls
+        traefik.http.routers.ldap_manager.tls.certresolver: cloudflare
         traefik.http.services.ldap_manager.loadbalancer.server.port: 80
 
 networks:
