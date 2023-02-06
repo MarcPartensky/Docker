@@ -20,8 +20,10 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.ipfs.rule: Host(`ipfs.marcpartensky.com`)
-        traefik.http.routers.ipfs.entrypoints: websecure
+        # traefik.http.routers.ipfs.rule: Host(`ipfs.marcpartensky.com`)
+        traefik.http.routers.ipfs.rule: >
+          Host(`ipfs.marcpartensky.com`) || Host(`ipfs.marcpartensky.fr`)
+        # traefik.http.routers.ipfs.entrypoints: websecure
         traefik.http.routers.ipfs.tls.certresolver: tls
         traefik.http.services.ipfs.loadbalancer.server.port: 5001
         traefik.http.routers.ifps.middlewares: ldap_auth
