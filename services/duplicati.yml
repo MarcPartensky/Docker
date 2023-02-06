@@ -15,15 +15,16 @@ services:
       - duplicati_source:/source
     networks:
       - caddy
-    # labels:
-    #   caddy: duplicati.marcpartensky.com
-    #   caddy.reverse_proxy: "{{upstreams 8200}}"
-    #   traefik.enable: "true"
-    #   traefik.http.services.duplicati.loadbalancer.server.port: 8200
-    #   traefik.http.routers.duplicati.rule: Host(`duplicati.marcpartensky.com`)
-    #   traefik.http.routers.duplicati.entrypoints: websecure
-    #   traefik.http.routers.duplicati.tls.certresolver: tls
-    #   traefik.http.routers.duplicati.middlewares: ldap_auth
+    labels:
+      caddy: duplicati.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams 8200}}"
+      traefik.enable: "true"
+      traefik.http.services.duplicati.loadbalancer.server.port: 8200
+      traefik.http.routers.duplicati.rule: >
+        Host(`duplicati.marcpartensky.com`) || Host(`dupliati.marcpartensky.fr`)
+      traefik.http.routers.duplicati.entrypoints: websecure
+      # traefik.http.routers.duplicati.tls.certresolver: tls
+      traefik.http.routers.duplicati.middlewares: ldap_auth
     deploy:
       labels:
         traefik.enable: "true"
@@ -33,7 +34,8 @@ services:
           Host(`duplicati.marcpartensky.com`) || Host(`duplicati.marcpartensky.fr`)
         traefik.http.routers.duplicati.entrypoints: websecure
         # traefik.http.routers.duplicati.tls.certresolver: tls
-        traefik.http.routers.duplicati.middlewares: ldap_auth
+        traefik.http.routers.duplicati.tls.certresolver: cloudflare
+        # traefik.http.routers.duplicati.middlewares: ldap_auth
 
 volumes:
   duplicati_config:
