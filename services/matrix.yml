@@ -32,7 +32,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.matrix.rule: Host(`matrix.marcpartensky.com`)
+        traefik.http.routers.matrix.rule: >
+          Host(`matrix.marcpartensky.com`) || Host(`matrix.marcpartensky.fr`)
         traefik.http.routers.matrix.entrypoints: websecure
         traefik.http.routers.matrix.tls.certresolver: tls
         traefik.http.services.matrix.loadbalancer.server.port: 8008
