@@ -22,7 +22,7 @@ services:
     env_file:
       - ../data/secrets/vaultwarden.env
     environment:
-      SIGNUPS_ALLOWED: "false"
+      SIGNUPS_ALLOWED: "true"
       INVITATIONS_ALLOWED: "true"
       WEBSOCKET_ENABLED: "true"
     volumes:
@@ -40,9 +40,14 @@ services:
     #   traefik.http.services.vaultwarden.loadbalancer.server.port: 80
     deploy:
       labels:
+        # traefik.enable: "false"
         traefik.enable: "true"
+        # traefik.http.routers.vaultwarden.rule: >
+        #   Host(`vault.marcpartensky.com`)
         traefik.http.routers.vaultwarden.rule: >
-          Host(`vault.marcpartensky.com`) || Host(`vault.marcpartensky.fr`)
+          Host(`vault.marcpartensky.com`) ||
+          Host(`vault.marcpartensky.fr`) ||
+          Host(`secret.marcpartensky.fr`)
         traefik.http.routers.vaultwarden.entrypoints: websecure
         traefik.http.routers.vaultwarden.tls.certresolver: tls
         traefik.http.services.vaultwarden.loadbalancer.server.port: 80
