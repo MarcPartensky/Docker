@@ -1,3 +1,4 @@
+# https://doc.traefik.io/traefik/routing/overview/
 global:
   checkNewVersion: true
   sendAnonymousUsage: false
