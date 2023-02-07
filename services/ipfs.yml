@@ -20,10 +20,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.1'
           memory: 500M
         # reservations:
-        #   cpus: '1'
+        #   cpus: '0.1'
         #   memory: 100M
       labels:
         traefik.enable: "true"
