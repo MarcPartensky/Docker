@@ -5,25 +5,27 @@ services:
     image: searx/searx
     restart: unless-stopped
     volumes:
-      - ../data/searx:/etc/searx
+      - ../data/searx/templates:/etc/searx/templates
+      - ../data/searx/themes:/etc/searx/searx/static/themes
     environment:
       BASE_URL: https://searx.marcpartensky.com
     networks:
       - caddy
-    labels:
-      caddy: searx.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams}}"
-      traefik.enable: "true"
-      traefik.http.routers.searx.rule: Host(`searx.marcpartensky.com`)
-      traefik.http.routers.searx.entrypoints: websecure
-      traefik.http.routers.searx.tls.certresolver: tls
-      traefik.http.services.searx.loadbalancer.server.port: 8080
+    # labels:
+    #   caddy: searx.marcpartensky.com
+    #   caddy.reverse_proxy: "{{upstreams}}"
+    #   traefik.enable: "true"
+    #   traefik.http.routers.searx.rule: Host(`searx.marcpartensky.com`)
+    #   traefik.http.routers.searx.entrypoints: websecure
+    #   traefik.http.routers.searx.tls.certresolver: tls
+    #   traefik.http.services.searx.loadbalancer.server.port: 8080
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.searx.rule: Host(`searx.marcpartensky.com`)
+        traefik.http.routers.searx.rule: >
+          Host(`searx.marcpartensky.com`) || Host(`searx.marcpartensky.fr`)
         traefik.http.routers.searx.entrypoints: websecure
-        traefik.http.routers.searx.tls.certresolver: tls
+        # traefik.http.routers.searx.tls.certresolver: tls
         traefik.http.services.searx.loadbalancer.server.port: 8080
 
 # volumes:
