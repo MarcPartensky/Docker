@@ -10,23 +10,41 @@ services:
       - ldap
     volumes:
       - arch:/home/marc
-    labels:
-      caddy: arch.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 8080}}"
-      traefik.enable: "true"
-      traefik.http.routers.arch.rule: Host(`arch.marcpartensky.com`)
-      traefik.http.routers.arch.entrypoints: websecure
-      traefik.http.routers.arch.tls.certresolver: tls
-      traefik.http.services.arch.loadbalancer.server.port: 8080
-      traefik.http.routers.arch.middlewares: ldap_auth
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap.marcpartensky.com
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: "true"
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "ou=people,dc=admin,dc=org"
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
+    deploy:
+      labels:
+        caddy: arch.marcpartensky.com
+        caddy.reverse_proxy: "{{upstreams 8080}}"
+        traefik.enable: "true"
+        traefik.http.routers.arch.rule: Host(`arch.marcpartensky.com`)
+        traefik.http.routers.arch.entrypoints: websecure
+        traefik.http.routers.arch.tls.certresolver: tls
+        traefik.http.services.arch.loadbalancer.server.port: 8080
+        # traefik.http.routers.arch.middlewares: ldap_auth, sablier
+        #
+        # # sablier
+        # # The sablier URL service, must be reachable from the Traefik instance
+        # traefik.http.middlewares.sablier.plugin.sablierUrl: http://sablier:10000
+        # # Comma separated names of containers/services/deployments etc.
+        # traefik.http.middlewares.sablier.plugin.names: arch
+        # # The session duration after which containers/services/deployments instances are shutdown
+        # traefik.http.middlewares.sablier.plugin.sessionDuration: 1m
+        # # You can only use one strategy at a time
+        # # To do so, only declare `dynamic` or `blocking`
+        #
+        # # Dynamic strategy, provides the waiting webui
+        # # (Optional) Defaults to the middleware name
+        # traefik.http.middlewares.sablier.plugin.dynamic.displayName: Starting application
+        # # (Optional) Set to true or false to show details specifcally for this middleware, unset to use Sablier server defaults
+        # traefik.http.middlewares.sablier.plugin.dynamic.showDetails: "true"
+        # # (Optional) The theme to use
+        # traefik.http.middlewares.sablier.plugin.dynamic.theme: hacker-terminal
+        # # (Optional) The loading page refresh frequency
+        # traefik.http.middlewares.sablier.plugin.dynamic.refreshFrequency: 5s
+        #
+        # # Blocking strategy, waits until services are up and running
+        # # but will not wait more than `timeout`
+        # # blocking:
+        # #   timeout: 1m
 
 volumes:
   arch:
