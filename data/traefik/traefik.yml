@@ -14,6 +14,8 @@ providers:
     network: caddy
   file:
     filename: dynamic.yml
+serversTransport: # enable ssl backend
+  insecureSkipVerify: true
 certificatesResolvers:
   # https://community.traefik.io/t/help-with-multiple-certificate-resolvers/15134
   tls:
