@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  feroxbuster:
+    image: epi052/feroxbuster
+    volumes:
+      - /srv/feroxbuster:/srv
+    command: >
+      -u http://ravens-pu8yvgzavpu7ooyr.francecentral.cloudapp.azure.com
+      -x php
+      --wordlist /srv/rockyou.txt
