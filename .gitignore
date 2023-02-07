@@ -18,6 +18,7 @@ data/vaultwarden
 data/filebrowser
 data/focalboard
 data/openvpn_*
+data/mailcow
 data.tar.gz
 data.7z
 data.7z.gpg
