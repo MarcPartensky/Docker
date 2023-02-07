@@ -18,6 +18,13 @@ services:
       - 5001:5001
       - 8080:8080
     deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 500M
+        # reservations:
+        #   cpus: '1'
+        #   memory: 100M
       labels:
         traefik.enable: "true"
         # traefik.http.routers.ipfs.rule: Host(`ipfs.marcpartensky.com`)
