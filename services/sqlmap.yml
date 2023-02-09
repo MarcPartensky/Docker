@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  sqlmap: paoloo/sqlmap
+    volumes:
+      - sqlmap:/root/.sqlmap
+    command: --url http://ravens-pu8yvgzavpu7ooyr.francecentral.cloudapp.azure.com/Reunion_secrete-2021-08-16.php
+
+volumes:
+  sqlmap:
