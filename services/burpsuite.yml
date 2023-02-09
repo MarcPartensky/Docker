@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  burpserver: 
+    image: pschiffe/burp-server
+    ports:
+      - "4971:4971"
+    volumes:
+      - conf:/etc/burp
+      - data:/var/spool/burp
+    environment:
+      BURP_CLIENTS_CONFIG: "host1:pass1 host2:pass2 host3:pass3"
+    tmpfs:
+      - /run
+      - /tmp
+    privileged: true
+     # deploy:
+     #  labels:
+     #    traefik.enable: "true"
+     #    traefik.http.routers.burpserver.rule: Host(`burp.marcpartensky.fr`)
+     #    traefik.http.routers.burpserver.entrypoints: websecure
+     #    traefik.http.routers.burpserver.tls.certresolver: tls
+     #    traefik.http.services.burpserver.loadbalancer.server.port: 4971
+
+volumes:
+  conf:
+  data:
