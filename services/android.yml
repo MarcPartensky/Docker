@@ -4,7 +4,9 @@ services:
     image: budtmo/docker-android-x86-12.0
     restart: unless-stopped
     privileged: true
-    # ports:
+    networks:
+      - caddy
+    ports:
     #   - "6080:6080"
       - "5554:5554"
       - "5555:5555"
@@ -19,3 +21,7 @@ services:
         traefik.http.routers.android.entrypoints: websecure
         traefik.http.routers.android.tls.certresolver: cloudflare
         traefik.http.services.android.loadbalancer.server.port: 6080
+
+networks:
+  caddy:
+    external: true
