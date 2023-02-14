@@ -13,36 +13,38 @@ services:
       - ../data/secrets/gitea.env
     networks:
       - caddy
-      - gitea
+      - postgres
     volumes:
-      - gitea_ssh:/data/git/.ssh
-      - gitea:/data
+      - ssh:/data/git/.ssh
+      - data:/data
       # - /etc/localtime:/etc/localtime:ro
     ports:
-      - "7012:22"
-    labels:
-      caddy: gitea.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 3000}}"
-      traefik.enable: "true"
-      traefik.http.routers.gitea.rule: Host(`git.marcpartensky.com`)
-      traefik.http.routers.gitea.entrypoints: websecure
-      traefik.http.routers.gitea.tls.certresolver: tls
-      traefik.http.services.gitea.loadbalancer.server.port: 3000
+      - "42070:22"
+    # labels:
+    #   caddy: gitea.marcpartensky.com
+    #   caddy.reverse_proxy: "{{upstreams 3000}}"
+    #   traefik.enable: "true"
+    #   traefik.http.routers.gitea.rule: Host(`git.marcpartensky.com`)
+    #   traefik.http.routers.gitea.entrypoints: websecure
+    #   traefik.http.routers.gitea.tls.certresolver: tls
+    #   traefik.http.services.gitea.loadbalancer.server.port: 3000
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.gitea.rule: Host(`git.marcpartensky.com`)
+        # traefik.http.routers.gitea.rule: >
+        #   Host(`git.marcpartensky.com`) || Host(`git.marcpartensky.fr`)
+        traefik.http.routers.gitea.rule: Host(`git.marcpartensky.fr`)
         traefik.http.routers.gitea.entrypoints: websecure
-        traefik.http.routers.gitea.tls.certresolver: tls
+        # traefik.http.routers.gitea.tls.certresolver: tls
+        traefik.http.routers.gitea.tls.certresolver: cloudflare
         traefik.http.services.gitea.loadbalancer.server.port: 3000
 
 volumes:
-  gitea:
-  gitea_ssh:
+  data:
+  ssh:
 
 networks:
-  gitea:
-  postgre:
+  postgres:
     external: true
   caddy:
     external: true
