@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  dockvpn:
+    image: alekslitvinenk/openvpn
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - caddy
+    ports:
+      - 1194:1194/udp
+      # - 80:8080/tcp
+    environment:
+      HOST_ADDR: vpn.marcpartensky.fr
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.dockvpn.rule: >
+          Host(`dockvpn.marcpartensky.fr`)
+        traefik.http.routers.dockvpn.entrypoints: websecure
+        traefik.http.routers.dockvpn.tls.certresolver: tls
+        traefik.http.services.dockvpn.loadbalancer.server.port: 8080
+networks:
+  caddy:
+    external: true
