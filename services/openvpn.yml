@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  openvpn:
+    image: ghcr.io/linuxserver/openvpn-as
+    cap_add:
+      - NET_ADMIN
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Paris
+      # INTERFACE: eth0 #optional
+    volumes:
+      - config:/config
+    ports:
+      - 943:943
+      # - 9443:9443
+      - 1194:1194/udp
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.openvpn.rule: >
+          Host(`vpn.marcpartensky.fr`)
+        traefik.http.routers.openvpn.entrypoints: websecure
+        traefik.http.routers.openvpn.tls.certresolver: tls
+        traefik.http.services.openvpn.loadbalancer.server.port: 8008
+
+volumes:
+  config:
