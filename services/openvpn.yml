@@ -12,7 +12,7 @@ services:
     volumes:
       - config:/config
     ports:
-      - 943:943
+      # - 943:943 # web
       # - 9443:9443
       - 1194:1194/udp
     deploy:
@@ -22,7 +22,7 @@ services:
           Host(`vpn.marcpartensky.fr`)
         traefik.http.routers.openvpn.entrypoints: websecure
         traefik.http.routers.openvpn.tls.certresolver: tls
-        traefik.http.services.openvpn.loadbalancer.server.port: 8008
+        traefik.http.services.openvpn.loadbalancer.server.port: 943
 
 volumes:
   config:
