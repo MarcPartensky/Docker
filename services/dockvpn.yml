@@ -6,9 +6,13 @@ services:
       - NET_ADMIN
     networks:
       - caddy
+    devices:
+      - /dev/net/tun
     ports:
       - 1194:1194/udp
-      # - 80:8080/tcp
+      - 8080:8080/tcp
+    volumes:
+      - ../data/dockvpn:/opt/Dockovpn_data/clients
     environment:
       HOST_ADDR: vpn.marcpartensky.fr
     deploy:
@@ -17,7 +21,7 @@ services:
         traefik.http.routers.dockvpn.rule: >
           Host(`dockvpn.marcpartensky.fr`)
         traefik.http.routers.dockvpn.entrypoints: websecure
-        traefik.http.routers.dockvpn.tls.certresolver: tls
+        traefik.http.routers.dockvpn.tls.certresolver: cloudflare
         traefik.http.services.dockvpn.loadbalancer.server.port: 8080
 networks:
   caddy:
