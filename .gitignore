@@ -20,6 +20,7 @@ data/focalboard
 data/openvpn_*
 data/mailcow
 data/dockvpn
+data/hydra
 data.tar.gz
 data.7z
 data.7z.gpg
