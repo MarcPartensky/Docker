@@ -3,7 +3,8 @@ services:
   focalboard:
     image: mattermost/focalboard
     volumes:
-      - data:/data
+      - data:/opt/focalboard/data
+      - pack:/opt/focalboard/pack
       - ../data/focalboard/config.json:/opt/focalboard/config.json
     environment:
       EXCLUDE_ENTERPRISE: "1"
@@ -18,10 +19,11 @@ services:
         traefik.http.routers.focalboard.entrypoints: websecure
         # traefik.http.routers.focalboard.tls.certresolver: tls
         traefik.http.services.focalboard.loadbalancer.server.port: 8000
-        traefik.http.routers.focalboard.middlewares: ldap_auth
+        # traefik.http.routers.focalboard.middlewares: ldap_auth
 
 volumes:
   data:
+  pack:
 networks:
   postgres:
     external: true
