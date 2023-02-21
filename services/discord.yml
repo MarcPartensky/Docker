@@ -8,8 +8,6 @@ services:
       - "7010:8000"
     networks:
       - discord
-    depends_on:
-      - docker_api
     env_file:
       - ../data/secrets/discord-bot.env
     deploy:
@@ -22,12 +20,15 @@ services:
       - "7011:8000"
     networks:
       - discord
-    depends_on:
-      - docker_api
     env_file:
       - ../data/secrets/ia.env
     deploy:
       replicas: 1
+
+  chatgpt:
+    image: xxxbrian/discord_chatgpt_bot:latest
+    env_file:
+      - ../data/secrets/discord_chatgpt.env
 
 networks:
   discord:
