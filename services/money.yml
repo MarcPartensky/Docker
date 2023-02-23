@@ -1,5 +1,10 @@
 version: "3.9"
 services:
+  honeygain:
+    image: marcpartensky/honeygain
+    env_file:
+      - ../data/secrets/honeygain.env
+
   repocket:
     image: repocket/repocket
     env_file:
