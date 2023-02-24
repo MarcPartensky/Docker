@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  yt-dlp:
+    image: marcpartensky/yt-dlp
+    restart: unless-stopped
+    volumes:
+      - ~/Videos/Youtube:/srv
+    env_file:
+      - ../data/secrets/yt-dlp.env
