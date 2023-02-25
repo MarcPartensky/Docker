@@ -19,7 +19,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.etherpad.rule: Host(`pad.marcpartensky.com`)
+        traefik.http.routers.etherpad.rule: >
+          Host(`pad.marcpartensky.com`) && Host(`pad.marcpartensky.fr`)
         traefik.http.routers.etherpad.entrypoints: websecure
         traefik.http.routers.etherpad.tls.certresolver: tls
         traefik.http.services.etherpad.loadbalancer.server.port: 9001
