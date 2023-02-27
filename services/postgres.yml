@@ -26,6 +26,20 @@ services:
     networks:
       - postgres
 
+  pgbackups:
+    image: prodrigestivill/postgres-backup-local
+    restart: unless-stopped
+    # user: postgres:postgres
+    volumes:
+      - /srv/pgbackups:/backups
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    networks:
+      - postgres
+    env_file:
+      - ../data/secrets/pgbackups.env
 
 volumes:
   postgres:
