@@ -20,7 +20,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.routers.ytdlp.rule: >
-          Host(`ytdlp.marcpartensky.fr`)
+          Host(`yt.marcpartensky.fr`)
         traefik.http.routers.ytdlp.entrypoints: websecure
         traefik.http.routers.ytdlp.tls.certresolver: tls
         traefik.http.services.ytdlp.loadbalancer.server.port: 3033
