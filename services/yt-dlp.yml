@@ -7,3 +7,25 @@ services:
       - ~/Videos/Youtube:/srv
     env_file:
       - ../data/secrets/yt-dlp.env
+
+  webui:
+    image: ghcr.io/marcopeocchi/yt-dlp-web-ui:latest
+    restart: unless-stopped
+    volumes:
+      - ~/Videos/Youtube:/downloads
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.ytdlp.rule: >
+          Host(`ytdlp.marcpartensky.fr`)
+        traefik.http.routers.ytdlp.entrypoints: websecure
+        traefik.http.routers.ytdlp.tls.certresolver: tls
+        traefik.http.services.ytdlp.loadbalancer.server.port: 3033
+
+volumes:
+  ytdlp:
+networks:
+  caddy:
+    external: true
