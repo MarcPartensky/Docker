@@ -21,15 +21,16 @@ services:
     image: vaultwarden/server
     env_file:
       - ../data/secrets/vaultwarden.env
-    environment:
-      SIGNUPS_ALLOWED: "true"
-      INVITATIONS_ALLOWED: "true"
-      WEBSOCKET_ENABLED: "true"
+    # environment:
+    #   SIGNUPS_ALLOWED: "true"
+    #   INVITATIONS_ALLOWED: "true"
+    #   WEBSOCKET_ENABLED: "true"
     volumes:
       - data:/data
     networks:
       - caddy
       - vaultwarden
+      - postgres
     # labels:
     #   caddy: vault.marcpartensky.com
     #   caddy.reverse_proxy: "{{upstreams 80}}"
@@ -64,6 +65,8 @@ volumes:
 
 networks:
   vaultwarden:
+  postgres:
+    external: true
   ldap:
     external: true
   caddy:
