@@ -1,17 +1,22 @@
 version: "3.9"
 services:
   jellyfin:
-    restart: unless-stopped
-    image: lscr.io/linuxserver/jellyfin:latest
+    image: jellyfin/jellyfin:latest
     environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: Europe/Paris
-      # JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
+    #   PUID: 1000
+    #   PGID: 1000
+    #   TZ: Europe/Paris
+      JELLYFIN_PublishedServerUrl: jellyfin.marcpartensky.fr
+    devices:
+      - /dev/dri
     volumes:
-      - library:/config
-      - tvseries:/data/tvshows
-      - movies:/data/movies
+      - config:/config
+      - cache:/cache
+      - media:/media
+      - movies:/movies
+      - musics:/musics
+      - photos:/photos
+      - ~/Videos/Youtube:/videos
     # ports:
       # - 8920:8920 #optional https self signed
       # - 7359:7359/udp #optional lan discovery
@@ -21,15 +26,20 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.jellyfin.rule: Host(`jellyfin.marcpartensky.com`)
+        # traefik.http.routers.jellyfin.rule: Host(`jellyfin.marcpartensky.com`)
+        traefik.http.routers.jellyfin.rule: Host(`jellyfin.marcpartensky.fr`)
         traefik.http.routers.jellyfin.entrypoints: websecure
         traefik.http.routers.jellyfin.tls.certresolver: tls
         traefik.http.services.jellyfin.loadbalancer.server.port: 8096
 
 volumes:
-  library:
-  tvseries:
+  config:
+  cache:
+  media:
   movies:
+  musics:
+  photos:
+  videos:
 
 networks:
   caddy:
