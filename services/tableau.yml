@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   tableau:
-    image: pvtmert/tableau
+    image: marcpartensky/tableau-server
     restart: unless-stopped
     env_file:
       - ../data/secrets/tableau.env
@@ -11,7 +11,7 @@ services:
       caddy: tableau.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
       traefik.enable: "true"
-      traefik.http.routers.tableau.rule: Host(`tableau.marcpartensky.com`)
+      traefik.http.routers.tableau.rule: Host(`tableau.marcpartensky.fr`)
       traefik.http.routers.tableau.entrypoints: websecure
       traefik.http.routers.tableau.tls.certresolver: tls
       traefik.http.services.tableau.loadbalancer.server.port: 8080
