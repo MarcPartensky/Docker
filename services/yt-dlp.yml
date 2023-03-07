@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   yt-dlp:
+    # container_name: ytdlp
     image: marcpartensky/yt-dlp
     restart: unless-stopped
     volumes:
