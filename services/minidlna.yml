@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  minidlna:
+    image: geekduck/minidlna
+    volumes:
+      - music:/opt/Music
+      - videos:/opt/Videos
+      - pictures:/opt/Pictures
+      - ../data/minidlna/minidlna.conf:/etc/minidlna.conf
