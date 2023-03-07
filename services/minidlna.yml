@@ -6,6 +6,7 @@ services:
       - music:/opt/Music
       - videos:/opt/Videos
       - pictures:/opt/Pictures
+      - db:/var/cache/minidlna
       # - ../data/minidlna/minidlna.conf:/etc/minidlna.conf
     deploy:
       labels:
@@ -18,7 +19,9 @@ services:
         # traefik.http.routers.minidlna.tls.certresolver: tls
         traefik.http.routers.minidlna.tls.certresolver: cloudflare
         # traefik.http.routers.minidlna.middlewares: ldap_auth
+
 volumes:
   music:
   videos:
   pictures:
+  db:
