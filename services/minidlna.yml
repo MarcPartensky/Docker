@@ -7,3 +7,7 @@ services:
       - videos:/opt/Videos
       - pictures:/opt/Pictures
       - ../data/minidlna/minidlna.conf:/etc/minidlna.conf
+volumes:
+  music:
+  videos:
+  pictures:
