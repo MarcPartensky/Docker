@@ -6,7 +6,18 @@ services:
       - music:/opt/Music
       - videos:/opt/Videos
       - pictures:/opt/Pictures
-      - ../data/minidlna/minidlna.conf:/etc/minidlna.conf
+      # - ../data/minidlna/minidlna.conf:/etc/minidlna.conf
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.minidlna.loadbalancer.server.port: 8200
+        traefik.http.routers.minidlna.rule: Host(`minidlna.marcpartensky.fr`)
+        # traefik.http.routers.minidlna.rule: >
+        #   Host(`minidlna.marcpartensky.com`) || Host(`minidlna.marcpartensky.fr`)
+        traefik.http.routers.minidlna.entrypoints: websecure
+        # traefik.http.routers.minidlna.tls.certresolver: tls
+        traefik.http.routers.minidlna.tls.certresolver: cloudflare
+        # traefik.http.routers.minidlna.middlewares: ldap_auth
 volumes:
   music:
   videos:
