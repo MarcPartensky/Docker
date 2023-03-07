@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  ui:
+    image: alseambusher/crontab-ui
+    networks:
+      - caddy
+    # ports:
+    #   - 8000:8000
+    volumes:
+      - crontabs:/crontab-ui/crontabs
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.ui.loadbalancer.server.port: 8000
+        traefik.http.routers.ui.rule: Host(`cron.marcpartensky.fr`)
+        # traefik.http.routers.ui.rule: >
+        #   Host(`cron.marcpartensky.com`) || Host(`cron.marcpartensky.fr`)
+        traefik.http.routers.ui.entrypoints: websecure
+        # traefik.http.routers.ui.tls.certresolver: tls
+        traefik.http.routers.ui.tls.certresolver: cloudflare
+        traefik.http.routers.ui.middlewares: ldap_auth
+
+volumes:
+  crontabs:
+
+networks:
+  caddy:
+    external: true
