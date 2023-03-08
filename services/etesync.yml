@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  etesync:
+    image: victorrds/etesync
+    restart: unless-stopped
+    networks:
+      - caddy
+      - postgres
+    env_file:
+      - ../data/secrets/etesync.env
+    environment:
+      SUPER_USER: admin
+
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true
