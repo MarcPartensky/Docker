@@ -8,6 +8,8 @@ mswarm: merge
 	docker stack deploy -c stacks/docker-compose.yml vps
 down:
 	docker stack rm vps
+pull:
+	for file in services/*; do docker-compose -f $$file pull; done
 export:
 	7z a -p data.7z data
 	gpg --encrypt --sign --recipient 'marc@marcpartensky.com' data.7z
