@@ -32,10 +32,10 @@ services:
     # user: postgres:postgres
     volumes:
       - /srv/pgbackups:/backups
-    links:
-      - postgres
-    depends_on:
-      - postgres
+    # links:
+    #   - postgres
+    # depends_on:
+    #   - postgres
     networks:
       - postgres
     env_file:
