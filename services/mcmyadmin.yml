@@ -20,17 +20,18 @@ services:
       caddy.reverse_proxy: "{{upstreams 8080}}"
       authorize.with: marc
       traefik.enable: "true"
-      traefik.http.routers.minecraft.rule: Host(`mcadmin.marcpartensky.com`)
-      traefik.http.routers.minecraft.entrypoints: websecure
-      traefik.http.routers.minecraft.tls.certresolver: tls
-      traefik.http.services.minecraft.loadbalancer.server.port: 8080
+      traefik.http.routers.mcmyadmin.rule: Host(`mcmyadmin.marcpartensky.com`)
+      traefik.http.routers.mcmyadmin.entrypoints: websecure
+      traefik.http.routers.mcmyadmin.tls.certresolver: tls
+      traefik.http.services.mcmyadmin.loadbalancer.server.port: 8080
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.minecraft.rule: Host(`mcadmin.marcpartensky.com`)
-        traefik.http.routers.minecraft.entrypoints: websecure
-        traefik.http.routers.minecraft.tls.certresolver: tls
-        traefik.http.services.minecraft.loadbalancer.server.port: 8080
+        # traefik.http.routers.mcmyadmin.rule: Host(`mcmyadmin.marcpartensky.com`)
+        traefik.http.routers.mcmyadmin.rule: Host(`mcmyadmin.marcpartensky.fr`)
+        traefik.http.routers.mcmyadmin.entrypoints: websecure
+        traefik.http.routers.mcmyadmin.tls.certresolver: tls
+        traefik.http.services.mcmyadmin.loadbalancer.server.port: 8080
 
 volumes:
   mcmyadmin:
