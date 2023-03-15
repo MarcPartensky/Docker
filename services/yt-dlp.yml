@@ -5,6 +5,7 @@ services:
     image: marcpartensky/yt-dlp
     restart: unless-stopped
     volumes:
+      - ../data/yt-dlp:/root/downloads
       - ~/Videos/Youtube:/srv
     env_file:
       - ../data/secrets/yt-dlp.env
