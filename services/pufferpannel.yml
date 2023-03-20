@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  puffer:
+    image: pufferpanel/pufferpanel
+    networks:
+      - caddy
+    volumes:
+      - ../data/pufferpanel:/etc/pufferpanel
+      - pufferpanel:/var/lib/pufferpanel
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.puffer.loadbalancer.server.port: 8080
+        traefik.http.routers.puffer.rule: Host(`puffer.marcpartensky.fr`)
+        # traefik.http.routers.puffer.rule: >
+        #   Host(`puffer.marcpartensky.com`) || Host(`puffer.marcpartensky.fr`)
+        traefik.http.routers.puffer.entrypoints: websecure
+        # traefik.http.routers.puffer.tls.certresolver: tls
+        traefik.http.routers.puffer.tls.certresolver: cloudflare
+        # traefik.http.routers.puffer.middlewares: ldap_auth
+
+volumes:
+  pufferpanel:
+
+networks:
+  caddy:
+    external: true
