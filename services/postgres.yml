@@ -26,6 +26,15 @@ services:
     networks:
       - postgres
 
+  backup:
+    image: kartoza/pg-backup:14-3.1
+    env_file:
+      - ../data/secrets/pg_backup.env
+    networks:
+      - postgres
+    volumes:
+      - /srv/pg-backup:/backups
+
   pgbackups:
     image: prodrigestivill/postgres-backup-local
     restart: unless-stopped
