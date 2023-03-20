@@ -14,7 +14,8 @@ services:
       - ../data/matrix:/data
       # - matrix:/data
     networks:
-        - caddy
+      - caddy
+      - postgres
     healthcheck:
       test: ["CMD", "curl", "-fSs", "http://localhost:8008/health"]
       interval: 15s
@@ -39,5 +40,7 @@ services:
         traefik.http.services.matrix.loadbalancer.server.port: 8008
 
 networks:
+  postgres:
+    external: true
   caddy:
     external: true
