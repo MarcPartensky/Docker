@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  pg_backup:
+    image: kartoza/pg-backup:14-3.1
+    env_file:
+      - ../data/secrets/pg_backup.env
+    # environment:
+    #   POSTGRES_MAJOR_VERSION: 14
+    networks:
+      - postgres
+    volumes:
+      - /srv/pg-backup:/backups
+
+networks:
+  postgres:
+    external: true
