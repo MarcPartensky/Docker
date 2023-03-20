@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  controller:
+    image: cybercube/crafty-controller
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.controller.loadbalancer.server.port: 8000
+        traefik.http.routers.controller.rule: Host(`controller.marcpartensky.fr`)
+        # traefik.http.routers.controller.rule: >
+        #   Host(`controller.marcpartensky.com`) || Host(`controller.marcpartensky.fr`)
+        traefik.http.routers.controller.entrypoints: websecure
+        # traefik.http.routers.controller.tls.certresolver: tls
+        traefik.http.routers.controller.tls.certresolver: cloudflare
+        # traefik.http.routers.controller.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
