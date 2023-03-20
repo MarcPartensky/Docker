@@ -5,6 +5,8 @@ services:
     image: mongo
     restart: unless-stopped
     volumes:
+      - ../data/mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ../data/mongo/config:/etc/mongo
       - mongo:/data/db
     networks:
       - mongo
@@ -39,7 +41,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
+        # traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
+        traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.fr`)
         traefik.http.routers.mongo.entrypoints: websecure
         traefik.http.routers.mongo.tls.certresolver: tls
         traefik.http.services.mongo.loadbalancer.server.port: 8081
