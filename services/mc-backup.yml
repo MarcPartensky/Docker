@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  backups:
+  backup:
     image: itzg/mc-backup
     environment:
       BACKUP_INTERVAL: "1d"
@@ -18,6 +18,6 @@ services:
     - /srv/minecraft/champi:/data:ro
     # use a host attached directory so that it in turn can be backed up
     # to external/cloud storage
-    - ./mc-backups:/backups
+    - /srv/mcbackups:/backups
     # share network namespace with server to simplify rcon access
     # network_mode: "service:mc"
