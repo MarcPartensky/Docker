@@ -15,7 +15,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.filebrowser.rule: Host(`file.marcpartensky.com`)
+        # traefik.http.routers.filebrowser.rule: Host(`file.marcpartensky.com`)
+        traefik.http.routers.filebrowser.rule: Host(`file.marcpartensky.fr`)
         traefik.http.routers.filebrowser.entrypoints: websecure
         traefik.http.routers.filebrowser.tls.certresolver: tls
         traefik.http.services.filebrowser.loadbalancer.server.port: 8080
