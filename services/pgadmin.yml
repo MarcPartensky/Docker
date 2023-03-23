@@ -30,7 +30,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.pgadmin.rule: Host(`pgadmin.marcpartensky.com`)
+        # traefik.http.routers.pgadmin.rule: Host(`pgadmin.marcpartensky.com`)
+        traefik.http.routers.pgadmin.rule: Host(`pgadmin.marcpartensky.fr`)
         traefik.http.routers.pgadmin.entrypoints: websecure
         traefik.http.routers.pgadmin.tls.certresolver: tls
         traefik.http.services.pgadmin.loadbalancer.server.port: 80
