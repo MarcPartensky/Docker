@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  gpg:
+    image: marcpartensky/gpg
+    volumes:
+      - /srv:/srv
+      - ../data/gpg:/root/keys
