@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  minecraft_champi:
+  server:
     image: itzg/minecraft-server
     restart: unless-stopped
     environment:
@@ -28,6 +28,29 @@ services:
       - "25565:25565"
     networks:
       - minecraft
+
+  backup:
+    image: itzg/mc-backup
+    environment:
+      BACKUP_INTERVAL: "1d"
+      # instead of network_mode below, could declare RCON_HOST
+      SERVE_PORT: 25565
+      RCON_HOST: server
+      RCON_PORT: 25575
+      PAUSE_IF_NO_PLAYER: "true"
+      PLAYERS_ONLINE_CHECK_INTERVAL: 1h
+      TZ: Europe/Paris
+      DEST_DIR: /backups
+    networks:
+      - minecraft
+    volumes:
+    # mount the same volume used by server, but read-only
+    - /srv/minecraft/champi:/data:ro
+    # use a host attached directory so that it in turn can be backed up
+    # to external/cloud storage
+    - /srv/mcbackups:/backups
+    # share network namespace with server to simplify rcon access
+    # network_mode: "service:mc"
 
 # volumes:
 #   minecraft:
