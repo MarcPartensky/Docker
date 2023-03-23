@@ -28,8 +28,9 @@ services:
       labels:
         traefik.enable: "true"
         # traefik.http.routers.ipfs.rule: Host(`ipfs.marcpartensky.com`)
-        traefik.http.routers.ipfs.rule: >
-          Host(`ipfs.marcpartensky.com`) || Host(`ipfs.marcpartensky.fr`)
+        traefik.http.routers.ipfs.rule: Host(`ipfs.marcpartensky.fr`)
+        # traefik.http.routers.ipfs.rule: >
+        #   Host(`ipfs.marcpartensky.com`) || Host(`ipfs.marcpartensky.fr`)
         # traefik.http.routers.ipfs.entrypoints: websecure
         # traefik.http.routers.ipfs.tls.certresolver: tls
         traefik.http.routers.ipfs.tls.certresolver: cloudflare
