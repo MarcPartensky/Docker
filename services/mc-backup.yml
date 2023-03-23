@@ -9,7 +9,7 @@ services:
       SERVE_PORT: 25565
       RCON_HOST: minecraft
       RCON_PORT: 25575
-      PAUSE_IF_NO_PLAYER: true
+      PAUSE_IF_NO_PLAYER: "true"
       PLAYERS_ONLINE_CHECK_INTERVAL: 1h
       TZ: Europe/Paris
       DEST_DIR: /backups
