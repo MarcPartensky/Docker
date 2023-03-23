@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     ports:
       - "1194-1195:1194-1195/udp"
-    depends_on:
-        - pritunl_mongo
+    # depends_on:
+    #     - pritunl_mongo
     environment:
       REVERSE_PROXY: "true"
       TZ: Europe/Paris
@@ -26,6 +26,7 @@ services:
     # volumes:
     #   - /etc/localtime:/etc/localtime:ro
     networks:
+      - mongo
       - caddy
       - pritunl
     labels:
@@ -46,6 +47,8 @@ services:
 
 networks:
   caddy:
+    external: true
+  mongo:
     external: true
   pritunl:
     # internal: true
