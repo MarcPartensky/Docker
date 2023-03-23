@@ -41,16 +41,15 @@ services:
     #   traefik.http.services.vaultwarden.loadbalancer.server.port: 80
     deploy:
       labels:
-        # traefik.enable: "false"
         traefik.enable: "true"
         # traefik.http.routers.vaultwarden.rule: >
         #   Host(`vault.marcpartensky.com`)
         traefik.http.routers.vaultwarden.rule: >
-          Host(`vault.marcpartensky.com`) ||
-          Host(`vault.marcpartensky.fr`) ||
-          Host(`secret.marcpartensky.fr`)
+          # Host(`vault.marcpartensky.com`) ||
+          Host(`vault.marcpartensky.fr`)
+          # Host(`secret.marcpartensky.fr`)
         traefik.http.routers.vaultwarden.entrypoints: websecure
-        traefik.http.routers.vaultwarden.tls.certresolver: tls
+        traefik.http.routers.vaultwarden.tls.certresolver: cloudflare
         traefik.http.services.vaultwarden.loadbalancer.server.port: 80
 
   # ldap_admin:
