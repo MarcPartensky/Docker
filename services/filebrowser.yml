@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     # user: "${UID}:${GID}"
     volumes:
-      - data:/data
+      - /root/Videos:/data
       - ../data/filebrowser:/config
     # environment:
       # FB_BASEURL: /filebrowser
