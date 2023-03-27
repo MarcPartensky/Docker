@@ -14,7 +14,8 @@ network_name = os.environ['DOCKER_NETWORK_NAME']
 c.SwarmSpawner.network_name = network_name
 c.SwarmSpawner.remove_containers = True
 c.SwarmSpawner.debug = True
-c.SwarmSpawner.image = "jupyterhub/singleuser:latest"
+# c.SwarmSpawner.image = "jupyterhub/singleuser:latest"
+c.SwarmSpawner.image = os.environ["DOCKER_IMAGE"]
 c.SwarmSpawner.host_ip = "0.0.0.0"
 
 # Persistence
@@ -25,7 +26,7 @@ c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
 # Authentication
 # c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
 c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
-c.LDAPAuthenticator.server_address = "marcpartensky.com"
+c.LDAPAuthenticator.server_address = "ldap"
 c.LDAPAuthenticator.use_ssl = True
 c.LDAPAuthenticator.bind_dn_template = [
     "uid={username},ou=people,dc=admin,dc=org",

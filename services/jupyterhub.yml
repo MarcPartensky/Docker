@@ -9,10 +9,11 @@ services:
       - ../data/jupyterhub/jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py
       # - jupyterhub:/srv/jupyterhub
     networks:
-    - caddy
-    - jupyterhub
+      - ldap
+      - caddy
+      - jupyterhub
     environment:
-      DOCKER_JUPYTER_IMAGE: marcpartensky/jupyterlab
+      DOCKER_IMAGE: marcpartensky/jupyterlab
       DOCKER_NETWORK_NAME: jupyterhub
       HUB_IP: jupyterhub
     labels:
@@ -26,7 +27,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.jupyterhub.rule: Host(`jupyterhub.marcpartensky.com`)
+        # traefik.http.routers.jupyterhub.rule: Host(`jupyterhub.marcpartensky.com`)
+        traefik.http.routers.jupyterhub.rule: Host(`jupyterhub.marcpartensky.fr`)
         traefik.http.routers.jupyterhub.entrypoints: websecure
         traefik.http.routers.jupyterhub.tls.certresolver: tls
         traefik.http.services.jupyterhub.loadbalancer.server.port: 8000
@@ -36,4 +38,6 @@ networks:
     name: jupyterhub
     driver: overlay
   caddy:
+    external: true
+  ldap:
     external: true
