@@ -9,6 +9,7 @@ services:
       TZ: Europe/Paris
     volumes:
       - ipfs:/config
+      - /srv/:/srv
     networks:
       - caddy
     ports:
@@ -44,7 +45,7 @@ services:
         # traefik.http.middlewares.add-context.redirectregex.regex: ^https:\\/\\/([^\\/]+)\\/?$$
         # traefik.http.middlewares.add-context.redirectregex.replacement: https://$$1/webui
         #
-        traefik.http.routers.service_nextcloud.middlewares: custom_repath
+        traefik.http.routers.ipfs.middlewares: custom_repath
         traefik.http.middlewares.custom_repath.replacepathregex.regex: ^/$$
         traefik.http.middlewares.custom_repath.replacepathregex.replacement: /webui
           
