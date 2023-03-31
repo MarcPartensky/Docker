@@ -35,6 +35,20 @@ services:
       # - mariadb
       # - postgres
       # - redis
+    networks:
+      - postgres
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.wallabag.loadbalancer.server.port: 80
+        traefik.http.routers.wallabag.rule: Host(`wallabag.marcpartensky.fr`)
+        # traefik.http.routers.wallabag.rule: >
+        #   Host(`wallabag.marcpartensky.com`) || Host(`wallabag.marcpartensky.fr`)
+        traefik.http.routers.wallabag.entrypoints: websecure
+        # traefik.http.routers.wallabag.tls.certresolver: tls
+        traefik.http.routers.wallabag.tls.certresolver: cloudflare
+        # traefik.http.routers.wallabag.middlewares: ldap_auth
 
     # postgres:
     #     image: postgres:11-alpine
@@ -74,3 +88,9 @@ volumes:
   assets:
   data:
   cache:
+networks:
+  wallabag:
+  caddy:
+    external: true
+  postgres:
+    external: true
