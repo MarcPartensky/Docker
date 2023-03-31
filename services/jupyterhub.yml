@@ -13,9 +13,11 @@ services:
       - caddy
       - jupyterhub
     environment:
-      DOCKER_IMAGE: marcpartensky/jupyterlab
+      # DOCKER_IMAGE: marcpartensky/jupyterlab
+      DOCKER_IMAGE: jupyterhub/singleuser
       DOCKER_NETWORK_NAME: jupyterhub
       HUB_IP: jupyterhub
+      DOCKER_HOST: unix:///var/run/docker.sock
     labels:
       caddy: jupyterhub.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8000}}"

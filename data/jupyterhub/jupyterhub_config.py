@@ -16,7 +16,8 @@ c.SwarmSpawner.remove_containers = True
 c.SwarmSpawner.debug = True
 # c.SwarmSpawner.image = "jupyterhub/singleuser:latest"
 c.SwarmSpawner.image = os.environ["DOCKER_IMAGE"]
-c.SwarmSpawner.host_ip = "0.0.0.0"
+c.SwarmSpawner.host_ip = "juypterhub"
+# c.SwarmSpawner.host_ip = "0.0.0.0"
 
 # Persistence
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
