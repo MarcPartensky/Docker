@@ -8,7 +8,7 @@ services:
     #   - GEN_CERT=yes
       JUPYTER_ENABLE_LAB: "yes"
       GRANT_SUDO: "yes"
-    # entrypoint: start.sh jupyter lab --user root
+    entrypoint: start.sh jupyter lab --user root
     networks:
       - caddy
     labels:
