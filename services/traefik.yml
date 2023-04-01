@@ -38,8 +38,7 @@ services:
       - caddy
       - ldap
     volumes:
-      - ../data/traefik/traefik.yml:/traefik.yml # static configuration
-      - ../data/traefik/dynamic.yml:/dynamic.yml
+      - ../data/traefik:/etc/traefik
         # - traefik_letsencrypt:/letsencrypt
       - traefik:/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
