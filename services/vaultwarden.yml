@@ -45,9 +45,8 @@ services:
         # traefik.http.routers.vaultwarden.rule: >
         #   Host(`vault.marcpartensky.com`)
         traefik.http.routers.vaultwarden.rule: >
-          # Host(`vault.marcpartensky.com`) ||
           Host(`vault.marcpartensky.fr`)
-          # Host(`secret.marcpartensky.fr`)
+        # Host(`secret.marcpartensky.com`)
         traefik.http.routers.vaultwarden.entrypoints: websecure
         traefik.http.routers.vaultwarden.tls.certresolver: cloudflare
         traefik.http.services.vaultwarden.loadbalancer.server.port: 80
