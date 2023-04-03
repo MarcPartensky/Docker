@@ -6,75 +6,66 @@ services:
     restart: unless-stopped
     command: server
     environment:
-      AUTHENTIK_REDIS__HOST: authentik_redis
-      AUTHENTIK_POSTGRESQL__HOST: authentik_postgres
+      AUTHENTIK_DEBUG: "true"
       AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
       AUTHENTIK_DEFAULT_USER_CHANGE_USERNAME: admin
       # WORKERS: 2
-    volumes:
-      - authentik_media:/media
-      - authentik_templates:/templates
-      - authentik_geoip:/geoip
     env_file:
       - ../data/secrets/authentik.env
     # ports:
     #   - "0.0.0.0:${AUTHENTIK_PORT_HTTP:-9000}:9000"
     #   - "0.0.0.0:${AUTHENTIK_PORT_HTTPS:-9443}:9443"
-    depends_on:
-      - authentik_postgres
-      - authentik_redis
-      - authentik_worker
+    volumes:
+      - media:/media
+      - templates:/templates
+      - geoip:/geoip
+    # depends_on:
+    #   - postgres
+    #   - redis
+    #   - worker
     networks:
       - authentik
       - caddy
+      - postgres
+      - redis
+      - ldap
     labels:
       caddy: authentik.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 9000}}"
-      traefik.enable: "true"
-      traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.com`)
-      traefik.http.routers.authentik.entrypoints: websecure
-      traefik.http.routers.authentik.tls.certresolver: tls
-      traefik.http.services.authentik.loadbalancer.server.port: 9000
+      # traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.com`)
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.fr`)
+        traefik.http.routers.authentik.entrypoints: websecure
+        traefik.http.routers.authentik.tls.certresolver: cloudflare
+        traefik.http.services.authentik.loadbalancer.server.port: 9000
 
-  authentik_postgres:
-    image: postgres:alpine
-    restart: unless-stopped
-    volumes:
-      - authentik_postgres:/var/lib/postgresql/data
-    env_file:
-      - ../data/secrets/authentik.env
-    networks:
-      - authentik
-
-  authentik_redis:
-    image: redis:alpine
-    restart: unless-stopped
-    networks:
-      - authentik
-
-  authentik_worker:
+  worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2022.2.1}
     restart: unless-stopped
     user: root
     command: worker
     environment:
-      AUTHENTIK_REDIS__HOST: authentik_redis
-      AUTHENTIK_POSTGRESQL__HOST: authentik_postgres
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
       AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
     # This is optional, and can be removed. If you remove this, the following will happen
     # - The permissions for the /backups and /media folders aren't fixed, so make sure they are 1000:1000
     # - The docker socket can't be accessed anymore
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - authentik_backups:/backups
-      - authentik_media:/media
-      - authentik_certs:/certs
-      - authentik_templates:/templates
-      - authentik_geoip:/geoip
+      - /srv/authentik:/backups
+      - media:/media
+      - certs:/certs
+      - templates:/templates
+      - geoip:/geoip
     env_file:
       - ../data/secrets/authentik.env
     networks:
       - authentik
+      - postgres
+      - redis
 
   # authentik_geoipupdate:
   #   image: maxmindinc/geoipupdate:latest
@@ -88,16 +79,41 @@ services:
   #   #   - ../data/secrets/authentik.env
   #   networks:
   #     - authentik
+  #     version: "3.5"
+
+  ldap:
+    image: ghcr.io/goauthentik/ldap
+    ports:
+      - 3389:389
+      - 6636:636
+    # Optionally specify which networks the container should be
+    # might be needed to reach the core authentik server
+    networks:
+      - authentik
+    environment:
+      AUTHENTIK_DEBUG: "true"
+      AUTHENTIK_HOST: http://authentik:9000
+      # AUTHENTIK_HOST: https://authentik:9443
+      # AUTHENTIK_HOST: https://authentik.marcpartensky.fr
+      AUTHENTIK_INSECURE: "false"
+    env_file:
+      - ../data/secrets/authentik_ldap.env
 
 volumes:
-  authentik_postgres:
-  authentik_backups:
-  authentik_media:
-  authentik_certs:
-  authentik_templates:
-  authentik_geoip:
+  # backups:
+  postgres:
+  media:
+  certs:
+  templates:
+  geoip:
 
 networks:
   authentik:
+  ldap:
+    external: true
+  redis:
+    external: true
+  postgres:
+    external: true
   caddy:
     external: true
