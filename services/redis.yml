@@ -10,6 +10,12 @@ services:
     volumes:
       - ../data/redis:/usr/local/etc/redis
       - /srv/redis:/data
+    healthcheck:
+       test: ["CMD", "redis-cli","ping"]
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       - node.role == manager
 
 networks:
   redis:
