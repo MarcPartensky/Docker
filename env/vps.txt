@@ -4,8 +4,7 @@ valentin
 open-web-calendar
 adguard
 servant
-discord-bot
-ia
+discord
 docker-api
 ialab
 portainer
@@ -20,3 +19,5 @@ pritunl-mongo
 fail2ban
 ldap
 ldap-manager
+vaultwarden
+authentik
