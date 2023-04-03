@@ -1,25 +1,28 @@
-version: "3.3"
+version: "3.9"
 
 services:
 
   peertube:
     image: chocobozzz/peertube:production-bullseye
     restart: unless-stopped
-    networks:
-      - caddy
     env_file:
       - ../data/secrets/peertube.env
     ports:
      - "1935:1935" # If you don't want to use the live feature, you can comment this line
     #  - "9000:9000" # If you provide your own webserver and reverse-proxy, otherwise not suitable for production
     volumes:
-      - peertube_assets:/app/client/dist
-      - peertube:/data
+      - assets:/app/client/dist
+      - data:/data
       - ../data/peertube:/config
-    depends_on:
-      - peertube_postgres
-      - peertube_redis
-      - peertube_postfix
+    networks:
+      - peertube
+      - caddy
+      - postgres
+      - redis
+    # depends_on:
+    #   - peertube_postgres
+    #   - peertube_redis
+    #   - peertube_postfix
     labels:
       caddy: peertube.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 80}}"
@@ -28,36 +31,49 @@ services:
       traefik.http.routers.peertube.entrypoints: websecure
       traefik.http.routers.peertube.tls.certresolver: tls
       traefik.http.services.peertube.loadbalancer.server.port: 80
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.peertube.rule: Host(`peertube.marcpartensky.fr`)
+        traefik.http.routers.peertube.entrypoints: websecure
+        traefik.http.routers.peertube.tls.certresolver: tls
+        traefik.http.services.peertube.loadbalancer.server.port: 80
 
-  peertube_postgres:
-    image: postgres:13-alpine
-    restart: unless-stopped
-    env_file:
-      - ../data/secrets/peertube.env
-    volumes:
-      - peertube_postgres:/var/lib/postgresql/data
+  # peertube_postgres:
+  #   image: postgres:13-alpine
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ../data/secrets/peertube.env
+  #   volumes:
+  #     - peertube_postgres:/var/lib/postgresql/data
 
-  peertube_redis:
-    image: redis:6-alpine
-    restart: unless-stopped
-    volumes:
-      - peertube_redis:/data
+  # peertube_redis:
+  #   image: redis:6-alpine
+  #   restart: unless-stopped
+  #   volumes:
+  #     - peertube_redis:/data
 
-  peertube_postfix:
-    image: mwader/postfix-relay
-    restart: unless-stopped
-    env_file:
-      - .env
-    volumes:
-      - peertube_postfix:/etc/opendkim/keys
+  # postfix:
+  #   image: mwader/postfix-relay
+  #   restart: unless-stopped
+  #   networks:
+  #     - peertube
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - postfix:/etc/opendkim/keys
 
 networks:
+  peertube:
+  postgres:
+    external: true
+  redis:
+    external: true
   caddy:
     external: true
 
 volumes:
-  peertube:
-  peertube_assets:
-  peertube_postgres:
-  peertube_redis:
-  peertube_postfix:
+  data:
+  assets:
+  postgres:
+  postfix:
