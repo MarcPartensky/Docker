@@ -7,14 +7,14 @@ services:
     env_file:
       - ../data/secrets/numeris.env
     links:
-      - numeris:db
+      - mysql:db
     networks:
       - caddy
       - numeris
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.phpmyadmin.rule: Host(`phpmyadmin.numeris.marcpartensky.com`)
+        traefik.http.routers.phpmyadmin.rule: Host(`phpmyadmin.numeris.marcpartensky.fr`)
         traefik.http.routers.phpmyadmin.entrypoints: websecure
         traefik.http.routers.phpmyadmin.tls.certresolver: tls
         traefik.http.services.phpmyadmin.loadbalancer.server.port: 80
@@ -42,7 +42,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.back.rule: Host(`api.numeris.marcpartensky.com`)
+        # traefik.http.routers.back.rule: Host(`api.numeris.marcpartensky.com`)
+        traefik.http.routers.back.rule: Host(`api.numeris.marcpartensky.fr`)
         traefik.http.routers.back.entrypoints: websecure
         traefik.http.routers.back.tls.certresolver: tls
         traefik.http.services.back.loadbalancer.server.port: 80
@@ -54,7 +55,40 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.front.rule: Host(`numeris.marcpartensky.com`)
+        # traefik.http.routers.front.rule: Host(`numeris.marcpartensky.com`)
+        traefik.http.routers.front.rule: Host(`numeris.marcpartensky.fr`)
+        traefik.http.routers.front.entrypoints: websecure
+        traefik.http.routers.front.tls.certresolver: tls
+        traefik.http.services.front.loadbalancer.server.port: 80
+        traefik.http.routers.front.middlewares: ldap_auth
+
+  back-staging:
+    image: numerisisep/numeris-back:staging
+    networks:
+      - caddy
+      - numeris
+    env_file:
+      - ../data/secrets/numeris.env
+    # volumes:
+    #   - .env:/home/numeris/.env
+    deploy:
+      labels:
+        traefik.enable: "true"
+        # traefik.http.routers.back.rule: Host(`api.numeris.marcpartensky.com`)
+        traefik.http.routers.back.rule: Host(`staging.api.numeris.marcpartensky.fr`)
+        traefik.http.routers.back.entrypoints: websecure
+        traefik.http.routers.back.tls.certresolver: tls
+        traefik.http.services.back.loadbalancer.server.port: 80
+
+  front-staging:
+    image: numerisisep/numeris-front:staging
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        # traefik.http.routers.front.rule: Host(`numeris.marcpartensky.com`)
+        traefik.http.routers.front.rule: Host(`staging.numeris.marcpartensky.fr`)
         traefik.http.routers.front.entrypoints: websecure
         traefik.http.routers.front.tls.certresolver: tls
         traefik.http.services.front.loadbalancer.server.port: 80
