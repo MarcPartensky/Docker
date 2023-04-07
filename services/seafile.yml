@@ -17,8 +17,6 @@ services:
     restart: unless-stopped
     entrypoint: memcached -m 256
     networks:
-      - seafile
-    networks:
       seafile:
         aliases:
           - seafile-memcached
@@ -37,8 +35,6 @@ services:
     # mem_limit: 2g
     volumes:
       - elasticsearch:/usr/share/elasticsearch/data  # Requested, specifies the path to Elasticsearch data persistent store.
-    networks:
-      - seafile
     networks:
       seafile:
         aliases:
