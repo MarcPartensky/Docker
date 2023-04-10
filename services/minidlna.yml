@@ -8,6 +8,8 @@ services:
       - pictures:/opt/Pictures
       - db:/var/cache/minidlna
       # - ../data/minidlna/minidlna.conf:/etc/minidlna.conf
+    networks:
+      - caddy
     deploy:
       labels:
         traefik.enable: "true"
@@ -25,3 +27,7 @@ volumes:
   videos:
   pictures:
   db:
+
+networks:
+  caddy:
+    external: true
