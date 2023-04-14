@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  cadvisor:
+    # image: google/cadvisor:v0.39.0
+    # image: google/cadvisor
+    image: gcr.io/cadvisor/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    command:
+      - '-docker_only'
+      - '-logtostderr'
+    #   - '-storage-driver=influxdb'
+    #   - '-storage-opt=host=swarm-manager1:8086'
+    #   - '-storage-opt=database=cadvisor'
+    #   - '-storage-opt=retention=1d'
+    #   - '-storage-opt=user=root'
+    #   - '-storage-opt=password=yourpassword'
+    #   - '-housekeeping_interval=5s'
+    #   - '-enable_load_reader'
+    #   - '-cpu_global_percentage=true'
+    #   - '-cpu_historic_interval=1m'
+    #   - '-docker_label_enable'
+    networks:
+      - caddy
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 512m
+      restart_policy:
+        condition: on-failure
+      mode: global
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.cadvisor.rule: Host(`cadvisor.marcpartensky.fr`)
+        # traefik.http.routers.cadvisor.rule: >
+        #   Host(`cadvisor.marcpartensky.com`) || Host(`cadvisor.marcpartensky.fr`)
+        traefik.http.routers.cadvisor.entrypoints: websecure
+        traefik.http.routers.cadvisor.tls.certresolver: tls
+        traefik.http.services.cadvisor.loadbalancer.server.port: 8080
+        traefik.http.routers.cadvisor.middlewares: ldap_auth
+
+      
+networks:
+  caddy:
+    external: true
