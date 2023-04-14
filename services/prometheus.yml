@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ../data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    networks:
+      - prometheus
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.prometheus.rule: Host(`prometheus.marcpartensky.fr`)
+        # traefik.http.routers.prometheus.rule: >
+        #   Host(`prometheus.marcpartensky.com`) || Host(`prometheus.marcpartensky.fr`)
+        traefik.http.routers.prometheus.entrypoints: websecure
+        traefik.http.routers.prometheus.tls.certresolver: tls
+        traefik.http.services.prometheus.loadbalancer.server.port: 9090
+
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points=\"^/(sys|proc|dev|host|etc)($$|/)\"
+    networks:
+      - prometheus
+
+  # cadvisor:
+  #   image: google/cadvisor
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker:/var/lib/docker:ro
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - prometheus
+  #
+networks:
+  prometheus:
+  caddy:
+    external: true
+
