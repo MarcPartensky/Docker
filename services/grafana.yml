@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    # environment:
+      # GF_INSTALL_PLUGINS: grafana-ldap-auth
+    volumes:
+      - ../data/grafana:/etc/grafana
+      - grafana:/var/lib/grafana
+    networks:
+      - caddy
+      - postgres
+    deploy:
+      labels:
+        caddy: grafana.marcpartensky.com
+        caddy.reverse_proxy: "{{upstreams 3000}}"
+        traefik.enable: "true"
+        traefik.http.routers.grafana.rule: Host(`grafana.marcpartensky.fr`)
+        traefik.http.routers.grafana.entrypoints: websecure
+        traefik.http.routers.grafana.tls.certresolver: tls
+        traefik.http.services.grafana.loadbalancer.server.port: 3000
+
+volumes:
+  grafana:
+
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true
