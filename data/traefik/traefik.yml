@@ -6,7 +6,8 @@ api:
   # insecure: false # = secure
   insecure: true
   dashboard: true
-  debug: true
+  # debug: true
+  debug: false
 providers:
   docker:
     swarmMode: true
