@@ -2,25 +2,39 @@ version: "3.9"
 
 services:
   jupyterlab:
-    image: jupyter/datascience-notebook:latest
-    restart: unless-stopped
+    # image: jupyter/datascience-notebook:latest
+    image: marcpartensky/jupyterlab
+    # restart: unless-stopped
     environment:
     #   - GEN_CERT=yes
       JUPYTER_ENABLE_LAB: "yes"
       GRANT_SUDO: "yes"
-    entrypoint: start.sh jupyter lab --user root
+      JUPYTER_CONFIG_DIR: /home/jupyter/.jupyter
+    # entrypoint: python -m jupyter lab
+    # entrypoint: start.sh jupyter lab --user root
     networks:
       - caddy
-    labels:
-      caddy: lab.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 8888}}"
-      traefik.enable: "true"
-      traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.com`)
-      traefik.http.routers.jupyterlab.entrypoints: websecure
-      traefik.http.routers.jupyterlab.tls.certresolver: tls
-      traefik.http.services.jupyterlab.loadbalancer.server.port: 8888
-    volumes:
-      - jupyterlab:/home/jovyan
+    # labels:
+    #   caddy: lab.marcpartensky.com
+    #   caddy.reverse_proxy: "{{upstreams 8888}}"
+    #   traefik.enable: "true"
+    #   traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.com`)
+    #   traefik.http.routers.jupyterlab.entrypoints: websecure
+    #   traefik.http.routers.jupyterlab.tls.certresolver: tls
+    #   traefik.http.services.jupyterlab.loadbalancer.server.port: 8888
+    # volumes:
+      # - jupyterlab:/home/jupyter
+      # - ../data/jupyterlab/:/home/jupyter/.jupyter/
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.fr`)
+        traefik.http.routers.jupyterlab.entrypoints: websecure
+        traefik.http.routers.jupyterlab.tls.certresolver: cloudflare
+        traefik.http.services.jupyterlab.loadbalancer.server.port: 8888
 # entrypoint: start-notebook.sh \
     #     --NotebookApp.keyfile=key/0000_key-certbot.pem
     #     --NotebookApp.certfile=cert/0000_csr-certbot.pem
