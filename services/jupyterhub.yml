@@ -15,7 +15,7 @@ services:
     environment:
       # DOCKER_IMAGE: marcpartensky/jupyterlab
       DOCKER_IMAGE: jupyterhub/singleuser
-      DOCKER_NETWORK_NAME: jupyterhub
+      DOCKER_NETWORK_NAME: caddy
       HUB_IP: jupyterhub
       DOCKER_HOST: unix:///var/run/docker.sock
     labels:
@@ -26,11 +26,12 @@ services:
       traefik.http.routers.jupyterhub.entrypoints: websecure
       traefik.http.routers.jupyterhub.tls.certresolver: tls
       traefik.http.services.jupyterhub.loadbalancer.server.port: 8000
+      # traefik.docker.network: jupyterhub_default
     deploy:
       labels:
         traefik.enable: "true"
         # traefik.http.routers.jupyterhub.rule: Host(`jupyterhub.marcpartensky.com`)
-        traefik.http.routers.jupyterhub.rule: Host(`jupyterhub.marcpartensky.fr`)
+        traefik.http.routers.jupyterhub.rule: Host(`hub.marcpartensky.fr`)
         traefik.http.routers.jupyterhub.entrypoints: websecure
         traefik.http.routers.jupyterhub.tls.certresolver: tls
         traefik.http.services.jupyterhub.loadbalancer.server.port: 8000

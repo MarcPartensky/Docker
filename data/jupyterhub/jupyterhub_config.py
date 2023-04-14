@@ -15,14 +15,31 @@ c.SwarmSpawner.network_name = network_name
 c.SwarmSpawner.remove_containers = True
 c.SwarmSpawner.debug = True
 # c.SwarmSpawner.image = "jupyterhub/singleuser:latest"
-c.SwarmSpawner.image = os.environ["DOCKER_IMAGE"]
-c.SwarmSpawner.host_ip = "juypterhub"
-# c.SwarmSpawner.host_ip = "0.0.0.0"
+# c.SwarmSpawner.image = "marcpartensky/jupyterhub-singleuser"
+# c.SwarmSpawner.image = os.environ["DOCKER_IMAGE"]
+# c.SwarmSpawner.host_ip = "juypterhub"
+# c.SwarmSpawner.container_spec = {
+#               # The command to run inside the service
+#               'args' : ['/usr/local/bin/start-singleuser.sh'], # (list)
+#               'Image' : 'juypterhub/singleuser',
+#               # 'mounts' : mounts
+#       }
+c.SwarmSpawner.host_ip = "0.0.0.0"
+
+# kill old kernels
+# https://opendreamkit.org/2018/10/17/jupyterhub-docker/
+# c.JupyterHub.services = [
+#     {
+#         'name': 'cull_idle',
+#         'admin': True,
+#         'command': 'python3 /srv/jupyterhub/cull_idle_servers.py --timeout=3600'.split(),
+#     },
+# ]
 
 # Persistence
-notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
-c.DockerSpawner.notebook_dir = notebook_dir
-c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+# notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
+# c.DockerSpawner.notebook_dir = notebook_dir
+# c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
 
 # Authentication
 # c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
