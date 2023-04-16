@@ -4,8 +4,8 @@ services:
   traefik:
     image: traefik:2.9.1 # https://github.com/wiltonsr/ldapauth/issues/25
     # image: traefik:latest # https://github.com/wiltonsr/ldapauth/issues/25
-    # env_file:
-    #   - ../data/secrets/traefik.env
+    env_file:
+      - ../data/secrets/traefik.env
     # restart: unless-stopped
     # command:
     #   ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration ##
