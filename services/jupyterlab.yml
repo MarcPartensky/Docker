@@ -31,7 +31,9 @@ services:
           - node.role == manager
       labels:
         traefik.enable: "true"
-        traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.fr`)
+        # traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.fr`)
+        traefik.http.routers.jupyterlab.rule: >
+          Host(`lab.marcpartensky.fr`) && Host(`lab.marcpartensky.com`)
         traefik.http.routers.jupyterlab.entrypoints: websecure
         traefik.http.routers.jupyterlab.tls.certresolver: cloudflare
         traefik.http.services.jupyterlab.loadbalancer.server.port: 8888
