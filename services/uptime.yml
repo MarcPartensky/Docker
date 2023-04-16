@@ -14,7 +14,7 @@ services:
         traefik.http.routers.kuma.rule: >
           Host(`uptime.marcpartensky.com`) || Host(`uptime.marcpartensky.fr`)
         traefik.http.routers.kuma.entrypoints: websecure
-        traefik.http.routers.kuma.tls.certresolver: cloudflare
+        traefik.http.routers.kuma.tls.certresolver: tls
         traefik.http.routers.kuma.middlewares: ldap_auth
 
 networks:
