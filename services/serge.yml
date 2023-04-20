@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  serge:
+    image: ghcr.io/nsarrazin/serge:latest
+    networks:
+      - caddy
+    volumes:
+      - weights:/usr/src/app/weights
+      - data:/data/db/
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.serge.rule: Host(`serge.marcpartensky.fr`)
+        traefik.http.routers.serge.entrypoints: websecure
+        traefik.http.services.serge.loadbalancer.server.port: 8008
+
+networks:
+  caddy:
+    external: true
+volumes:
+  data:
+  weights:
