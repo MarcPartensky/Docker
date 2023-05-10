@@ -4,9 +4,9 @@ services:
   portainer:
     image: portainer/portainer-ce
     restart: unless-stopped
-    environment:
-      VIRTUAL_HOST: docker.marcpartensky.com
-      VIRTUAL_PORT: 9000
+    # environment:
+    #   VIRTUAL_HOST: docker.marcpartensky.com
+    #   VIRTUAL_PORT: 9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data
@@ -31,8 +31,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        # traefik.http.routers.portainer.rule: Host(`docker.marcpartensky.com`)
-        traefik.http.routers.portainer.rule: Host(`docker.marcpartensky.fr`)
+        traefik.http.routers.portainer.rule: >
+          Host(`docker.marcpartensky.fr`) && Host(`docker.marcpartensky.com`)
         traefik.http.routers.portainer.entrypoints: websecure
         traefik.http.routers.portainer.tls.certresolver: tls
         traefik.http.services.portainer.loadbalancer.server.port: 9000
