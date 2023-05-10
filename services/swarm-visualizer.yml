@@ -17,7 +17,8 @@ services:
         traefik.http.routers.swarm_visualizer.rule: >
           Host(`swarm.marcpartensky.fr`) && Host(`swarm.marcpartensky.com`)
         traefik.http.routers.swarm_visualizer.entrypoints: websecure
-        traefik.http.routers.swarm_visualizer.tls.certresolver: tls
+        # traefik.http.routers.swarm_visualizer.tls.certresolver: tls
+        traefik.http.routers.swarm_visualizer.tls.certresolver: cloudflare
         traefik.http.services.swarm_visualizer.loadbalancer.server.port: 8080
 
 networks:
