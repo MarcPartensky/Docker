@@ -14,7 +14,8 @@ services:
       labels:
         traefik.enable: "true"
         # traefik.http.routers.swarm_visualizer.rule: Host(`swarm.marcpartensky.com`)
-        traefik.http.routers.swarm_visualizer.rule: Host(`swarm.marcpartensky.fr`)
+        traefik.http.routers.swarm_visualizer.rule: >
+          Host(`swarm.marcpartensky.fr`) && Host(`swarm.marcpartensky.com`)
         traefik.http.routers.swarm_visualizer.entrypoints: websecure
         traefik.http.routers.swarm_visualizer.tls.certresolver: tls
         traefik.http.services.swarm_visualizer.loadbalancer.server.port: 8080
