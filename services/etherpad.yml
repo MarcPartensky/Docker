@@ -7,15 +7,7 @@ services:
     environment:
       ADMIN_PASSWORD: supersecret
     networks:
-        - caddy
-    labels:
-      caddy: etherpad.marcpartensky.com, pad.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 9001}}"
-      traefik.enable: "true"
-      traefik.http.routers.etherpad.rule: Host(`pad.marcpartensky.com`)
-      traefik.http.routers.etherpad.entrypoints: websecure
-      traefik.http.routers.etherpad.tls.certresolver: tls
-      traefik.http.services.etherpad.loadbalancer.server.port: 9001
+      - caddy
     deploy:
       labels:
         traefik.enable: "true"
@@ -23,7 +15,7 @@ services:
           Host(`pad.marcpartensky.com`) ||
           Host(`pad.marcpartensky.fr`)
         traefik.http.routers.etherpad.entrypoints: websecure
-        traefik.http.routers.etherpad.tls.certresolver: tls
+        traefik.http.routers.etherpad.tls.certresolver: cloudflare
         traefik.http.services.etherpad.loadbalancer.server.port: 9001
 
 networks:
