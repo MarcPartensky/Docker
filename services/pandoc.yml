@@ -14,7 +14,7 @@ services:
         traefik.enable: "true"
         # traefik.http.routers.pandoc.rule: Host(`pandoc.marcpartensky.com`)
         traefik.http.routers.pandoc.rule: >
-          Host(`pandoc.marcpartensky.com`) &&
+          Host(`pandoc.marcpartensky.com`) ||
           Host(`pandoc.marcpartensky.fr`)
         traefik.http.routers.pandoc.entrypoints: websecure
         traefik.http.routers.pandoc.tls.certresolver: tls
