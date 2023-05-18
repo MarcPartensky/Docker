@@ -42,10 +42,8 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        # traefik.http.routers.vaultwarden.rule: >
-        #   Host(`vault.marcpartensky.com`)
         traefik.http.routers.vaultwarden.rule: >
-          Host(`vault.marcpartensky.fr`) &&
+          Host(`vault.marcpartensky.fr`) ||
           Host(`vault.marcpartensky.com`)
         traefik.http.routers.vaultwarden.entrypoints: websecure
         traefik.http.routers.vaultwarden.tls.certresolver: cloudflare
