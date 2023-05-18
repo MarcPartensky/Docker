@@ -21,8 +21,8 @@ services:
         #   Host(`cv.marcpartensky.fr`) &&
         #   PathPrefix(`/api`)
         traefik.http.routers.server.entrypoints: websecure
-        traefik.http.routers.server.tls.certresolver: cloudflare
-        # traefik.http.routers.server.tls.certresolver: tls
+        # traefik.http.routers.server.tls.certresolver: cloudflare
+        traefik.http.routers.server.tls.certresolver: tls
 
   client:
     image: amruthpillai/reactive-resume:client-latest
@@ -37,14 +37,14 @@ services:
         traefik.http.services.client.loadbalancer.server.port: 3000
         # traefik.http.routers.client.rule: Host(`cv.marcpartensky.fr`)
         traefik.http.routers.client.rule: >
+          Host(`cv.marcpartensky.fr`)
           # Host(`cv.marcpartensky.com`) &&
           # Path(`/`) ||
           # Host(`cv.marcpartensky.fr`) &&
-          Host(`cv.marcpartensky.fr`)
           # Path(`/`)
         traefik.http.routers.client.entrypoints: websecure
-        traefik.http.routers.client.tls.certresolver: cloudflare
-        # traefik.http.routers.server.tls.certresolver: tls
+        # traefik.http.routers.client.tls.certresolver: cloudflare
+        traefik.http.routers.server.tls.certresolver: tls
         # traefik.http.routers.client.middlewares: ldap_auth
 networks:
   postgres:
