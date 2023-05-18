@@ -24,7 +24,7 @@ services:
           Host(`yt.marcpartensky.fr`) ||
           Host(`yt.marcpartensky.com`)
         traefik.http.routers.ytdlp.entrypoints: websecure
-        traefik.http.routers.ytdlp.tls.certresolver: tls
+        traefik.http.routers.ytdlp.tls.certresolver: cloudflare
         traefik.http.services.ytdlp.loadbalancer.server.port: 3033
 
 volumes:
