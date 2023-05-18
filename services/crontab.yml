@@ -13,9 +13,9 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.services.ui.loadbalancer.server.port: 8000
-        traefik.http.routers.ui.rule: Host(`cron.marcpartensky.fr`)
-        # traefik.http.routers.ui.rule: >
-        #   Host(`cron.marcpartensky.com`) || Host(`cron.marcpartensky.fr`)
+        traefik.http.routers.ui.rule: >
+          Host(`cron.marcpartensky.com`) ||
+          Host(`cron.marcpartensky.fr`)
         traefik.http.routers.ui.entrypoints: websecure
         # traefik.http.routers.ui.tls.certresolver: tls
         traefik.http.routers.ui.tls.certresolver: cloudflare
