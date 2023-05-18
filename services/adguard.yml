@@ -35,7 +35,9 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.routers.adguard.rule: Host(`adguard.marcpartensky.com`)
+        traefik.http.routers.adguard.rule: >
+          Host(`adguard.marcpartensky.com`) ||
+          Host(`adguard.marcpartensky.fr`)
         traefik.http.routers.adguard.entrypoints: websecure
         traefik.http.routers.adguard.tls.certresolver: tls
         traefik.http.services.adguard.loadbalancer.server.port: 3000
