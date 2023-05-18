@@ -31,9 +31,9 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        # traefik.http.routers.gitea.rule: >
-        #   Host(`git.marcpartensky.com`) || Host(`git.marcpartensky.fr`)
-        traefik.http.routers.gitea.rule: Host(`git.marcpartensky.fr`)
+        traefik.http.routers.gitea.rule: >
+          Host(`git.marcpartensky.com`) ||
+          Host(`git.marcpartensky.fr`)
         traefik.http.routers.gitea.entrypoints: websecure
         # traefik.http.routers.gitea.tls.certresolver: tls
         traefik.http.routers.gitea.tls.certresolver: cloudflare
