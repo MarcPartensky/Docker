@@ -26,8 +26,9 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        # traefik.http.routers.jellyfin.rule: Host(`jellyfin.marcpartensky.com`)
-        traefik.http.routers.jellyfin.rule: Host(`jellyfin.marcpartensky.fr`)
+        traefik.http.routers.jellyfin.rule: >
+          Host(`jellyfin.marcpartensky.fr`) ||
+          Host(`jellyfin.marcpartensky.com`)
         traefik.http.routers.jellyfin.entrypoints: websecure
         traefik.http.routers.jellyfin.tls.certresolver: tls
         traefik.http.services.jellyfin.loadbalancer.server.port: 8096
