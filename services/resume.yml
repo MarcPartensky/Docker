@@ -13,13 +13,16 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.services.server.loadbalancer.server.port: 3100
-        # traefik.http.routers.server.rule: Host(`api.cv.marcpartensky.fr`)
         traefik.http.routers.server.rule: Host(`api.cv.marcpartensky.fr`)
+        # traefik.http.routers.server.rule: "Host(`cv.marcpartensky.fr`) && PathPrefix(`/api`)"
         # traefik.http.routers.server.rule: >
-        #   Host(`server.marcpartensky.com`) || Host(`server.marcpartensky.fr`)
+        #   Host(`cv.marcpartensky.com`) &&
+        #   PathPrefix(`/api`) ||
+        #   Host(`cv.marcpartensky.fr`) &&
+        #   PathPrefix(`/api`)
         traefik.http.routers.server.entrypoints: websecure
         traefik.http.routers.server.tls.certresolver: cloudflare
-        traefik.http.routers.server.middlewares: ldap_auth
+        # traefik.http.routers.server.tls.certresolver: tls
 
   client:
     image: amruthpillai/reactive-resume:client-latest
@@ -32,12 +35,17 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.services.client.loadbalancer.server.port: 3000
-        traefik.http.routers.client.rule: Host(`cv.marcpartensky.fr`)
-        # traefik.http.routers.client.rule: >
-        #   Host(`client.marcpartensky.com`) || Host(`client.marcpartensky.fr`)
+        # traefik.http.routers.client.rule: Host(`cv.marcpartensky.fr`)
+        traefik.http.routers.client.rule: >
+          # Host(`cv.marcpartensky.com`) &&
+          # Path(`/`) ||
+          # Host(`cv.marcpartensky.fr`) &&
+          Host(`cv.marcpartensky.fr`)
+          # Path(`/`)
         traefik.http.routers.client.entrypoints: websecure
         traefik.http.routers.client.tls.certresolver: cloudflare
-        traefik.http.routers.client.middlewares: ldap_auth
+        # traefik.http.routers.server.tls.certresolver: tls
+        # traefik.http.routers.client.middlewares: ldap_auth
 networks:
   postgres:
     external: true
