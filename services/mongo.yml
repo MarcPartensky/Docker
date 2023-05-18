@@ -43,7 +43,7 @@ services:
         traefik.enable: "true"
         # traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
         traefik.http.routers.mongo.rule: >
-          Host(`mongo.marcpartensky.fr`) &&
+          Host(`mongo.marcpartensky.fr`) ||
           Host(`mongo.marcpartensky.com`)
         traefik.http.routers.mongo.entrypoints: websecure
         traefik.http.routers.mongo.tls.certresolver: tls
