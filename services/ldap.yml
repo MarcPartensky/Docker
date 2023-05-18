@@ -20,6 +20,13 @@ services:
       - ldap:/var/lib/ldap
       - ldap_slapd:/etc/ldap/slapd.d
 
+
+  backup:
+    image: osixia/openldap-backup:1.5.0
+    environment:
+      LDAP_BACKUP_CONFIG_CRON_EXP: "0 5 * * *"
+      LDAP_BACKUP_DATA_CRON_EXP: "0 5 * * *"
+
 volumes:
   ldap:
   ldap_slapd:
