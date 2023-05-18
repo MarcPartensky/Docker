@@ -16,7 +16,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.routers.homer.rule: >
-          Host(`homer.marcpartensky.com`) &&
+          Host(`homer.marcpartensky.com`) ||
           Host(`homer.marcpartensky.fr`)
         traefik.http.routers.homer.entrypoints: websecure
         traefik.http.routers.homer.tls.certresolver: tls
