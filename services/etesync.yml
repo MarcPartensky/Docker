@@ -15,12 +15,11 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.services.etesync.loadbalancer.server.port: 3735
-        traefik.http.routers.etesync.rule: Host(`etesync.marcpartensky.fr`)
-        # traefik.http.routers.etesync.rule: >
-        #   Host(`etesync.marcpartensky.com`) || Host(`etesync.marcpartensky.fr`)
+        traefik.http.routers.etesync.rule: >
+          Host(`etesync.marcpartensky.com`) || Host(`etesync.marcpartensky.fr`)
         traefik.http.routers.etesync.entrypoints: websecure
-        # traefik.http.routers.etesync.tls.certresolver: tls
-        traefik.http.routers.etesync.tls.certresolver: cloudflare
+        traefik.http.routers.etesync.tls.certresolver: tls
+        # traefik.http.routers.etesync.tls.certresolver: cloudflare
         # traefik.http.routers.etesync.middlewares: ldap_auth
 
 networks:
