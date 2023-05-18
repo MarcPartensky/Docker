@@ -13,7 +13,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.serge.rule: >
           Host(`serge.marcpartensky.fr`) ||
-          Host(`serge.marcpartensky.com`) ||
+          Host(`serge.marcpartensky.com`)
         traefik.http.routers.serge.entrypoints: websecure
         traefik.http.services.serge.loadbalancer.server.port: 8008
 
