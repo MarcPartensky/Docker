@@ -8,9 +8,9 @@ services:
       # replicas: 0
       labels:
         traefik.enable: "true"
-        traefik.http.routers.whoami.rule: Host(`whoami.marcpartensky.fr`)
-        # traefik.http.routers.whoami.rule: >
-        #   Host(`whoami.marcpartensky.com`) || Host(`whoami.marcpartensky.fr`)
+        # traefik.http.routers.whoami.rule: Host(`whoami.marcpartensky.fr`)
+        traefik.http.routers.whoami.rule: >
+          Host(`whoami.marcpartensky.com`) || Host(`whoami.marcpartensky.fr`)
         traefik.http.routers.whoami.entrypoints: websecure
         traefik.http.routers.whoami.tls.certresolver: tls
         traefik.http.services.whoami.loadbalancer.server.port: 80
