@@ -5,16 +5,10 @@ services:
     restart: unless-stopped
     networks:
       - caddy
-    labels:
-      caddy: agenda.militant.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 8080}}"
-      traefik.enable: "true"
-      traefik.http.routers.agenda_militant.rule: Host(`agenda.militant.marcpartensky.com`)
-      traefik.http.routers.agenda_militant.entrypoints: websecure
-      traefik.http.routers.agenda_militant.tls.certresolver: tls
-      traefik.http.services.agenda_militant.loadbalancer.server.port: 8080
     deploy:
       labels:
+        caddy: agenda.militant.marcpartensky.com
+        caddy.reverse_proxy: "{{upstreams 8080}}"
         traefik.enable: "true"
         traefik.http.routers.agenda_militant.rule: Host(`agenda.militant.marcpartensky.com`)
         traefik.http.routers.agenda_militant.entrypoints: websecure
