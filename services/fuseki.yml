@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  fuseki:
+    image: stain/jena-fuseki
+    volumes:
+      # - ./config:/fuseki/configuration
+      - data:/fuseki/databases
+    # environment:
+    #   - FUSEKI_HOME=/fuseki
+    #   - FUSEKI_BASE=/fuseki/databases
+    env_file:
+      - ../data/secrets/fuseki.env
+    networks:
+      - caddy
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.fuseki.rule: Host(`fuseki.marcpartensky.com`)
+        traefik.http.services.fuseki.loadbalancer.server.port: 3030
+
+networks:
+  caddy:
+    external: true
+
+volumes:
+  data:
