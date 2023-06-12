@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     # user: postgres:postgres
     # user: "966:966"
-    user: 1000:1000
+    # user: 1000:1000
     ports:
       - target: 5432
         published: 5432
