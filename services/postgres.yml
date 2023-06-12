@@ -4,14 +4,15 @@ services:
     image: postgres:14
     restart: unless-stopped
     # user: postgres:postgres
-    # user: "974:974"
+    # user: "966:966"
+    user: 1000:1000
     ports:
       - target: 5432
         published: 5432
         mode: host
     volumes:
       - ../data/postgres:/docker-entrypoint-initdb.d
-      - postgres:/var/lib/postgresql/data
+      - /home/marc/srv/postgres:/var/lib/postgresql/data
       - ../data/postgres/server.crt:/var/lib/postgresql/server.crt
       - ../data/postgres/server.key:/var/lib/postgresql/server.key
     env_file:
@@ -23,8 +24,8 @@ services:
       -c ssl=on
       -c ssl_cert_file=/var/lib/postgresql/server.crt
       -c ssl_key_file=/var/lib/postgresql/server.key
-    networks:
-      - postgres
+    # networks:
+    #   - postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -q || exit 1"]
       interval: 10s
@@ -35,8 +36,8 @@ services:
     image: kartoza/pg-backup:14-3.1
     env_file:
       - ../data/secrets/pg_backup.env
-    networks:
-      - postgres
+    # networks:
+    #   - postgres
     volumes:
       - /srv/pg-backup:/backups
 
@@ -50,14 +51,14 @@ services:
     #   - postgres
     # depends_on:
     #   - postgres
-    networks:
-      - postgres
+    # networks:
+    #   - postgres
     env_file:
       - ../data/secrets/pgbackups.env
 
 volumes:
   postgres:
 
-networks:
-  postgres:
-    external: true
+# networks:
+#   postgres:
+#     external: true
