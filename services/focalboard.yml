@@ -9,23 +9,13 @@ services:
     environment:
       EXCLUDE_ENTERPRISE: "1"
     networks:
-      - caddy
       - postgres
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.focalboard.rule: >
-          Host(`board.marcpartensky.com`) || Host(`board.marcpartensky.fr`)
-        traefik.http.routers.focalboard.entrypoints: websecure
-        # traefik.http.routers.focalboard.tls.certresolver: tls
-        traefik.http.services.focalboard.loadbalancer.server.port: 8000
-        # traefik.http.routers.focalboard.middlewares: ldap_auth
+    ports:
+      - "8000:8000"
 
 volumes:
   data:
   pack:
 networks:
   postgres:
-    external: true
-  caddy:
     external: true
