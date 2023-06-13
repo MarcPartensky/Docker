@@ -31,6 +31,8 @@ services:
       - caddy
       - vaultwarden
       - postgres
+    ports:
+      - "8001:80"
     # labels:
     #   caddy: vault.marcpartensky.com
     #   caddy.reverse_proxy: "{{upstreams 80}}"
