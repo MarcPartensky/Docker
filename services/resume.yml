@@ -6,6 +6,9 @@ services:
     restart: unless-stopped
     env_file:
       - ../data/secrets/resume.env
+    environment:
+      PUBLIC_URL: https://cv.marcpartensky.fr
+      PUBLIC_SERVER_URL: https://cv.marcpartensky.fr/api
     networks:
       - caddy
       - postgres
@@ -29,6 +32,9 @@ services:
     restart: unless-stopped
     env_file:
      - ../data/secrets/resume.env
+    environment:
+      PUBLIC_URL: https://cv.marcpartensky.fr
+      PUBLIC_SERVER_URL: https://cv.marcpartensky.fr/api
     networks:
       - caddy
     deploy:
