@@ -7,8 +7,10 @@ services:
     env_file:
       - ../data/secrets/resume.env
     environment:
-      PUBLIC_URL: https://cv.marcpartensky.fr
-      PUBLIC_SERVER_URL: https://cv.marcpartensky.fr/api
+      PUBLIC_URL: http://localhost:8002
+      PUBLIC_SERVER_URL: http://localhost:8003
+    ports:
+      - "8003:3100"
     networks:
       - caddy
       - postgres
@@ -33,10 +35,12 @@ services:
     env_file:
      - ../data/secrets/resume.env
     environment:
-      PUBLIC_URL: https://cv.marcpartensky.fr
-      PUBLIC_SERVER_URL: https://cv.marcpartensky.fr/api
+      PUBLIC_URL: http://localhost:8002
+      PUBLIC_SERVER_URL: http://localhost:8003
     networks:
       - caddy
+    ports:
+      "8002:3000"
     deploy:
       labels:
         traefik.enable: "true"
