@@ -13,6 +13,8 @@ services:
   webui:
     image: ghcr.io/marcopeocchi/yt-dlp-web-ui:latest
     restart: unless-stopped
+    ports:
+      - "8004:3033"
     volumes:
       - ~/Videos/Youtube:/downloads
     networks:
