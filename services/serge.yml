@@ -8,14 +8,16 @@ services:
     volumes:
       - weights:/usr/src/app/weights
       - data:/data/db/
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.serge.rule: >
-          Host(`serge.marcpartensky.fr`) ||
-          Host(`serge.marcpartensky.com`)
-        traefik.http.routers.serge.entrypoints: websecure
-        traefik.http.services.serge.loadbalancer.server.port: 8008
+    ports:
+      - "8004:8008"
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     traefik.http.routers.serge.rule: >
+    #       Host(`serge.marcpartensky.fr`) ||
+    #       Host(`serge.marcpartensky.com`)
+    #     traefik.http.routers.serge.entrypoints: websecure
+    #     traefik.http.services.serge.loadbalancer.server.port: 8008
 
 networks:
   caddy:
