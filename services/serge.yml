@@ -2,7 +2,8 @@ version: "3"
 
 services:
   serge:
-    image: ghcr.io/nsarrazin/serge:latest
+    # image: ghcr.io/nsarrazin/serge:latest
+    image: ghcr.io/serge-chat/serge:latest
     networks:
       - caddy
     volumes:
