@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  cloudflare:
+    image: cloudflare/cloudflared:latest
+    env_file: ../data/secrets/cloudflare.env
+    command: tunnel --no-autoupdate run
