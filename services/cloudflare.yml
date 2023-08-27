@@ -4,3 +4,8 @@ services:
     image: cloudflare/cloudflared:latest
     env_file: ../data/secrets/cloudflare.env
     command: tunnel --no-autoupdate run
+    networks:
+      - caddy
+networks:
+  caddy:
+    external: true
