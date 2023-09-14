@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  logseq:
+    image: ghcr.io/logseq/logseq-webapp:latest
+    # volumes:
+    networks:
+      - traefik
+      - postgres
+    labels:
+      traefik.enable: "true"
+      # traefik.http.routers.focalboard.rule: >
+      #   Host(`board.marcpartensky.com`) || Host(`board.marcpartensky.fr`)
+      traefik.http.routers.logseq.service: logseq
+      traefik.http.routers.logseq.rule: >
+        Host(`logseq.marcpartensky.com`)
+      traefik.http.routers.logseq.tls: true
+      traefik.http.routers.logseq.entrypoints: web-secure
+      traefik.http.routers.logseq.tls.certresolver: default
+      traefik.http.services.logseq.loadbalancer.server.port: 80
+      # traefik.http.routers.focalboard.middlewares: ldap_auth
+
+volumes:
+  data:
+  pack:
+networks:
+  postgres:
+    external: true
+  traefik:
+    external: true
