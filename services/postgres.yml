@@ -35,7 +35,7 @@ services:
     image: chiavegatto/postgres-pgagent
     entrypoint: /bin/sh -c
                 "/tmp/wait-for-it.sh postgres:5432 --timeout=30 &&
-                psql -U postgres -h postgres -p 5432 -d test -c 'CREATE EXTENSION IF NOT EXISTS pgagent;' &&
+                psql -U postgres -h postgres -p 5432 -d postgres -c 'CREATE EXTENSION IF NOT EXISTS pgagent;' &&
                 pgagent -f hostaddr=postgres dbname=postgres user=postgres port=5432"
     environment:
       TIMEZONE: Europe/Paris
