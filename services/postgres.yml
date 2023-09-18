@@ -21,7 +21,7 @@ services:
       -c log_destination=stderr
       -c ssl=on
       -c ssl_cert_file=/var/lib/postgresql/certs/server.crt
-      -c ssl_key_file=/var/lib/postgresql/certs/server.req
+      -c ssl_key_file=/var/lib/postgresql/certs/server.key
     networks:
       - postgres
     healthcheck:
