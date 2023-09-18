@@ -10,8 +10,8 @@ services:
         published: 5432
         mode: host
     volumes:
-      - ../data/postgres:/initdb.d
       - postgres:/var/lib/postgresql/data
+      - ../data/postgres/initdb.d:/initdb.d
       - ../data/postgres/certs:/var/lib/postgresql/certs
     env_file:
       - ../data/secrets/postgres.env
