@@ -10,7 +10,7 @@ services:
         published: 5432
         mode: host
     volumes:
-      - ../data/postgres:/docker-entrypoint-initdb.d
+      - ../data/postgres:/initdb.d
       - postgres:/var/lib/postgresql/data
       - ../data/postgres/certs:/var/lib/postgresql/certs
     env_file:
