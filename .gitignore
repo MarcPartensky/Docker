@@ -12,7 +12,7 @@ data/matrix
 data/heimdall
 data/pihole/etc-pihole
 data/pxe
-data/postgres
+data/postgres/certs
 data/wireguard
 data/vaultwarden
 data/filebrowser
