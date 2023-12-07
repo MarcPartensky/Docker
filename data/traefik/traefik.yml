@@ -60,13 +60,13 @@ entryPoints:
     #   trustedIPs:
     #     - "127.0.0.1/32"
     #     - "192.168.1.7"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
-          priority: 10
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: websecure
+    #       scheme: https
+    #       permanent: true
+    #       priority: 10
 experimental:
   # http3: true
   plugins:
