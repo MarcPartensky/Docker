@@ -9,6 +9,7 @@ services:
       - ~/Videos/Youtube:/srv
     env_file:
       - ../data/secrets/yt-dlp.env
+    network_mode: none
 
   webui:
     image: ghcr.io/marcopeocchi/yt-dlp-web-ui:latest

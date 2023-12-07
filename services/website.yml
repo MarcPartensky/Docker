@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   website:
-    image: marcpartensky/website
+    image: marcpartensky/website:v140.f211658.2023-11-01
     restart: unless-stopped
     env_file:
       - ../data/secrets/website.env
