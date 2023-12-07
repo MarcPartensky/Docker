@@ -1,0 +1,39 @@
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:v2.6"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  whoami:
+    image: "traefik/whoami"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.marcpartensky.com`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+
+  cloudflared:
+    image: cloudflare/cloudflared:2022.5.1
+    container_name: cloudflared
+    env_file:
+      - ../data/secrets/cloudflare.env
+    command:
+      - tunnel
+      - --no-autoupdate
+      - run
+
+  traefik-cloudflare-tunnel:
+    image: "justmiles/traefik-cloudflare-tunnel:latest"
+    env_file:
+      - ../data/secrets/cloudflare.env

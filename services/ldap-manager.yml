@@ -15,27 +15,29 @@ services:
       NO_HTTPS: "TRUE"
     env_file:
       - ../data/secrets/ldap.env
-    depends_on:
-      - ldap
+    # depends_on:
+    #   - ldap
     networks:
       - ldap
       - caddy
-    # labels:
-    #   caddy: auth.marcpartensky.com
-    #   caddy.reverse_proxy: "{{upstreams}}"
-    #   traefik.enable: "true"
-    #   traefik.http.routers.ldap_manager.rule: Host(`auth.marcpartensky.com`)
-    #   traefik.http.routers.ldap_manager.entrypoints: websecure
-    #   traefik.http.routers.ldap_manager.tls.certresolver: tls
-    #   traefik.http.services.ldap_manager.loadbalancer.server.port: 80
+    labels:
+      # caddy: auth.marcpartensky.com
+      # caddy.reverse_proxy: "{{upstreams}}"
+      traefik.enable: "true"
+      traefik.http.routers.ldap_manager.rule: Host(`auth.marcpartensky.com`)
+      traefik.http.routers.ldap_manager.entrypoints: web
+      # traefik.http.routers.ldap_manager.tls.certresolver: tls
+      traefik.http.services.ldap_manager.loadbalancer.server.port: 80
     deploy:
       labels:
         traefik.enable: "true"
+        # traefik.http.routers.ldap_manager.rule: >
+        #   Host(`auth.marcpartensky.com`) || Host(`auth.marcpartensky.fr`)
         traefik.http.routers.ldap_manager.rule: >
-          Host(`auth.marcpartensky.com`) || Host(`auth.marcpartensky.fr`)
-        traefik.http.routers.ldap_manager.entrypoints: websecure
+          Host(`auth.marcpartensky.com`)
+        traefik.http.routers.ldap_manager.entrypoints: web
         # traefik.http.routers.ldap_manager.tls.certresolver: tls
-        traefik.http.routers.ldap_manager.tls.certresolver: cloudflare
+        # traefik.http.routers.ldap_manager.tls.certresolver: cloudflare
         traefik.http.services.ldap_manager.loadbalancer.server.port: 80
 
 networks:

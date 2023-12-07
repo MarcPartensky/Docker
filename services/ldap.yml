@@ -2,13 +2,13 @@ version: "3.9"
 
 services:
   ldap:
-    image: osixia/openldap
+    image: osixia/openldap:1.3.0
     restart: unless-stopped
     environment:
       LDAP_ORGANISATION: admin
       LDAP_DOMAIN: admin.org
       LDAP_RFC2307BIS_SCHEMA: "true"
-      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "false"
       LDAP_TLS_VERIFY_CLIENT: never
     env_file:
       - ../data/secrets/ldap.env

@@ -2,10 +2,20 @@ version: "3.9"
 services:
   cloudflare:
     image: cloudflare/cloudflared:latest
+    restart: unless-stopped
     env_file: ../data/secrets/cloudflare.env
     command: tunnel --no-autoupdate run
     networks:
       - caddy
+
+  traefik-cloudflare-tunnel:
+    image: justmiles/traefik-cloudflare-tunnel:latest
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/cloudflare.env
+    networks:
+      - caddy
+
 networks:
   caddy:
     external: true

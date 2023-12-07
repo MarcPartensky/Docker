@@ -33,6 +33,11 @@ services:
       caddy: authentik.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 9000}}"
       # traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.com`)
+      traefik.enable: "true"
+      traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.com`)
+      traefik.http.routers.authentik.entrypoints: web
+        # traefik.http.routers.authentik.tls.certresolver: cloudflare
+      traefik.http.services.authentik.loadbalancer.server.port: 9000
     deploy:
       labels:
         traefik.enable: "true"

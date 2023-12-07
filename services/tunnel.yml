@@ -3,6 +3,6 @@ services:
   ssh-tunnel:
     image: kroniak/ssh-client
     network_mode: host
-    entrypoint: ssh -NR 42069:localhost:22 debian@etienne-faviere.tech
+    entrypoint: ssh -NR 42072:localhost:42069 marc@fourche.org -p42069
     volumes:
       - ~/.ssh:/root/.ssh

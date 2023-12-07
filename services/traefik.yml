@@ -4,6 +4,7 @@ services:
   traefik:
     image: traefik:2.9.1 # https://github.com/wiltonsr/ldapauth/issues/25
     # image: traefik:latest # https://github.com/wiltonsr/ldapauth/issues/25
+    restart: unless-stopped
     env_file:
       - ../data/secrets/traefik.env
     # restart: unless-stopped
@@ -27,13 +28,13 @@ services:
     #   - --entrypoints.web.http.redirections.entryPoint.to=websecure
     #   - --entrypoints.web.http.redirections.entryPoint.scheme=https
     #   - --entrypoints.web.http.redirections.entrypoint.permanent=true
-    ports:
-      - target: 80
-        published: 80
-        mode: host
-      - target: 443
-        published: 443
-        mode: host
+    # ports:
+    #   - target: 80
+    #     published: 80
+    #     mode: host
+    #   - target: 443
+    #     published: 443
+    #     mode: host
     networks:
       - caddy
       - ldap
@@ -46,8 +47,8 @@ services:
       traefik.enable: "true"
       traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
       traefik.http.routers.traefik.service: api@internal
-      traefik.http.routers.traefik.entrypoints: websecure
-      traefik.http.routers.traefik.tls.certresolver: tls
+      traefik.http.routers.traefik.entrypoints: web
+        # traefik.http.routers.traefik.tls.certresolver: tls
       traefik.docker.network: caddy
     healthcheck:
       test: traefik healthcheck --ping
@@ -69,19 +70,20 @@ services:
           # traefik.docker.network: caddy
         traefik.http.services.traefik.loadbalancer.server.port: 8080
           # traefik.http.routers.traefik.service: api@internal
-        traefik.http.routers.traefik.entrypoints: websecure
+        # traefik.http.routers.traefik.entrypoints: websecure
+        traefik.http.routers.traefik.entrypoints: web
         traefik.http.routers.traefik.rule: >
-          Host(`traefik.marcpartensky.com`) || Host(`traefik.marcpartensky.fr`)
-        traefik.http.routers.traefik.tls.certresolver: tls
+          Host(`traefik.marcpartensky.com`)
+        # traefik.http.routers.traefik.tls.certresolver: tls
         # ldapAuth Options=================================================================
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: "true"
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "ou=people,dc=admin,dc=org"
-        traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: "DEBUG"
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: "true"
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "ou=people,dc=admin,dc=org"
+        # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
 
 volumes:
   # traefik_letsencrypt:
