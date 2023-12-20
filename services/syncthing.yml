@@ -8,9 +8,7 @@ services:
       PGID: 1000
       TZ: Etc/UTC
     volumes:
-      - /path/to/appdata/config:/config
-      - /path/to/data1:/data1
-      - /path/to/data2:/data2
+      - /srv:/srv
     ports:
       - 8384:8384
       - 22000:22000
