@@ -48,32 +48,33 @@ services:
       traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entrypoints: web
+      traefik.http.services.traefik.loadbalancer.server.port: 8080
         # traefik.http.routers.traefik.tls.certresolver: tls
       traefik.docker.network: caddy
     healthcheck:
       test: traefik healthcheck --ping
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      # mode: global
-      update_config:
-        parallelism: 1
-        delay: 5s
-        order: start-first
-        failure_action: rollback
-      rollback_config:
-        order: start-first
-      labels:
-        traefik.enable: "true"
-        traefik.port: 8080
-          # traefik.docker.network: caddy
-        traefik.http.services.traefik.loadbalancer.server.port: 8080
-          # traefik.http.routers.traefik.service: api@internal
-        # traefik.http.routers.traefik.entrypoints: websecure
-        traefik.http.routers.traefik.entrypoints: web
-        traefik.http.routers.traefik.rule: >
-          Host(`traefik.marcpartensky.com`)
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       - node.role == manager
+    #   # mode: global
+    #   update_config:
+    #     parallelism: 1
+    #     delay: 5s
+    #     order: start-first
+    #     failure_action: rollback
+    #   rollback_config:
+    #     order: start-first
+    #   labels:
+    #     traefik.enable: "true"
+    #     traefik.port: 8080
+    #       # traefik.docker.network: caddy
+    #     traefik.http.services.traefik.loadbalancer.server.port: 8080
+    #       # traefik.http.routers.traefik.service: api@internal
+    #     # traefik.http.routers.traefik.entrypoints: websecure
+    #     traefik.http.routers.traefik.entrypoints: web
+    #     traefik.http.routers.traefik.rule: >
+    #       Host(`traefik.marcpartensky.com`)
         # traefik.http.routers.traefik.tls.certresolver: tls
         # ldapAuth Options=================================================================
         # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: "true"
