@@ -14,7 +14,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.focalboard.rule: >
-        Host(`board.tower.marcpartensky.com`)
+        Host(`board.marcpartensky.com`)
       traefik.http.routers.focalboard.entrypoints: web
       # traefik.http.routers.focalboard.tls.certresolver: tls
       traefik.http.services.focalboard.loadbalancer.server.port: 8000
