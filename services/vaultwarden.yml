@@ -31,24 +31,23 @@ services:
       - caddy
       - vaultwarden
       - postgres
-    # labels:
-    #   caddy: vault.marcpartensky.com
-    #   caddy.reverse_proxy: "{{upstreams 80}}"
-    #   traefik.enable: "true"
-    #   traefik.http.routers.vaultwarden.rule: Host(`vault.marcpartensky.com`)
-    #   traefik.http.routers.vaultwarden.entrypoints: websecure
-    #   traefik.http.routers.vaultwarden.tls.certresolver: tls
-    #   traefik.http.services.vaultwarden.loadbalancer.server.port: 80
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.vaultwarden.rule: >
-          Host(`vault.marcpartensky.fr`) ||
-          Host(`vault.marcpartensky.com`)
-        traefik.http.routers.vaultwarden.entrypoints: websecure
-        traefik.http.routers.vaultwarden.tls.certresolver: cloudflare
-        traefik.http.services.vaultwarden.loadbalancer.server.port: 80
-
+    labels:
+      # caddy: vault.marcpartensky.com
+      # caddy.reverse_proxy: "{{upstreams 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.vaultwarden.rule: Host(`vault.marcpartensky.com`)
+      traefik.http.routers.vaultwarden.entrypoints: web
+      # traefik.http.routers.vaultwarden.tls.certresolver: tls
+      traefik.http.services.vaultwarden.loadbalancer.server.port: 80
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     traefik.http.routers.vaultwarden.rule: >
+    #       Host(`vault.marcpartensky.com`)
+    #     traefik.http.routers.vaultwarden.entrypoints: websecure
+    #     traefik.http.routers.vaultwarden.tls.certresolver: cloudflare
+    #     traefik.http.services.vaultwarden.loadbalancer.server.port: 80
+    #
   # ldap_admin:
   #   image: osixia/phpldapadmin
   #   ports:
