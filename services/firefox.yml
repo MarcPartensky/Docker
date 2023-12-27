@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  ffsync:
+    image: mozilla/syncserver:latest
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/firefox.env
+    networks:
+      - caddy
+      - postgres
+    volumes:
+      - /srv/firefox:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ffsync.rule: Host(`firefox.marcpartensky.com`)
+      traefik.http.routers.ffsync.entrypoints: web
+      traefik.http.services.ffsync.loadbalancer.server.port: 80
+    # labels:
+    #   - traefik.enable: true
+    #   - traefik.backend: ffsync
+    #   - traefik.frontend.rule: Host:firefoxsync.${DOMAINNAME}
+    #   - traefik.port: 5000
+    #   - traefik.docker.network: caddy
+
+  # ffsync_db:
+  #   image: postgres:alpine
+  #   container_name: ffsync_db
+  #   restart: unless-stopped
+  #   networks:
+  #       - ffsync_network
+  #   environment:
+  #     POSTGRES_DB: ${FFSYNC_DATABASE_DB}
+  #     POSTGRES_USER: ${FFSYNC_DATABASE_USER}
+  #     POSTGRES_PASSWORD: ${FFSYNC_DB_PASSWORD}
+
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true
