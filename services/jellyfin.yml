@@ -6,7 +6,7 @@ services:
     #   PUID: 1000
     #   PGID: 1000
     #   TZ: Europe/Paris
-      JELLYFIN_PublishedServerUrl: jellyfin.marcpartensky.fr
+      JELLYFIN_PublishedServerUrl: jellyfin.marcpartensky.com
     devices:
       - /dev/dri
     volumes:
@@ -26,11 +26,11 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
+          # Host(`jellyfin.marcpartensky.fr`) ||
         traefik.http.routers.jellyfin.rule: >
-          Host(`jellyfin.marcpartensky.fr`) ||
           Host(`jellyfin.marcpartensky.com`)
-        traefik.http.routers.jellyfin.entrypoints: websecure
-        traefik.http.routers.jellyfin.tls.certresolver: tls
+        traefik.http.routers.jellyfin.entrypoints: web
+          # traefik.http.routers.jellyfin.tls.certresolver: tls
         traefik.http.services.jellyfin.loadbalancer.server.port: 8096
 
 volumes:
