@@ -6,29 +6,28 @@ services:
     restart: unless-stopped
     volumes:
       # - nextcloud:/var/www/html
-      - data:/var/www/html/data
-      - config:/var/www/html/config
-      - themes:/var/www/html/themes
-      - apps:/var/www/html/custom_apps
+      - ../data/nextcloud/config:/var/www/html/config
+      - /srv/nextcloud/data:/var/www/html/data
+      - /srv/nextcloud/themes:/var/www/html/themes
+      - /srv/nextcloud/apps:/var/www/html/custom_apps
     env_file:
       - ../data/secrets/nextcloud.env
     networks:
       - caddy
       - postgres
+      - redis
       - ldap
         # depends_on:
         #   - nextcloud_mariadb
-    deploy:
-      labels:
-        caddy: cloud.marcpartensky.com
-        caddy.reverse_proxy: "{{upstreams http 80}}"
-        traefik.enable: "true"
-        traefik.http.routers.nextcloud.rule: >
-          Host(`cloud.marcpartensky.com`) ||
-          Host(`cloud.marcpartensky.fr`)
-        traefik.http.routers.nextcloud.entrypoints: websecure
-        traefik.http.routers.nextcloud.tls.certresolver: tls
-        traefik.http.services.nextcloud.loadbalancer.server.port: 80
+    labels:
+      caddy: cloud.marcpartensky.com
+      caddy.reverse_proxy: "{{upstreams http 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.nextcloud.rule: >
+        Host(`cloud.marcpartensky.com`)
+      traefik.http.routers.nextcloud.entrypoints: web
+      # traefik.http.routers.nextcloud.tls.certresolver: tls
+      traefik.http.services.nextcloud.loadbalancer.server.port: 80
 
 volumes:
   data:
@@ -42,4 +41,6 @@ networks:
   caddy:
     external: true
   postgres:
+    external: true
+  redis:
     external: true
