@@ -2,6 +2,7 @@ version: "3.9"
 services:
   crontab:
     image: alseambusher/crontab-ui
+    restart: unless-stopped
     networks:
       - caddy
     # ports:
