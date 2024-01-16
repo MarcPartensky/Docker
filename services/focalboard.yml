@@ -2,6 +2,7 @@ version: "3.9"
 services:
   focalboard:
     image: mattermost/focalboard
+    restart: unless-stopped
     volumes:
       - data:/opt/focalboard/data
       - pack:/opt/focalboard/pack
