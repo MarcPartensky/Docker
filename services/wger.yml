@@ -8,6 +8,7 @@
 services:
   wger:
     image: wger/server:latest
+    restart: unless-stopped
     # depends_on:
     #   db:
     #     condition: service_healthy
@@ -18,25 +19,51 @@ services:
     volumes:
       - static:/home/wger/static
       - media:/home/wger/media
+    networks:
+      - caddy
+      - postgres
+      - redis
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8000
       interval: 10s
       timeout: 5s
       retries: 5
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.wger.loadbalancer.server.port: 8000
+      traefik.http.routers.wger.rule: >
+        Host(`wger2.marcpartensky.com`)
+      traefik.http.routers.wger.entrypoints: web
+      # traefik.http.routers.ui.tls.certresolver: tls
+      # traefik.http.routers.ui.tls.certresolver: cloudflare
+      # traefik.http.routers.wger.middlewares: ldap_auth
 
   nginx:
     image: nginx:stable
+    restart: unless-stopped
     volumes:
       - ../data/wger/nginx.conf:/etc/nginx/conf.d/default.conf
-      - static:/wger/static:ro
-      - media:/wger/media:ro
-    ports:
-      - "80:80"
+      - static:/wger/static
+      - media:/wger/media
+        # ports:
+        #   - "80:80"
+    networks:
+      - postgres
+      - caddy
     healthcheck:
       test: service nginx status
       interval: 10s
       timeout: 5s
       retries: 5
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx.entrypoints: web
+      traefik.http.services.nginx.loadbalancer.server.port: 80
+      traefik.http.routers.nginx.rule: >
+        Host(`wger.marcpartensky.com`)
+      # traefik.http.routers.ui.tls.certresolver: tls
+      # traefik.http.routers.ui.tls.certresolver: cloudflare
+       #traefik.http.routers.nginx.middlewares: ldap_auth
 
   # cache:
   #   image: redis
@@ -51,10 +78,14 @@ services:
 
   celery_worker:
     image: wger/server:latest
+    restart: unless-stopped
     container_name: wger_celery_worker
     command: /start-worker
     env_file:
-      - ./data/secrets/wger.env
+      - ../data/secrets/wger.env
+    networks:
+      - postgres
+      - redis
     # depends_on:
     #   cache:
     #     condition: service_healthy
@@ -68,12 +99,16 @@ services:
 
   celery_beat:
     image: wger/server:latest
+    restart: unless-stopped
     command: /start-beat
     volumes:
       - celery-beat:/home/wger/beat/
+    networks:
+      - postgres
+      - redis
     env_file:
-      - ./config/.env
-      - ./data/secrets/wger.env
+      #   - ./config/.env
+      - ../data/secrets/wger.env
     # depends_on:
     #   cache:
     #     condition: service_healthy
@@ -84,6 +119,8 @@ volumes:
   media:
 
 networks:
+  redis:
+    external: true
   caddy:
     external: true
   postgres:
