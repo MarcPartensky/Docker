@@ -19,6 +19,7 @@ services:
 
   vaultwarden:
     image: vaultwarden/server
+    restart: unless-stopped
     env_file:
       - ../data/secrets/vaultwarden.env
     # environment:
