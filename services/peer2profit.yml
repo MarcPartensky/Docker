@@ -1,6 +1,6 @@
 version: "3.9"
 services:
   peer2profit:
-    image: peer2profit/peer2profit_x86_64:latest
+    image: enwaiax/peer2profit
     environment:
       P2P_EMAIL: marc@marcpartensky.com
