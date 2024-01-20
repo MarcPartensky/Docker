@@ -9,7 +9,7 @@ services:
     #   - 8000:8000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - crontabs:/crontab-ui/crontabs
+      - /srv/crontab:/crontab-ui/crontabs
     labels:
       traefik.enable: "true"
       traefik.http.services.crontab.loadbalancer.server.port: 8000
@@ -18,7 +18,7 @@ services:
       traefik.http.routers.crontab.entrypoints: web
       # traefik.http.routers.ui.tls.certresolver: tls
       # traefik.http.routers.ui.tls.certresolver: cloudflare
-      traefik.http.routers.crontab.middlewares: ldap_auth
+      # traefik.http.routers.crontab.middlewares: ldap_auth
 
 volumes:
   crontabs:
