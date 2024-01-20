@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  server:
+  mail-server:
     image: amruthpillai/reactive-resume:server-latest
     restart: unless-stopped
     env_file:
@@ -14,19 +14,19 @@ services:
       - postgres
     labels:
       traefik.enable: "true"
-      traefik.http.services.server.loadbalancer.server.port: 3100
-      traefik.http.routers.server.rule: Host(`api.cv.marcpartensky.com`)
+      traefik.http.services.mail-server.loadbalancer.server.port: 3100
+      traefik.http.routers.mail-server.rule: Host(`api.cv.marcpartensky.com`)
       # traefik.http.routers.server.rule: "Host(`cv.marcpartensky.fr`) && PathPrefix(`/api`)"
       # traefik.http.routers.server.rule: >
       #   Host(`cv.marcpartensky.com`) &&
       #   PathPrefix(`/api`) ||
       #   Host(`cv.marcpartensky.fr`) &&
       #   PathPrefix(`/api`)
-      traefik.http.routers.server.entrypoints: web
+      traefik.http.routers.mail-server.entrypoints: web
       # traefik.http.routers.server.tls.certresolver: cloudflare
       # traefik.http.routers.server.tls.certresolver: tls
 
-  client:
+  mail-client:
     image: amruthpillai/reactive-resume:client-latest
     restart: unless-stopped
     env_file:
@@ -38,15 +38,15 @@ services:
       - caddy
     labels:
       traefik.enable: "true"
-      traefik.http.services.client.loadbalancer.server.port: 3000
+      traefik.http.services.mail-client.loadbalancer.server.port: 3000
       # traefik.http.routers.client.rule: Host(`cv.marcpartensky.fr`)
-      traefik.http.routers.client.rule: >
+      traefik.http.routers.mail-client.rule: >
         Host(`cv.marcpartensky.com`)
         # Host(`cv.marcpartensky.com`) &&
         # Path(`/`) ||
         # Host(`cv.marcpartensky.fr`) &&
         # Path(`/`)
-      traefik.http.routers.client.entrypoints: web
+      traefik.http.routers.mail-client.entrypoints: web
       # traefik.http.routers.client.tls.certresolver: cloudflare
       # traefik.http.routers.server.tls.certresolver: tls
       # traefik.http.routers.client.middlewares: ldap_auth
