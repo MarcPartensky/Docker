@@ -40,8 +40,7 @@ services:
       traefik.enable: "true"
       traefik.http.services.mail-client.loadbalancer.server.port: 3000
       # traefik.http.routers.client.rule: Host(`cv.marcpartensky.fr`)
-      traefik.http.routers.mail-client.rule: >
-        Host(`cv.marcpartensky.com`)
+      traefik.http.routers.mail-client.rule: Host(`cv.marcpartensky.com`)
         # Host(`cv.marcpartensky.com`) &&
         # Path(`/`) ||
         # Host(`cv.marcpartensky.fr`) &&
