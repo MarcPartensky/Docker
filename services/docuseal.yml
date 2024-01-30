@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  docuseal:
+    image: docuseal/docuseal:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - /srv/docuseal:/data
+    env_file:
+      - ../data/secrets/docuseal.env
+    networks:
+      - caddy
+      - postgres
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.docuseal.rule: >
+        Host(`docuseal.marcpartensky.com`)
+      traefik.http.routers.docuseal.entrypoints: web
+      traefik.http.services.docuseal.loadbalancer.server.port: 3000
+
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true
