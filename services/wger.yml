@@ -72,7 +72,6 @@ services:
   celery_worker:
     image: wger/server:latest
     restart: unless-stopped
-    container_name: wger_celery_worker
     command: /start-worker
     env_file:
       - ../data/secrets/wger.env
