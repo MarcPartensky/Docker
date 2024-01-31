@@ -49,7 +49,7 @@ services:
         #   Host(`wallabag.marcpartensky.fr`)
       traefik.http.routers.wallabag.entrypoints: web
       # traefik.http.routers.wallabag.tls.certresolver: tls
-      traefik.http.routers.wallabag.tls.certresolver: cloudflare
+      # traefik.http.routers.wallabag.tls.certresolver: cloudflare
       # traefik.http.routers.wallabag.middlewares: ldap_auth
 
     # postgres:
