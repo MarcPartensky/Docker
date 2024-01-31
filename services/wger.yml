@@ -23,20 +23,13 @@ services:
       - caddy
       - postgres
       - redis
+        # ports:
+        #   - 8000
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8000
       interval: 10s
       timeout: 5s
       retries: 5
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.wger.loadbalancer.server.port: 8000
-      traefik.http.routers.wger.rule: >
-        Host(`wger2.marcpartensky.com`)
-      traefik.http.routers.wger.entrypoints: web
-      # traefik.http.routers.ui.tls.certresolver: tls
-      # traefik.http.routers.ui.tls.certresolver: cloudflare
-      # traefik.http.routers.wger.middlewares: ldap_auth
 
   nginx:
     image: nginx:stable
