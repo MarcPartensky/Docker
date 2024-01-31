@@ -7,7 +7,7 @@ services:
     volumes:
       - ../data/mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       - ../data/mongo/config:/etc/mongo
-      - mongo:/data/db
+      - /srv/mongo:/data/db
     networks:
       - mongo
     ports:
@@ -34,10 +34,11 @@ services:
       caddy.reverse_proxy: "{{upstreams 8081}}"
       traefik.enable: "true"
       traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
-      traefik.http.routers.mongo.entrypoints: websecure
-      traefik.http.routers.mongo.tls.certresolver: tls
+        # traefik.http.routers.mongo.entrypoints: websecure
+      traefik.http.routers.mongo.entrypoints: web
+        # traefik.http.routers.mongo.tls.certresolver: tls
       traefik.http.services.mongo.loadbalancer.server.port: 8081
-      traefik.http.routers.duplicati.middlewares: ldap_auth
+       # traefik.http.routers.duplicati.middlewares: ldap_auth
     deploy:
       labels:
         traefik.enable: "true"
