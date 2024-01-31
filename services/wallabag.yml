@@ -4,9 +4,10 @@ services:
     image: wallabag/wallabag
     volumes:
       # Volumes for data-related folders
+      - /srv/wallabag:/var/www/html/data
       - assets:/var/www/html/web/assets
-      - data:/var/www/html/data
-      - cache:/var/www/.cache
+      # - cache:/var/www/.cache
+      - cache:/var/www/wallabag/var/
       # Uncomment the following volume if you run rootless Docker
       # A limitation blocks permissions on root docker, see
       # https://github.com/moby/moby/issues/40881
@@ -39,17 +40,17 @@ services:
       - caddy
       - postgres
       - redis
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.services.wallabag.loadbalancer.server.port: 80
-        traefik.http.routers.wallabag.rule: >
-          Host(`wallabag.marcpartensky.com`) ||
-          Host(`wallabag.marcpartensky.fr`)
-        traefik.http.routers.wallabag.entrypoints: websecure
-        # traefik.http.routers.wallabag.tls.certresolver: tls
-        traefik.http.routers.wallabag.tls.certresolver: cloudflare
-        # traefik.http.routers.wallabag.middlewares: ldap_auth
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.wallabag.loadbalancer.server.port: 80
+      traefik.http.routers.wallabag.rule: Host(`wallabag.marcpartensky.com`)
+        # traefik.http.routers.wallabag.rule: >
+        #   Host(`wallabag.marcpartensky.com`) ||
+        #   Host(`wallabag.marcpartensky.fr`)
+      traefik.http.routers.wallabag.entrypoints: web
+      # traefik.http.routers.wallabag.tls.certresolver: tls
+      traefik.http.routers.wallabag.tls.certresolver: cloudflare
+      # traefik.http.routers.wallabag.middlewares: ldap_auth
 
     # postgres:
     #     image: postgres:11-alpine
