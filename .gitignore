@@ -25,6 +25,7 @@ data/yt-dlp
 data/mongo
 data/gpg
 data/redis
+data/fdroid
 data.tar.gz
 data.7z
 data.7z.gpg
