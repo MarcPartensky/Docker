@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  moodle:
+    image: moodlehq/moodleapp
+    restart: unless-stopped
+    networks:
+      - caddy
+        # - postgres
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.moodle.rule: >
+        Host(`moodle.marcpartensky.com`)
+      traefik.http.routers.moodle.entrypoints: web
+      traefik.http.services.moodle.loadbalancer.server.port: 80
+
+networks:
+  # postgres:
+  #   external: true
+  caddy:
+    external: true
