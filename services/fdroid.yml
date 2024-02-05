@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+
+  fdroid:
+   image: nginx
+   # image: registry.gitlab.com/fdroid/docker-executable-fdroidserver:master
+   restart: unless-stopped
+   env_file:
+     - ../data/secrets/fdroid.env
+       # command: bash -c './wait-for postgres:5432 -- python3 manage.py migrate && ./httpd-foreground'
+   volumes:
+     - /srv/fdroid:/usr/share/nginx/html:ro
+     - ../data/fdroid/config.py:/apk/config.py
+     - ../data/fdroid/fdroid.keystore:/tmp/my.keystore
+     # - /srv/fdroid/apk:/repo
+     # - /srv/fdroid:/repomaker/data
+   networks:
+     - caddy
+     - postgres
+   labels:
+     traefik.enable: "true"
+     traefik.http.services.fdroid.loadbalancer.server.port: 80
+     traefik.http.routers.fdroid.rule: Host(`fdroid.marcpartensky.com`)
+     traefik.http.routers.fdroid.entrypoints: web
+
+  # fdroid:
+  #   image: registry.gitlab.com/fdroid/repomaker:latest
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ../data/secrets/fdroid.env
+  #   command: bash -c './wait-for postgres:5432 -- python3 manage.py migrate && ./httpd-foreground'
+  #   volumes:
+  #     - /srv/fdroid:/repomaker/data
+  #     - ../data/fdroid/settings_docker.py:/repomaker/repomaker/settings_docker.py
+  #   networks:
+  #     - caddy
+  #     - postgres
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.services.fdroid.loadbalancer.server.port: 80
+  #     traefik.http.routers.fdroid.rule: Host(`fdroid.marcpartensky.com`)
+  #     traefik.http.routers.fdroid.entrypoints: web
+
+        # fdroid-tasks:
+        #   image: registry.gitlab.com/fdroid/repomaker:latest
+        #   restart: unless-stopped
+        #   env_file:
+        #     - ../data/secrets/fdroid.env
+        #   command: bash -c './wait-for fdroid:80 -- su www-data -p -s /bin/bash -c "cd /repomaker && python3 manage.py process_tasks"'
+        #   volumes:
+        #     - /srv/fdroid:/repomaker/data
+        #   depends_on:
+        #     - fdroid
+
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true
