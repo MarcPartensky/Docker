@@ -3,43 +3,50 @@ services:
   authelia:
     image: authelia/authelia
     restart: unless-stopped
-    expose:
-      - 9091
+      # expose:
+      #   - 9091
+    env_file:
+      - ../data/secrets/authelia.env
     environment:
       TZ: France/Paris
     volumes:
       - ../data/authelia:/config
     networks:
-      - authelia
       - caddy
+      - redis
+      - ldap
     labels:
-      caddy: authelia.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 9091}}"
+      # caddy: authelia.marcpartensky.com
+      # caddy.reverse_proxy: "{{upstreams 9091}}"
       traefik.enable: true
       traefik.http.routers.authelia.rule: Host(`authelia.marcpartensky.com`)
-      traefik.http.routers.authelia.entrypoints: websecure
-      traefik.http.routers.authelia.tls: true
-      traefik.http.routers.authelia.tls.certresolver: tls
+      traefik.http.routers.authelia.entrypoints: web
+        # traefik.http.routers.authelia.tls: true
+        # traefik.http.routers.authelia.tls.certresolver: tls
       traefik.http.middlewares.authelia.forwardauth.address: http://authelia:9091/api/verify?rd=https://authelia.marcpartensky.com  # yamllint disable-line rule:line-length
       traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: true
       traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: Remote-User,Remote-Groups,Remote-Name,Remote-Email  # yamllint disable-line rule:line-length
 
-  redis:
-    image: redis:alpine
-    restart: unless-stopped
-    expose:
-      - 6379
-    environment:
-      TZ: France/Paris
-    volumes:
-      - authelia_redis:/data
-    networks:
-      - authelia
+  # redis:
+  #   image: redis:alpine
+  #   restart: unless-stopped
+  #   expose:
+  #     - 6379
+  #   environment:
+  #     TZ: France/Paris
+  #   volumes:
+  #     - authelia_redis:/data
+  #   networks:
+  #     - authelia
 
-volumes:
-  authelia_redis:
+        # volumes:
+  # authelia_redis:
 
 networks:
   authelia:
   caddy:
+    external: true
+  redis:
+    external: true
+  ldap:
     external: true
