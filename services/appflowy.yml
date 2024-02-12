@@ -1,0 +1,51 @@
+# Essential services for AppFlowy Cloud
+
+version: "3.9"
+services:
+  appflowy-nginx:
+    restart: on-failure
+    image: nginx
+    ports:
+      - 80:80   # Disable this if you are using TLS
+    volumes:
+      - ../data/appflowy/nginx.conf:/etc/nginx/nginx.conf
+        # - ./nginx/ssl/certificate.crt:/etc/nginx/ssl/certificate.crt
+        # - ./nginx/ssl/private_key.key:/etc/nginx/ssl/private_key.key
+
+  gotrue:
+    image: appflowyinc/gotrue:${GOTRUE_VERSION:-latest}
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: docker/gotrue.Dockerfile
+    env_file:
+      - ../data/secrets/appflowy.env
+
+  appflowy-cloud:
+    image: appflowyinc/appflowy_cloud:${BACKEND_VERSION:-latest}
+    restart: on-failure
+    env_file:
+      - ../data/secrets/appflowy.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  appflowy-admin:
+    restart: on-failure
+    image: appflowyinc/admin_frontend:${BACKEND_VERSION:-latest}
+    depends_on:
+      - gotrue
+    env_file:
+      - ../data/secrets/appflowy.env
+    build:
+      context: .
+      dockerfile: ./admin_frontend/Dockerfile
+
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true
+  redis:
+    external: true
+
