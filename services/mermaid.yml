@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  mermaid:
+    image: supinf/mermaid-editor
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.mermaid.rule: >
+        Host(`mermaid.marcpartensky.com`)
+      traefik.http.routers.mermaid.entrypoints: web
+      traefik.http.services.mermaid.loadbalancer.server.port: 80
+
+networks:
+  caddy:
+    external: true
