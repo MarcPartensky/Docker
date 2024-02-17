@@ -2,5 +2,8 @@ version: "3.9"
 services:
   peer2profit:
     image: enwaiax/peer2profit
+      # command: ./entrypoint.sh --email marc@marcpartensky.com
     environment:
-      P2P_EMAIL: marc@marcpartensky.com
+      - email=marc@marcpartensky.com
+    # environment:
+    #   P2P_EMAIL: marc@marcpartensky.com
