@@ -7,7 +7,11 @@ services:
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock
     networks:
-        - caddy
+      - caddy
+    privileged: true
+      # user: root
+    environment:
+      CATTLE_SYSTEM_CATALOG: bundled
     labels:
       caddy: rancher.marcpartensky.com
       caddy.reverse_proxy: "{{upstreams 8080}}"
