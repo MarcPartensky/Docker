@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     env_file:
       - ../data/secrets/resume.env
-    environment:
-      PUBLIC_URL: https://cv.marcpartensky.com
+        # environment:
+        #   PUBLIC_URL: https://cv.marcpartensky.com
     networks:
       - caddy
       - postgres
@@ -17,6 +17,23 @@ services:
       traefik.http.services.resume.loadbalancer.server.port: 3000
       traefik.http.routers.resume.rule: Host(`cv.marcpartensky.com`)
       traefik.http.routers.resume.entrypoints: web
+
+  printer:
+    image: browserless/chrome:1.61.0-puppeteer-21.4.1
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/resume.env
+    networks:
+      - caddy
+    environment:
+        #   TOKEN: chrome_token
+      EXIT_ON_HEALTH_FAILURE: true
+      PRE_REQUEST_HEALTH_CHECK: true
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.printer.loadbalancer.server.port: 3000
+      traefik.http.routers.printer.rule: Host(`printer.marcpartensky.com`)
+      traefik.http.routers.printer.entrypoints: web
 
   
         # resume-back:
