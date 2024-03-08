@@ -1,64 +1,35 @@
 version: "3.9"
 
 services:
-  server:
-    image: amruthpillai/reactive-resume:server-latest
+  resume:
+    image: amruthpillai/reactive-resume:latest
     restart: unless-stopped
     env_file:
       - ../data/secrets/resume.env
-    environment:
-      PUBLIC_URL: http://localhost:8002
-      PUBLIC_SERVER_URL: http://localhost:8003
-    ports:
-      - "8003:3100"
+        # environment:
+        #   PUBLIC_URL: https://cv.marcpartensky.com
     networks:
-      - caddy
       - postgres
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.services.server.loadbalancer.server.port: 3100
-        traefik.http.routers.server.rule: Host(`api.cv.marcpartensky.fr`)
-        # traefik.http.routers.server.rule: "Host(`cv.marcpartensky.fr`) && PathPrefix(`/api`)"
-        # traefik.http.routers.server.rule: >
-        #   Host(`cv.marcpartensky.com`) &&
-        #   PathPrefix(`/api`) ||
-        #   Host(`cv.marcpartensky.fr`) &&
-        #   PathPrefix(`/api`)
-        traefik.http.routers.server.entrypoints: websecure
-        # traefik.http.routers.server.tls.certresolver: cloudflare
-        traefik.http.routers.server.tls.certresolver: tls
+      - redis
+    ports:
+      - 8002:3000
 
-  client:
-    image: amruthpillai/reactive-resume:client-latest
+  printer:
+    image: browserless/chrome:1.61.0-puppeteer-21.4.1
     restart: unless-stopped
     env_file:
-     - ../data/secrets/resume.env
-    environment:
-      PUBLIC_URL: http://localhost:8002
-      PUBLIC_SERVER_URL: http://localhost:8003
-    networks:
-      - caddy
+      - ../data/secrets/resume.env
     ports:
-      - "8002:3000"
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.services.client.loadbalancer.server.port: 3000
-        # traefik.http.routers.client.rule: Host(`cv.marcpartensky.fr`)
-        traefik.http.routers.client.rule: >
-          Host(`cv.marcpartensky.fr`)
-          # Host(`cv.marcpartensky.com`) &&
-          # Path(`/`) ||
-          # Host(`cv.marcpartensky.fr`) &&
-          # Path(`/`)
-        traefik.http.routers.client.entrypoints: websecure
-        # traefik.http.routers.client.tls.certresolver: cloudflare
-        traefik.http.routers.server.tls.certresolver: tls
-        # traefik.http.routers.client.middlewares: ldap_auth
+      - 8003:3000
+    environment:
+        #   TOKEN: chrome_token
+      EXIT_ON_HEALTH_FAILURE: true
+      PRE_REQUEST_HEALTH_CHECK: true
+
 networks:
   postgres:
     external: true
   caddy:
     external: true
-
+  redis:
+    external: true
