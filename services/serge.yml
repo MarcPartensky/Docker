@@ -4,7 +4,7 @@ services:
   serge:
     # image: ghcr.io/nsarrazin/serge:latest
     image: ghcr.io/serge-chat/serge:latest
-    network_mode: host
+    # network_mode: host
     volumes:
       - weights:/usr/src/app/weights
       - data:/data/db/
