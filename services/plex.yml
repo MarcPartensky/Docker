@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  plex:
+    # image: lscr.io/linuxserver/plex:latest
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    environment:
+      # - PUID=1000
+      # - PGID=1000
+      # - TZ=Etc/UTC
+      VERSION: docker
+      # - PLEX_CLAIM= #optional
+    # devices:
+    #   - /dev/dri:/dev/dri
+    volumes:
+      - /srv/plex/library:/config
+      - /srv/plex/tvseries:/tv
+      - /srv/plex/movies:/movies
+      - /srv/plex/data:/data
+    ports:
+      - "32400:32400"
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.plex.loadbalancer.server.port: 32400
+      traefik.http.routers.plex.rule: >
+        Host(`plex.marcpartensky.com`)
+      traefik.http.routers.plex.entrypoints: web
+      # traefik.http.routers.plex.tls.certresolver: tls
+      # traefik.http.routers.plex.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
