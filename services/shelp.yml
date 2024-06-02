@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  shelp-front:
+    image: marcpartensky/shelp-front
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/shelp.env
+    networks:
+      - caddy
+      - mongo
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.shelp-front.rule: Host(`shelp.marcpartensky.com`)
+      traefik.http.routers.shelp-front.entrypoints: web
+      traefik.http.services.shelp-front.loadbalancer.server.port: 3000
+
+  shelp-back:
+    image: marcpartensky/shelp-back
+    restart: unless-stopped
+    env_file:
+      - ../data/secrets/shelp.env
+    networks:
+      - caddy
+      - mongo
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.shelp-back.rule: Host(`api.shelp.marcpartensky.com`)
+      traefik.http.routers.shelp-back.entrypoints: web
+      traefik.http.services.shelp-back.loadbalancer.server.port: 8080
+
+volumes:
+  data:
+  pack:
+networks:
+  mongo:
+    external: true
+  caddy:
+    external: true
