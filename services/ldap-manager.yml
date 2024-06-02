@@ -5,11 +5,12 @@ services:
     image: wheelybird/ldap-user-manager:latest
     restart: unless-stopped
     environment:
-      SERVER_HOSTNAME: auth.marcpartensy.com
-      LDAP_URI: ldap://ldap
-      LDAP_BASE_DN: dc=admin,dc=org
+      SERVER_HOSTNAME: auth.marcpartensky.com
+      LDAP_URI: ldap://ldap:389
+      # LDAP_BASE_DN: dc=admin,dc=org
+      LDAP_BASE_DN: dc=marcpartensky,dc=com
       LDAP_ADMINS_GROUP: admins
-      LDAP_ADMIN_BIND_DN: cn=admin,dc=admin,dc=org
+      LDAP_ADMIN_BIND_DN: uid=5a5049f38c347a028dc67c975ef66cdc1e953ae57e89154fb074bcc18b1f4581,dc=marcpartensky,dc=com
       LDAP_IGNORE_CERT_ERRORS: "true"
       LDAP_REQUIRE_STARTTLS: "FALSE"
       NO_HTTPS: "TRUE"
@@ -28,17 +29,17 @@ services:
       traefik.http.routers.ldap_manager.entrypoints: web
       # traefik.http.routers.ldap_manager.tls.certresolver: tls
       traefik.http.services.ldap_manager.loadbalancer.server.port: 80
-    deploy:
-      labels:
-        traefik.enable: "true"
-        # traefik.http.routers.ldap_manager.rule: >
-        #   Host(`auth.marcpartensky.com`) || Host(`auth.marcpartensky.fr`)
-        traefik.http.routers.ldap_manager.rule: >
-          Host(`auth.marcpartensky.com`)
-        traefik.http.routers.ldap_manager.entrypoints: web
-        # traefik.http.routers.ldap_manager.tls.certresolver: tls
-        # traefik.http.routers.ldap_manager.tls.certresolver: cloudflare
-        traefik.http.services.ldap_manager.loadbalancer.server.port: 80
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     # traefik.http.routers.ldap_manager.rule: >
+    #     #   Host(`auth.marcpartensky.com`) || Host(`auth.marcpartensky.fr`)
+    #     traefik.http.routers.ldap_manager.rule: >
+    #       Host(`auth.marcpartensky.com`)
+    #     traefik.http.routers.ldap_manager.entrypoints: web
+    #     # traefik.http.routers.ldap_manager.tls.certresolver: tls
+    #     # traefik.http.routers.ldap_manager.tls.certresolver: cloudflare
+    #     traefik.http.services.ldap_manager.loadbalancer.server.port: 80
 
 networks:
   ldap:

@@ -10,18 +10,26 @@ services:
      - caddy
     environment:
       HTTP_PORT: 80
+      GRPC_PORT: 9090
+
       LDAP_HOST: "ldap"
-      LDAP_PORT: 636
+      LDAP_PORT: 389
       # LDAP_ADMIN_PASSWORD: admin
       # LDAP_CONFIG_PASSWORD: config
 
       LDAP_ORGANIZATION: Marc Partensky
       # LDAP_DOMAIN: marcpartensky.com
-      LDAP_DOMAIN: marcpartensky.fr
-      DAP_BASE_DN: dc=admin,dc=org
+      # LDAP_DOMAIN: marcpartensky.fr
+      # DAP_BASE_DN: dc=admin,dc=org
+      LDAP_DOMAIN: marcpartensky.com
+      LDAP_BASE_DN: dc=marcpartensky,dc=com
 
-      # DEFAULT_ADMIN_USERNAME: ldapadmin
-      # DEFAULT_ADMIN_PASSWORD: changeme
+      # DEFAULT_ADMIN_USERNAME: ldap-manager-php
+      # DEFAULT_ADMIN_PASSWORD: "@Rd2^28Yo9er*rZ52p!JkxQPq!!VvQ"
+      DEFAULT_ADMIN_USERNAME: marc
+      DEFAULT_ADMIN_PASSWORD: "D2%4&$ascXxxbJX%BY^tN6BRF@bY!F"
+      LDAP_ADMIN_USERNAME: marc
+      LDAP_ADMIN_PASSWORD: "D2%4&$ascXxxbJX%BY^tN6BRF@bY!F"
       # FORCE_CREATE_ADMIN: "true"
 
       LDAP_TLS: "false"
@@ -31,15 +39,23 @@ services:
       AUDIENCE: marcpartensky.com
       GENERATE: "true" # ports:
   #   - 9090:9090
-    deploy:
-      labels:
-        traefik.enable: "true"
-        # traefik.http.routers.ldap_manager_go.rule: Host(`ldapgo.marcpartensky.com`)
-        traefik.http.routers.ldap_manager_go.rule: >
-          Host(`ldapgo.marcpartensky.com`) || Host(`ldapgo.marcpartensky.fr`)
-        traefik.http.routers.ldap_manager_go.entrypoints: websecure
-        traefik.http.routers.ldap_manager_go.tls.certresolver: tls
-        traefik.http.services.ldap_manager_go.loadbalancer.server.port: 80
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ldap_manager_go.rule: Host(`ldapgo.marcpartensky.com`)
+      # traefik.http.routers.ldap_manager_go.rule: >
+      #   Host(`ldapgo.marcpartensky.com`)
+      traefik.http.routers.ldap_manager_go.entrypoints: web
+      # traefik.http.routers.ldap_manager_go.tls.certresolver: tls
+      traefik.http.services.ldap_manager_go.loadbalancer.server.port: 80
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     # traefik.http.routers.ldap_manager_go.rule: Host(`ldapgo.marcpartensky.com`)
+    #     traefik.http.routers.ldap_manager_go.rule: >
+    #       Host(`ldapgo.marcpartensky.com`) || Host(`ldapgo.marcpartensky.fr`)
+    #     traefik.http.routers.ldap_manager_go.entrypoints: websecure
+    #     traefik.http.routers.ldap_manager_go.tls.certresolver: tls
+    #     traefik.http.services.ldap_manager_go.loadbalancer.server.port: 80
 
 networks:
   ldap:
