@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  visualizer:
+    image: dockersamples/visualizer
+    restart: unless-stopped
+    volumes:
+      # - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    # logging:
+    #   options:
+    #     max-size: 1g
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.visualizer.rule: Host(`services.marcpartensky.com`)
+      # traefik.http.routers.visualizer.rule: >
+      #   Host(`swarm.marcpartensky.fr`) && Host(`swarm.marcpartensky.com`)
+      traefik.http.routers.visualizer.entrypoints: web
+      # traefik.http.routers.swarm_visualizer.tls.certresolver: tls
+      # traefik.http.routers.visualizer.tls.certresolver: cloudflare
+      # traefik.http.routers.visualizer.tls.certresolver: cloudflare
+      traefik.http.services.visualizer.loadbalancer.server.port: 8080
+
+networks:
+  caddy:
+    external: true
