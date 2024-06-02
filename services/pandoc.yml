@@ -20,8 +20,8 @@ services:
     #     traefik.http.routers.pandoc.entrypoints: websecure
     #     traefik.http.routers.pandoc.tls.certresolver: tls
     #     traefik.http.services.pandoc.loadbalancer.server.port: 80
-    # networks:
-    #   - caddy
+    networks:
+      - caddy
 
 volumes:
   pandoc:
