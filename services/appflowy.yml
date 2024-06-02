@@ -5,19 +5,29 @@ services:
   appflowy-nginx:
     restart: on-failure
     image: nginx
-    ports:
-      - 80:80   # Disable this if you are using TLS
+    # ports:
+    #   - 80:80   # Disable this if you are using TLS
     volumes:
       - ../data/appflowy/nginx.conf:/etc/nginx/nginx.conf
         # - ./nginx/ssl/certificate.crt:/etc/nginx/ssl/certificate.crt
         # - ./nginx/ssl/private_key.key:/etc/nginx/ssl/private_key.key
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.appflowy.loadbalancer.server.port: 80
+      traefik.http.routers.appflowy.rule: >
+        Host(`appflowy.marcpartensky.com`)
+      traefik.http.routers.appflowy.entrypoints: web
+      # traefik.http.routers.appflowy.tls.certresolver: tls
+      traefik.http.routers.appflowy.middlewares: ldap_auth
 
   gotrue:
     image: appflowyinc/gotrue:${GOTRUE_VERSION:-latest}
     restart: on-failure
-    build:
-      context: .
-      dockerfile: docker/gotrue.Dockerfile
+    networks:
+      - caddy
+      - postgres
     env_file:
       - ../data/secrets/appflowy.env
 
@@ -26,9 +36,6 @@ services:
     restart: on-failure
     env_file:
       - ../data/secrets/appflowy.env
-    build:
-      context: .
-      dockerfile: Dockerfile
 
   appflowy-admin:
     restart: on-failure
@@ -37,9 +44,6 @@ services:
       - gotrue
     env_file:
       - ../data/secrets/appflowy.env
-    build:
-      context: .
-      dockerfile: ./admin_frontend/Dockerfile
 
 networks:
   caddy:
@@ -48,4 +52,3 @@ networks:
     external: true
   redis:
     external: true
-
