@@ -18,7 +18,7 @@ services:
       traefik.http.routers.crontab.entrypoints: web
       # traefik.http.routers.ui.tls.certresolver: tls
       # traefik.http.routers.ui.tls.certresolver: cloudflare
-      # traefik.http.routers.crontab.middlewares: ldap_auth
+      traefik.http.routers.crontab.middlewares: ldap_auth
 
 volumes:
   crontabs:
