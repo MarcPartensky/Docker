@@ -9,10 +9,10 @@ services:
       TZ: Etc/UTC
     volumes:
       - /srv:/srv
-    ports:
+    # ports:
       # - 8384:8384
-      - 22000:22000
-      - 21027:21027/udp
+      # - 22000:22000/tcp
+      # - 21027:21027/udp
     networks:
       - caddy
     labels:
