@@ -1,15 +1,39 @@
+# https://acouvreur.github.io/sablier/#/plugins/traefik
+
+# Traefik will evict containers from its pool if they are stopped.
+# Meaning LABELS ATTACHED TO CONTAINERS TO AUTODISCOVER THEM IS NOT POSSIBLE
+# with this plugin.
+# You have to use the dynamic config file provider instead.
+
 version: "3.9"
 services:
   sablier:
-    image: ghcr.io/acouvreur/sablier:local
+    image: acouvreur/sablier:1.6.1
     command:
       - start
       - --provider.name=docker
     volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 10000:10000
+    networks:
+      - caddy
     labels:
       traefik.enable: true
       # Dynamic Middleware
       traefik.http.middlewares.dynamic.plugin.sablier.names: sablier-whoami-1
       traefik.http.middlewares.dynamic.plugin.sablier.sablierUrl: http://sablier:10000
       traefik.http.middlewares.dynamic.plugin.sablier.dynamic.sessionDuration: 1m
+      # traefik.enable: "true"
+      # traefik.http.services.sablier.loadbalancer.server.port: 10000
+      # # traefik.http.routers.sablier.rule: >
+      # #   Host(`sablier.marcpartensky.com`) || Host(`sablier.marcpartensky.fr`)
+      # traefik.http.routers.sablier.rule: >
+      #   Host(`sablier.marcpartensky.com`)
+      # traefik.http.routers.sablier.entrypoints: web
+      # # traefik.http.routers.sablier.tls.certresolver: tls
+      # traefik.http.routers.sablier.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
