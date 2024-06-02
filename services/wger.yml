@@ -8,6 +8,7 @@
 services:
   wger:
     image: wger/server:latest
+    container_name: wger
     restart: unless-stopped
     # depends_on:
     #   db:
@@ -33,6 +34,7 @@ services:
 
   nginx:
     image: nginx:stable
+    container_name: wger-nginx
     restart: unless-stopped
     volumes:
       - ../data/wger/nginx.conf:/etc/nginx/conf.d/default.conf
@@ -71,6 +73,7 @@ services:
 
   celery_worker:
     image: wger/server:latest
+    container_name: wger-celery
     restart: unless-stopped
     command: /start-worker
     env_file:
@@ -91,6 +94,7 @@ services:
 
   celery_beat:
     image: wger/server:latest
+    container_name: wger-celery-beat
     restart: unless-stopped
     command: /start-beat
     volumes:

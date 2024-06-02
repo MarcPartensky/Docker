@@ -1,32 +1,34 @@
 version: "3.9"
 services:
-  yt-dlp:
-    # container_name: ytdlp
-    image: marcpartensky/yt-dlp
-    restart: unless-stopped
-    volumes:
-      - ../data/yt-dlp:/root/downloads
-      - ~/Videos/Youtube:/srv
-    env_file:
-      - ../data/secrets/yt-dlp.env
-    network_mode: none
+  # yt-dlp:
+  #   # container_name: ytdlp
+  #   image: marcpartensky/yt-dlp
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ../data/yt-dlp:/root/downloads
+  #     - ~/Videos/Youtube:/srv
+  #   env_file:
+  #     - ../data/secrets/yt-dlp.env
+  #   network_mode: none
 
   webui:
     image: ghcr.io/marcopeocchi/yt-dlp-web-ui:latest
+    container_name: yt-dlp-webui
     restart: unless-stopped
     volumes:
-      - ~/Videos/Youtube:/downloads
+      # - ~/Videos/Youtube:/downloads
+      - /srv/jellyfin/Videos:/downloads
     networks:
       - caddy
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.ytdlp.rule: >
-          Host(`yt.marcpartensky.fr`) ||
-          Host(`yt.marcpartensky.com`)
-        traefik.http.routers.ytdlp.entrypoints: websecure
-        traefik.http.routers.ytdlp.tls.certresolver: cloudflare
-        traefik.http.services.ytdlp.loadbalancer.server.port: 3033
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     traefik.http.routers.ytdlp.rule: >
+    #       Host(`yt.marcpartensky.fr`) ||
+    #       Host(`yt.marcpartensky.com`)
+    #     traefik.http.routers.ytdlp.entrypoints: websecure
+    #     traefik.http.routers.ytdlp.tls.certresolver: cloudflare
+    #     traefik.http.services.ytdlp.loadbalancer.server.port: 3033
 
 volumes:
   ytdlp:

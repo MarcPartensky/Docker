@@ -2,20 +2,22 @@ version: "3"
 
 services:
   serge:
-    image: ghcr.io/nsarrazin/serge:latest
+    # image: ghcr.io/nsarrazin/serge:latest
+    image: ghcr.io/serge-chat/serge:latest
+    container_name: serge
     restart: unless-stopped
     networks:
       - caddy
     volumes:
       - weights:/usr/src/app/weights
       - data:/data/db/
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.serge.rule: >
-        Host(`serge.marcpartensky.com`)
-      # Host(`serge.marcpartensky.fr`) ||
-      traefik.http.routers.serge.entrypoints: web
-      traefik.http.services.serge.loadbalancer.server.port: 8008
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.routers.serge.rule: >
+    #     Host(`serge.marcpartensky.com`)
+    #   # Host(`serge.marcpartensky.fr`) ||
+    #   traefik.http.routers.serge.entrypoints: web
+    #   traefik.http.services.serge.loadbalancer.server.port: 8008
 
 networks:
   caddy:

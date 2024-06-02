@@ -3,6 +3,7 @@ version: "3.9"
 services:
   etherpad:
     image: etherpad/etherpad
+    container_name: etherpad
     restart: unless-stopped
     env_file:
       - ../data/secrets/etherpad.env
@@ -15,19 +16,17 @@ services:
     #   - data:/opt/etherpad-lite/var
     # volumes:
     #   - ../data/etherpad/settings.json:/opt/etherpad-lite/settings.json
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.etherpad.rule: >
-          Host(`pad.marcpartensky.com`) ||
-          Host(`pad.marcpartensky.fr`)
-        traefik.http.routers.etherpad.entrypoints: websecure
-        traefik.http.routers.etherpad.tls.certresolver: cloudflare
-        traefik.http.services.etherpad.loadbalancer.server.port: 9001
-        traefik.http.middlewares.redirect-pad-com.redirectregex.regex: "^https://etherpad.marcpartensky.com/(.*)"
-        traefik.http.middlewares.redirect-pad-com.redirectregex.replacement: "https://pad.marcpartensky.com/$${1}"
-        traefik.http.middlewares.redirect-pad-fr.redirectregex.regex: "^https://etherpad.marcpartensky.fr/(.*)"
-        traefik.http.middlewares.redirect-pad-fr.redirectregex.replacement: "https://pad.marcpartensky.fr/$${1}"
+    labels:
+      traefik.enable: "true"
+      # traefik.http.routers.etherpad.rule: >
+      #   Host(`pad.marcpartensky.com`)
+      # traefik.http.routers.etherpad.entrypoints: web
+      #   # traefik.http.routers.etherpad.tls.certresolver: cloudflare
+      # traefik.http.services.etherpad.loadbalancer.server.port: 9001
+      traefik.http.middlewares.redirect-pad-com.redirectregex.regex: "^https://etherpad.marcpartensky.com/(.*)"
+      traefik.http.middlewares.redirect-pad-com.redirectregex.replacement: "https://pad.marcpartensky.com/$${1}"
+      traefik.http.middlewares.redirect-pad-fr.redirectregex.regex: "^https://etherpad.marcpartensky.fr/(.*)"
+      traefik.http.middlewares.redirect-pad-fr.redirectregex.replacement: "https://pad.marcpartensky.fr/$${1}"
 
 # volumes:
 #   data:

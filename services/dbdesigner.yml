@@ -2,16 +2,17 @@ version: "3.9"
 services:
   dbdesigner:
     image: marcpartensky/dbdesigner
+    container_name: dbdesigner
     networks:
       - caddy
     environment:
       PORT: 3000
     labels:
-      traefik.enable: "true"
-      traefik.http.services.dbdesigner.loadbalancer.server.port: 3000
-      traefik.http.routers.dbdesigner.rule: >
-        Host(`dbdesigner.marcpartensky.com`)
-      traefik.http.routers.dbdesigner.entrypoints: web
+      # traefik.enable: "true"
+      # traefik.http.services.dbdesigner.loadbalancer.server.port: 3000
+      # traefik.http.routers.dbdesigner.rule: >
+      #   Host(`dbdesigner.marcpartensky.com`)
+      # traefik.http.routers.dbdesigner.entrypoints: web
       # traefik.http.routers.dbdesigner.tls.certresolver: tls
       traefik.http.routers.dbdesigner.middlewares: ldap_auth
 

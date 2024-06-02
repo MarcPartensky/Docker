@@ -2,6 +2,7 @@ version: "3.9"
 services:
   homer:
     image: b4bz/homer
+    container_name: homer
     restart: unless-stopped
     volumes:
       - homer:/www/assets
@@ -9,18 +10,18 @@ services:
       INIT_ASSETS: 1 # default
     networks:
       - caddy
-    labels:
-      caddy: homer.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 8080}}"
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.homer.rule: >
-          Host(`homer.marcpartensky.com`) ||
-          Host(`homer.marcpartensky.fr`)
-        traefik.http.routers.homer.entrypoints: websecure
-        traefik.http.routers.homer.tls.certresolver: tls
-        traefik.http.services.homer.loadbalancer.server.port: 8080
+    # labels:
+    #   caddy: homer.marcpartensky.com
+    #   caddy.reverse_proxy: "{{upstreams 8080}}"
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     traefik.http.routers.homer.rule: >
+    #       Host(`homer.marcpartensky.com`) ||
+    #       Host(`homer.marcpartensky.fr`)
+    #     traefik.http.routers.homer.entrypoints: websecure
+    #     traefik.http.routers.homer.tls.certresolver: tls
+    #     traefik.http.services.homer.loadbalancer.server.port: 8080
 
 volumes:
   homer:

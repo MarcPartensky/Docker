@@ -4,6 +4,7 @@ services:
   jupyterlab:
     # image: jupyter/datascience-notebook:latest
     image: marcpartensky/jupyterlab
+    container_name: jupyterlab
     # restart: unless-stopped
     environment:
     #   - GEN_CERT=yes
@@ -25,18 +26,18 @@ services:
     # volumes:
       # - jupyterlab:/home/jupyter
       # - ../data/jupyterlab/:/home/jupyter/.jupyter/
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-        traefik.enable: "true"
-        # traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.fr`)
-        traefik.http.routers.jupyterlab.rule: >
-          Host(`lab.marcpartensky.fr`) && Host(`lab.marcpartensky.com`)
-        traefik.http.routers.jupyterlab.entrypoints: websecure
-        traefik.http.routers.jupyterlab.tls.certresolver: cloudflare
-        traefik.http.services.jupyterlab.loadbalancer.server.port: 8888
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       - node.role == manager
+    #   labels:
+    #     traefik.enable: "true"
+    #     # traefik.http.routers.jupyterlab.rule: Host(`lab.marcpartensky.fr`)
+    #     traefik.http.routers.jupyterlab.rule: >
+    #       Host(`lab.marcpartensky.fr`) && Host(`lab.marcpartensky.com`)
+    #     traefik.http.routers.jupyterlab.entrypoints: websecure
+    #     traefik.http.routers.jupyterlab.tls.certresolver: cloudflare
+    #     traefik.http.services.jupyterlab.loadbalancer.server.port: 8888
 # entrypoint: start-notebook.sh \
     #     --NotebookApp.keyfile=key/0000_key-certbot.pem
     #     --NotebookApp.certfile=cert/0000_csr-certbot.pem
