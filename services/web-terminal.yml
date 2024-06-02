@@ -4,6 +4,8 @@ services:
     image: raonigabriel/web-terminal:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /home/marc:/root
+    # user: "1000:100" # cant apk install
     networks:
       - caddy
     labels:
@@ -15,7 +17,7 @@ services:
         Host(`terminal.marcpartensky.com`)
       traefik.http.routers.terminal.entrypoints: web
       # traefik.http.routers.terminal.tls.certresolver: tls
-      # traefik.http.routers.terminal.middlewares: ldap_auth
+      traefik.http.routers.terminal.middlewares: ldap_auth
 
 networks:
   caddy:
