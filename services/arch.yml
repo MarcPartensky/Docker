@@ -11,6 +11,12 @@ services:
       - ldap
     volumes:
       - arch:/home/marc
+    healthcheck:
+      test: curl --fail http://localhost:8080/ || exit 1
+      interval: 5m
+      timeout: 30s
+      retries: 3
+      start_period: 60s
     # deploy:
     #   labels:
     #     caddy: arch.marcpartensky.com
