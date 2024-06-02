@@ -2,7 +2,8 @@ version: "3.9"
 
 services:
   authentik:
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2022.2.1}
+    # image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.4.2}
+    image: ghcr.io/goauthentik/server:2024.4.2
     restart: unless-stopped
     command: server
     environment:
@@ -16,7 +17,7 @@ services:
     #   - "0.0.0.0:${AUTHENTIK_PORT_HTTP:-9000}:9000"
     #   - "0.0.0.0:${AUTHENTIK_PORT_HTTPS:-9443}:9443"
     volumes:
-      - media:/media
+      - authentik_media:/media
       - templates:/templates
       - geoip:/geoip
     # depends_on:
@@ -37,19 +38,20 @@ services:
       traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.com`)
       traefik.http.routers.authentik.entrypoints: web
         # traefik.http.routers.authentik.tls.certresolver: cloudflare
-      traefik.http.services.authentik.loadbalancer.server.port: 9000
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.fr`)
-        traefik.http.routers.authentik.entrypoints: websecure
-        traefik.http.routers.authentik.tls.certresolver: cloudflare
-        traefik.http.services.authentik.loadbalancer.server.port: 9000
+      traefik.http.services.authentik.loadbalancer.server.port: 80
+        # deploy:
+        #   labels:
+        #     traefik.enable: "true"
+        #     traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.fr`)
+        #     traefik.http.routers.authentik.entrypoints: websecure
+        #     traefik.http.routers.authentik.tls.certresolver: cloudflare
+        #     traefik.http.services.authentik.loadbalancer.server.port: 9000
 
   worker:
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2022.2.1}
+    # image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.4.2}
+    image: ghcr.io/goauthentik/server:2024.4.2
     restart: unless-stopped
-    user: root
+    # user: root
     command: worker
     environment:
       AUTHENTIK_REDIS__HOST: redis
@@ -61,7 +63,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/authentik:/backups
-      - media:/media
+      - authentik_media:/media
       - certs:/certs
       - templates:/templates
       - geoip:/geoip
@@ -88,26 +90,20 @@ services:
 
   ldap:
     image: ghcr.io/goauthentik/ldap
+    restart: unless-stopped
     ports:
-      - 3389:389
-      - 6636:636
-    # Optionally specify which networks the container should be
-    # might be needed to reach the core authentik server
+      - 389:389 # no need to expose insecure port
+      - 636:636
     networks:
-      - authentik
-    environment:
-      AUTHENTIK_DEBUG: "true"
-      AUTHENTIK_HOST: http://authentik:9000
-      # AUTHENTIK_HOST: https://authentik:9443
-      # AUTHENTIK_HOST: https://authentik.marcpartensky.fr
-      AUTHENTIK_INSECURE: "false"
+      - authentik # connect to authentik server
+      - ldap # connect to other services
     env_file:
-      - ../data/secrets/authentik_ldap.env
+      - ../data/secrets/authentik.env
 
 volumes:
   # backups:
   postgres:
-  media:
+  authentik_media:
   certs:
   templates:
   geoip:
