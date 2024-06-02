@@ -92,8 +92,8 @@ services:
     image: ghcr.io/goauthentik/ldap
     restart: unless-stopped
     ports:
-      - 389:389 # no need to expose insecure port
-      - 636:636
+      # - 389:389/tcp # no need to expose insecure port
+      - 0.0.0.0:636:636/tcp
     networks:
       - authentik # connect to authentik server
       - ldap # connect to other services
