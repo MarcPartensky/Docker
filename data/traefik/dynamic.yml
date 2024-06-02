@@ -1,7 +1,340 @@
 http:
+  # middlewares:
+  #   basic:
+  #     basicAuth:
+  #       users:
+  #       - test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/
+  #       # usersFile: etc/traefik/.htpasswd
+  services:
+    pgadmin:
+      loadBalancer:
+        servers:
+          - url: http://pgadmin:80
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: http://jellyfin:8096
+    portainer:
+      loadBalancer:
+        servers:
+          - url: http://portainer:9000
+    dbdesigner:
+      loadBalancer:
+        servers:
+          - url: http://dbdesigner:3000
+    etherpad:
+      loadBalancer:
+        servers:
+          - url: http://etherpad:9001
+    mongo:
+      loadBalancer:
+        servers:
+          - url: http://mongo:8081
+    resume:
+      loadBalancer:
+        servers:
+          - url: http://resume:3000
+    printer:
+      loadBalancer:
+        servers:
+          - url: http://resume:3000
+    mailu:
+      loadBalancer:
+        servers:
+          - url: http://mailu:80
+    yt-dlp-webui:
+      loadBalancer:
+        servers:
+          - url: http://yt-dlp-webui:80
+    wger-nginx:
+      loadBalancer:
+        servers:
+          - url: http://wger:80
+    web-terminal:
+      loadBalancer:
+        servers:
+          - url: http://web-terminal:7681
+    homer:
+      loadBalancer:
+        servers:
+          - url: http://homer:8080
+    pandoc:
+      loadBalancer:
+        servers:
+          - url: http://pandoc:80
+    jupyterlab:
+      loadBalancer:
+        servers:
+          - url: http://jupyterlab:8888
+    gitlab:
+      loadBalancer:
+        servers:
+          - url: http://gitlab:80
+    serge:
+      loadBalancer:
+        servers:
+          - url: http://serge:8008
+
+  routers:
+    pgadmin:
+      rule: "Host(`pgadmin.marcpartensky.com`)"
+      service: pgadmin
+      entryPoints: ["web"]
+      middlewares: ["sablier-pgadmin@file"]
+    jellyfin:
+      rule: "Host(`jellyfin.marcpartensky.com`)"
+      service: jellyfin
+      entryPoints: ["web"]
+      middlewares: ["sablier-jellyfin@file"]
+    portainer:
+      rule: "Host(`docker.marcpartensky.com`)"
+      service: portainer
+      entryPoints: ["web"]
+      middlewares: ["sablier-portainer@file"]
+    dbdesigner:
+      rule: "Host(`dbdesigner.marcpartensky.com`)"
+      service: dbdesigner
+      entryPoints: ["web"]
+      middlewares: ["sablier-dbdesigner@file"]
+    etherpad:
+      rule: "Host(`pad.marcpartensky.com`)"
+      service: etherpad
+      entryPoints: ["web"]
+      middlewares: ["sablier-etherpad@file"]
+    mongo:
+      rule: "Host(`mongo.marcpartensky.com`)"
+      service: mongo-express
+      entryPoints: ["web"]
+      middlewares: ["sablier-mongo@file"]
+    resume:
+      rule: "Host(`cv.marcpartensky.com`)"
+      service: resume
+      entryPoints: ["web"]
+      middlewares: ["sablier-resume@file"]
+    printer:
+      rule: "Host(`printer.marcpartensky.com`)"
+      service: resume
+      entryPoints: ["web"]
+      middlewares: ["sablier-resume@file"]
+    mailu:
+      rule: "Host(`mail.marcpartensky.com`)"
+      service: mailu
+      entryPoints: ["web"]
+      middlewares: ["sablier-mailu@file"]
+    yt-dlp-webui:
+      rule: "Host(`yt.marcpartensky.com`)"
+      service: yt-dlp-webui
+      entryPoints: ["web"]
+      middlewares: ["sablier-yt-dlp-webui@file"]
+    wger:
+      rule: "Host(`wger.marcpartensky.com`)"
+      service: wger-nginx
+      entryPoints: ["web"]
+      middlewares: ["sablier-wger@file"]
+    web-terminal:
+      rule: "Host(`terminal.marcpartensky.com`)"
+      service: web-terminal
+      entryPoints: ["web"]
+      middlewares: ["sablier-web-terminal@file", "ldap_auth@docker"]
+    homer:
+      rule: "Host(`homer.marcpartensky.com`)"
+      service: homer
+      entryPoints: ["web"]
+      middlewares: ["sablier-homer@file"]
+    pandoc:
+      rule: "Host(`pandoc.marcpartensky.com`)"
+      service: pandoc
+      entryPoints: ["web"]
+      middlewares: ["sablier-pandoc@file"]
+    jupyterlab:
+      rule: "Host(`jupyterlab.marcpartensky.com`)"
+      service: jupyterlab
+      entryPoints: ["web"]
+      middlewares: ["sablier-jupyterlab@file"]
+    gitlab:
+      rule: "Host(`gitlab.marcpartensky.com`)"
+      service: gitlab
+      entryPoints: ["web"]
+      middlewares: ["sablier-gitlab@file"]
+    serge:
+      rule: "Host(`serge.marcpartensky.com`)"
+      service: serge
+      entryPoints: ["web"]
+      middlewares: ["sablier-serge@file"]
+
   middlewares:
-    basic:
-      basicAuth:
-        users:
-        - test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/
-        # usersFile: etc/traefik/.htpasswd
+    sablier-pgadmin:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: pgadmin
+          dynamic:
+            displayName: pgAdmin
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
+    sablier-jellyfin:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: jellyfin
+          sessionDuration: 5m
+          dynamic:
+            # showDetails: true
+            displayName: Jellyfin
+            refreshFrequency: 5s
+            theme: shuffle
+    sablier-portainer:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: portainer,portainer-agent
+          sessionDuration: 1m
+          dynamic:
+            displayName: Portainer
+            showDetails: true
+            theme: shuffle
+    sablier-dbdesigner:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: dbdesigner
+          sessionDuration: 5m
+          dynamic:
+            displayName: dbDesigner
+            showDetails: true
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-etherpad:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: etherpad
+          sessionDuration: 5m
+          dynamic:
+            displayName: Etherpad
+            showDetails: true
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-mongo:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: mongo-express
+          sessionDuration: 5m
+          dynamic:
+            displayName: Mongo Express
+            showDetails: true 
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-resume:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: resume,printer
+          sessionDuration: 5m
+          dynamic:
+            displayName: Reactive Resume
+            showDetails: true 
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-mailu:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: mailu,mailu-resolver,mailu-admin,mailu-imap,mailu-smtp,mailu-oletools,mailu-antispam,mailu-webdav,mailu-fetchmail
+          sessionDuration: 5m
+          dynamic:
+            displayName: Mailu
+            showDetails: true 
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-yt-dlp-webui:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: yt-dlp-webui
+          sessionDuration: 5m
+          dynamic:
+            displayName: yt-dlp WebUI
+            showDetails: true 
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-wger:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: wger,wger-nginx,wger-celery,wger-celery-beat
+          sessionDuration: 5m
+          dynamic:
+            displayName: yt-dlp WebUI
+            showDetails: true 
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-web-terminal:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: web-terminal
+          sessionDuration: 5m
+          dynamic:
+            displayName: Web Terminal
+            showDetails: true 
+            theme: matrix
+            refreshFrequency: 1s
+    sablier-homer:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: homer
+          sessionDuration: 5m
+          dynamic:
+            displayName: Homer
+            showDetails: true 
+            theme: shuffle
+            refreshFrequency: 1s
+    sablier-pandoc:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: pandoc
+          sessionDuration: 5m
+          dynamic:
+            displayName: Pandoc
+            showDetails: true 
+            theme: hacker-terminal
+            refreshFrequency: 1s
+    sablier-jupyterlab:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: jupyterlab
+          sessionDuration: 5m
+          dynamic:
+            displayName: Jupyter Lab
+            showDetails: true 
+            theme: matrix
+            refreshFrequency: 1s
+    sablier-gitlab:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: gitlab,gitlab-runner
+          sessionDuration: 5m
+          dynamic:
+            displayName: Gitlab
+            showDetails: true 
+            theme: matrix
+            refreshFrequency: 5s
+    sablier-serge:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: serge
+          sessionDuration: 5m
+          dynamic:
+            displayName: Serge
+            showDetails: true 
+            theme: matrix
+            refreshFrequency: 5s

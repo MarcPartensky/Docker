@@ -15,7 +15,8 @@ providers:
     exposedByDefault: false # traefik enabled containers only
     network: caddy
   file:
-    filename: dynamic.yml
+    filename: /etc/traefik/dynamic.yml
+    watch: true
 serversTransport: # enable ssl backend
   insecureSkipVerify: true
 certificatesResolvers:
@@ -60,13 +61,13 @@ entryPoints:
     #   trustedIPs:
     #     - "127.0.0.1/32"
     #     - "192.168.1.7"
-    # http:
-    #   redirections:
-    #     entryPoint:
-    #       to: websecure
-    #       scheme: https
-    #       permanent: true
-    #       priority: 10
+    http:
+      redirections:
+        entryPoint:
+          # to: websecure
+          scheme: https
+          permanent: true
+          priority: 10
 experimental:
   # http3: true
   plugins:
@@ -85,9 +86,11 @@ experimental:
 #   ldapSource:
 #     ldap:
 #       url: ldaps://marcpartensky.com:636
+#       # url: ldap://ldap:389
 #       startTLS: true
 #       insecureSkipVerify: true
-#       bindDN: cn=admin,dc=admin,dc=org
+#       bindDn: ""
+#       # bindDN: cn=marc,dc=marcpartensky,dc=com
 
 # - --providers.docker.network=web # <== Operate on the docker network named web
 ## API Settings - https://docs.traefik.io/operations/api/, endpoints - https://docs.traefik.io/operations/api/#endpoints ##
