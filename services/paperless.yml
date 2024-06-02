@@ -46,6 +46,7 @@ services:
 
   paperless:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
     restart: unless-stopped
       # depends_on:
       #   - db
@@ -61,11 +62,11 @@ services:
       - redis
       - caddy
       - postgres
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.paperless.rule: Host(`paperless.marcpartensky.com`)
-      traefik.http.routers.paperless.entrypoints: web
-      traefik.http.services.paperless.loadbalancer.server.port: 8000
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.routers.paperless.rule: Host(`paperless.marcpartensky.com`)
+    #   traefik.http.routers.paperless.entrypoints: web
+    #   traefik.http.services.paperless.loadbalancer.server.port: 8000
 
 volumes:
   data:

@@ -9,7 +9,7 @@ services:
     # user: "1000:100" # cant apk install
     networks:
       - caddy
-    labels:
+    # labels:
       # traefik.enable: "true"
       # traefik.http.services.terminal.loadbalancer.server.port: 7681
       # # traefik.http.routers.terminal.rule: >
@@ -18,7 +18,7 @@ services:
       #   Host(`terminal.marcpartensky.com`)
       # traefik.http.routers.terminal.entrypoints: web
       # traefik.http.routers.terminal.tls.certresolver: tls
-      traefik.http.routers.terminal.middlewares: ldap_auth
+      # traefik.http.routers.terminal.middlewares: ldap_auth
 
 networks:
   caddy:

@@ -2,6 +2,7 @@ version: "3.9"
 services:
   grafana:
     image: grafana/grafana
+    container_name: grafana
     restart: unless-stopped
     env_file:
       - ../data/secrets/grafana.env
@@ -14,17 +15,17 @@ services:
       - caddy
       - postgres
       - ldap
-    deploy:
-      labels:
-        caddy: grafana.marcpartensky.com
-        caddy.reverse_proxy: "{{upstreams 3000}}"
-        traefik.enable: "true"
-        traefik.http.routers.grafana.rule: >
-          Host(`grafana.marcpartensky.fr`) ||
-          Host(`grafana.marcpartensky.com`)
-        traefik.http.routers.grafana.entrypoints: websecure
-        traefik.http.routers.grafana.tls.certresolver: tls
-        traefik.http.services.grafana.loadbalancer.server.port: 3000
+    # deploy:
+    #   labels:
+    #     caddy: grafana.marcpartensky.com
+    #     caddy.reverse_proxy: "{{upstreams 3000}}"
+    #     traefik.enable: "true"
+    #     traefik.http.routers.grafana.rule: >
+    #       Host(`grafana.marcpartensky.fr`) ||
+    #       Host(`grafana.marcpartensky.com`)
+    #     traefik.http.routers.grafana.entrypoints: websecure
+    #     traefik.http.routers.grafana.tls.certresolver: tls
+    #     traefik.http.services.grafana.loadbalancer.server.port: 3000
 
 volumes:
   grafana:

@@ -18,12 +18,12 @@ services:
       - 10000:10000
     networks:
       - caddy
-    labels:
-      traefik.enable: true
+    # labels:
+    #   traefik.enable: true
       # Dynamic Middleware
-      traefik.http.middlewares.dynamic.plugin.sablier.names: sablier-whoami-1
-      traefik.http.middlewares.dynamic.plugin.sablier.sablierUrl: http://sablier:10000
-      traefik.http.middlewares.dynamic.plugin.sablier.dynamic.sessionDuration: 1m
+      # traefik.http.middlewares.dynamic.plugin.sablier.names: sablier-whoami-1
+      # traefik.http.middlewares.dynamic.plugin.sablier.sablierUrl: http://sablier:10000
+      # traefik.http.middlewares.dynamic.plugin.sablier.dynamic.sessionDuration: 1m
       # traefik.enable: "true"
       # traefik.http.services.sablier.loadbalancer.server.port: 10000
       # # traefik.http.routers.sablier.rule: >

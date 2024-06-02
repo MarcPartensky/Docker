@@ -3,24 +3,27 @@ version: "3.9"
 services:
   portainer:
     restart: unless-stopped
+    container_name: portainer
     image: portainer/portainer-ce:latest
-    ports:
-      - 9443:9443
+    # ports:
+    #   - 9443:9443
     volumes:
       - data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - caddy
       - portainer
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.portainer.rule: Host(`docker.marcpartensky.com`)
-      traefik.http.routers.portainer.entrypoints: web
-      # traefik.http.routers.portainer.tls.certresolver: tls
-      traefik.http.services.portainer.loadbalancer.server.port: 9000
+      - ldap
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.routers.portainer.rule: Host(`docker.marcpartensky.com`)
+    #   traefik.http.routers.portainer.entrypoints: web
+    #   # traefik.http.routers.portainer.tls.certresolver: tls
+    #   traefik.http.services.portainer.loadbalancer.server.port: 9000
 
-  agent:
+  portainer-agent:
     image: portainer/agent:2.18.2
+    container_name: portainer-agent
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
@@ -101,5 +104,7 @@ volumes:
 
 networks:
   portainer:
+  ldap:
+    external: true
   caddy:
     external: true

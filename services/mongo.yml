@@ -19,6 +19,7 @@ services:
 
   express:
     image: mongo-express
+    container_name: mongo-express
     restart: unless-stopped
     environment:
       ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
@@ -39,17 +40,17 @@ services:
         # traefik.http.routers.mongo.tls.certresolver: tls
       traefik.http.services.mongo.loadbalancer.server.port: 8081
        # traefik.http.routers.duplicati.middlewares: ldap_auth
-    deploy:
-      labels:
-        traefik.enable: "true"
-        # traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
-        traefik.http.routers.mongo.rule: >
-          Host(`mongo.marcpartensky.fr`) ||
-          Host(`mongo.marcpartensky.com`)
-        traefik.http.routers.mongo.entrypoints: websecure
-        traefik.http.routers.mongo.tls.certresolver: tls
-        traefik.http.services.mongo.loadbalancer.server.port: 8081
-        traefik.http.routers.mongo.middlewares: ldap_auth
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     # traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
+    #     traefik.http.routers.mongo.rule: >
+    #       Host(`mongo.marcpartensky.fr`) ||
+    #       Host(`mongo.marcpartensky.com`)
+    #     traefik.http.routers.mongo.entrypoints: websecure
+    #     traefik.http.routers.mongo.tls.certresolver: tls
+    #     traefik.http.services.mongo.loadbalancer.server.port: 8081
+    #     traefik.http.routers.mongo.middlewares: ldap_auth
 
 volumes:
   mongo:

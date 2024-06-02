@@ -1,13 +1,20 @@
+# https://github.com/wallabag/wallabag/issues/1878
+# https://github.com/wallabag/docker/issues/412
+
+# mandatory for fresh install
+# php bin/console wallabag:install --env=prod -n
+
 version: "3.9"
 services:
   wallabag:
     image: wallabag/wallabag
     volumes:
       # Volumes for data-related folders
-      - /srv/wallabag:/var/www/html/data
-      - assets:/var/www/html/web/assets
-      # - cache:/var/www/.cache
-      - cache:/var/www/wallabag/var/
+      - /srv/wallabag/data/entrypoint.sh:/entrypoint.sh
+      - /srv/wallabag/data:/var/www/wallabag/data
+      - /srv/wallabag/assets:/var/www/wallabag/web/assets
+      - wallabag_cache:/var/www/wallabag/var/
+
       # Uncomment the following volume if you run rootless Docker
       # A limitation blocks permissions on root docker, see
       # https://github.com/moby/moby/issues/40881
@@ -32,14 +39,18 @@ services:
       # - 8000:8000
       # Uncomment to permit Xdebug remote session
       # - 9000:9000
-    # depends_on:
-      # - mariadb
-      # - postgres
-      # - redis
     networks:
       - caddy
       - postgres
       - redis
+    healthcheck:
+      test: ["CMD", "wget" ,"--no-verbose", "--tries=1", "--spider", "http://localhost/api/info"]
+      interval: 1m
+      timeout: 3s
+        # entrypoint: >
+        #   sh -c "su -c 'php bin/console wallabag:install --env=prod -n' &&
+        #   ./entrypoint.sh"
+    command: wallabag
     labels:
       traefik.enable: "true"
       traefik.http.services.wallabag.loadbalancer.server.port: 80
@@ -87,9 +98,7 @@ services:
   #     retries: 3
 
 volumes:
-  assets:
-  data:
-  cache:
+  wallabag_cache:
 networks:
   wallabag:
   caddy:
