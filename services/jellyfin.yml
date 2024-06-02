@@ -12,26 +12,28 @@ services:
     volumes:
       - config:/config
       - cache:/cache
-      - media:/media
-      - movies:/movies
-      - musics:/musics
-      - photos:/photos
+      - /srv/jellyfin/media:/media
+      - /srv/jellyfin/movies:/movies
+      - /srv/jellyfin/musics:/musics
+      - /srv/jellyfin/photos:/photos
       - ~/Videos/Youtube:/videos
-    # ports:
+    ports:
+      - 8096:8096
       # - 8920:8920 #optional https self signed
       # - 7359:7359/udp #optional lan discovery
       # - 1900:1900/udp #optional dnla
     networks:
       - caddy
-    deploy:
-      labels:
-        traefik.enable: "true"
-          # Host(`jellyfin.marcpartensky.fr`) ||
-        traefik.http.routers.jellyfin.rule: >
-          Host(`jellyfin.marcpartensky.com`)
-        traefik.http.routers.jellyfin.entrypoints: web
-          # traefik.http.routers.jellyfin.tls.certresolver: tls
-        traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.jellyfin.rule: >
+        Host(`jellyfin.marcpartensky.com`)
+      traefik.http.routers.jellyfin.entrypoints: web
+        # traefik.http.routers.jellyfin.tls.certresolver: tls
+      traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+      # traefik.http.services.jellyfin.loadbalancer.server.port: 8920
+      # traefik.http.services.jellyfin.loadbalancer.server.scheme: https
+
 
 volumes:
   config:
