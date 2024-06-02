@@ -72,14 +72,17 @@ experimental:
   # http3: true
   plugins:
     ldapAuth:
-      moduleName: "github.com/wiltonsr/ldapAuth"
-      version: "v0.0.19"
+      moduleName: github.com/wiltonsr/ldapAuth
+      version: v0.0.19
     souin:
-      moduleName: "github.com/darkweak/souin"
-      version: "v1.6.22"
+      moduleName: github.com/darkweak/souin
+      version: v1.6.22
     sablier:
-      moduleName: "github.com/acouvreur/sablier"
-      version: "v1.0.0"
+      moduleName: github.com/acouvreur/sablier
+      version: v1.0.0
+    cloudflarewarp:
+      modulename: github.com/BetterCorp/cloudflarewarp
+      version: v1.3.0
 
 # ldap entreprise  https://doc.traefik.io/traefik-enterprise/operations/static-configuration/
 # authSources:

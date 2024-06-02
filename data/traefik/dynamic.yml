@@ -74,6 +74,54 @@ http:
       loadBalancer:
         servers:
           - url: http://serge:8008
+    arch:
+      loadBalancer:
+        servers:
+          - url: http://arch:8080
+    gitea:
+      loadBalancer:
+        servers:
+          - url: http://gitea:3000
+    # heimdall:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://heimdall:80
+    pgweb:
+      loadBalancer:
+        servers:
+          - url: http://pgweb:8081
+    paperless:
+      loadBalancer:
+        servers:
+          - url: http://paperless:8000
+    jenkins:
+      loadBalancer:
+        servers:
+          - url: http://jenkins:8080
+    rancher:
+      loadBalancer:
+        servers:
+          - url: http://rancher:80
+    docuseal:
+      loadBalancer:
+        servers:
+          - url: http://docuseal:3000
+    grafana:
+      loadBalancer:
+        servers:
+          - url: http://grafana:3000
+    peertube:
+      loadBalancer:
+        servers:
+          - url: http://peertube:9000
+    mcmyadmin:
+      loadBalancer:
+        servers:
+          - url: http://mcmyadmin:8080
+    qbittorrent:
+      loadBalancer:
+        servers:
+          - url: http://qbittorrent:8080
 
   routers:
     pgadmin:
@@ -161,8 +209,75 @@ http:
       service: serge
       entryPoints: ["web"]
       middlewares: ["sablier-serge@file"]
+    arch:
+      rule: "Host(`arch.marcpartensky.com`)"
+      service: arch
+      entryPoints: ["web"]
+      middlewares: ["sablier-arch@file"]
+    gitea:
+      rule: "Host(`git.marcpartensky.com`)"
+      service: gitea
+      entryPoints: ["web"]
+      middlewares: ["sablier-gitea@file"]
+    # heimdall:
+    #   rule: "Host(`heimdall.marcpartensky.com`)"
+    #   service: heimdall
+    #   entryPoints: ["web"]
+      # middlewares: ["sablier-heimdall@file"]
+    pgweb:
+      rule: "Host(`pgweb.marcpartensky.com`)"
+      service: pgweb
+      entryPoints: ["web"]
+      middlewares: ["sablier-pgweb@file", "ldap_auth@docker"]
+    paperless:
+      rule: "Host(`paperless.marcpartensky.com`)"
+      service: paperless
+      entryPoints: ["web"]
+      middlewares: ["sablier-paperless@file"]
+    jenkins:
+      rule: "Host(`jenkins.marcpartensky.com`)"
+      service: jenkins
+      entryPoints: ["web"]
+      middlewares: ["sablier-jenkins@file"]
+    rancher:
+      rule: "Host(`rancher.marcpartensky.com`)"
+      service: rancher
+      entryPoints: ["web"]
+      middlewares: ["sablier-rancher@file"]
+    docuseal:
+      rule: "Host(`docuseal.marcpartensky.com`)"
+      service: docuseal
+      entryPoints: ["web"]
+      middlewares: ["sablier-docuseal@file"]
+    grafana:
+      rule: "Host(`grafana.marcpartensky.com`)"
+      service: grafana
+      entryPoints: ["web"]
+      middlewares: ["sablier-grafana@file"]
+    peertube:
+      rule: "Host(`peertube.marcpartensky.com`)"
+      service: peertube
+      entryPoints: ["web"]
+      middlewares: ["sablier-peertube@file"]
+    mcmyadmin:
+      rule: "Host(`mcmyadmin.marcpartensky.com`)"
+      service: mcmyadmin
+      entryPoints: ["web"]
+      middlewares: ["sablier-mcmyadmin@file"]
+    qbittorrent:
+      rule: "Host(`torrent.marcpartensky.com`)"
+      service: qbittorrent
+      entryPoints: ["web"]
+      middlewares: ["sablier-qbittorrent@file", "ldap_auth@docker"]
+
 
   middlewares:
+    cloudflarewarp:
+      plugin:
+        cloudflarewarp:
+          disableDefault: false
+          trustip: # Trust IPS not required if disableDefault is false - we will allocate Cloud Flare IPs automatically
+            - "2400:cb00::/32"
     sablier-pgadmin:
       plugin:
         sablier:
@@ -204,7 +319,7 @@ http:
           dynamic:
             displayName: dbDesigner
             showDetails: true
-            theme: shuffle
+            theme: ghost
             refreshFrequency: 1s
     sablier-etherpad:
       plugin:
@@ -303,7 +418,7 @@ http:
           dynamic:
             displayName: Pandoc
             showDetails: true 
-            theme: hacker-terminal
+            # theme: hacker-terminal
             refreshFrequency: 1s
     sablier-jupyterlab:
       plugin:
@@ -337,4 +452,136 @@ http:
             displayName: Serge
             showDetails: true 
             theme: matrix
+            refreshFrequency: 5s
+    sablier-arch:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: arch
+          sessionDuration: 5m
+          dynamic:
+            displayName: Arch Linux VNC
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-gitea:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: gitea
+          sessionDuration: 5m
+          dynamic:
+            displayName: Gitea
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    # sablier-heimdall:
+    #   plugin:
+    #     sablier:
+    #       sablierUrl: http://sablier:10000
+    #       names: heimdall
+    #       sessionDuration: 5m
+    #       dynamic:
+    #         displayName: Heimdall
+    #         showDetails: true 
+    #         theme: ghost
+    #         refreshFrequency: 5s
+    sablier-pgweb:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: pgweb
+          sessionDuration: 5m
+          dynamic:
+            displayName: PG Web
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-paperless:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: paperless
+          sessionDuration: 2m
+          dynamic:
+            displayName: Paperless
+            showDetails: true 
+            theme: hacker-matrix
+            refreshFrequency: 5s
+    sablier-jenkins:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: jenkins
+          sessionDuration: 2m
+          dynamic:
+            displayName: Jenkins
+            showDetails: true 
+            theme: matrix
+            refreshFrequency: 5s
+    sablier-rancher:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: rancher
+          sessionDuration: 2m
+          dynamic:
+            displayName: Rancher
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-docuseal:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: docuseal
+          sessionDuration: 2m
+          dynamic:
+            displayName: Docuseal
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-grafana:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: grafana
+          sessionDuration: 2m
+          dynamic:
+            displayName: Grafana
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-peertube:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: peertube
+          sessionDuration: 2m
+          dynamic:
+            displayName: Peertube
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-mcmyadmin:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: mcmyadmin
+          sessionDuration: 2m
+          dynamic:
+            displayName: McMyAdmin
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-qbittorrent:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: qbittorrent
+          sessionDuration: 2m
+          dynamic:
+            displayName: Qbittorrent
+            showDetails: true 
+            theme: ghost
             refreshFrequency: 5s
