@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  mistral:
+    image: ghcr.io/mistralai/mistral-src/vllm:latest
+    networks:
+      - caddy
+    environment:
+      HF_TOKEN: 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
+        # runtime: rocm
+    command: >
+      --host 0.0.0.0
+      --model mistralai/Mistral-7B-Instruct-v0.2
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.mistgral.rule: >
+        Host(`mistral.marcpartensky.com`)
+      traefik.http.routers.mistgral.entrypoints: web
+      # traefik.http.routers.mistgral.tls.certresolver: tls
+      traefik.http.services.mistgral.loadbalancer.server.port: 8000
+      # traefik.http.routers.mistgral.middlewares: ldap_auth
+
+volumes:
+  data:
+  pack:
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true
