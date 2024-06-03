@@ -7,33 +7,42 @@ services:
     ports:
       - 53:53/tcp
       - 53:53/udp
-      - 67:67/udp
-      - 68:68/udp # adguard home as dhcp
+      # - 67:67/udp
+      # - 68:68/udp # adguard home as dhcp
       # - 80:80/tcp  # https/dns-over-https
       # - 443:443/tcp
       # - 443:443/udp
       # - 3000:3000/tcp # adguard home's admin
-      - 853:853/tcp # dns-over-tls
-      - 784:784/udp # dns-over-quic
-      - 853:853/udp
-      - 8853:8853/udp
-      - 5443:5443/tcp # dnscrypt server
-      - 5443:5443/udp
+      # - 853:853/tcp # dns-over-tls
+      # - 784:784/udp # dns-over-quic
+      # - 853:853/udp
+      # - 8853:8853/udp
+      # - 5443:5443/tcp # dnscrypt server
+      # - 5443:5443/udp
     volumes:
       - adguard:/opt/adguardhome/work
       - ../data/adguard:/opt/adguardhome/conf
     networks:
       - caddy
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.adguard.rule: >
-          Host(`adguard.marcpartensky.com`) ||
-          Host(`adguard.marcpartensky.fr`)
-        traefik.http.routers.adguard.entrypoints: websecure
-        traefik.http.routers.adguard.tls.certresolver: cloudflare
-        traefik.http.services.adguard.loadbalancer.server.port: 3000
-        traefik.http.routers.adguard.middlewares: ldap_auth
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.adguard.rule: >
+        Host(`adguard.marcpartensky.com`)
+      traefik.http.routers.adguard.entrypoints: web
+      # traefik.http.routers.adguard.tls.certresolver: cloudflare
+      traefik.http.services.adguard.loadbalancer.server.port: 3000
+      traefik.http.routers.adguard.middlewares: ldap_auth
+
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     traefik.http.routers.adguard.rule: >
+    #       Host(`adguard.marcpartensky.com`) ||
+    #       Host(`adguard.marcpartensky.fr`)
+    #     traefik.http.routers.adguard.entrypoints: websecure
+    #     traefik.http.routers.adguard.tls.certresolver: cloudflare
+    #     traefik.http.services.adguard.loadbalancer.server.port: 3000
+    #     traefik.http.routers.adguard.middlewares: ldap_auth
 
 volumes:
   adguard:
