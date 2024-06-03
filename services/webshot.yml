@@ -3,6 +3,7 @@ version: "3.9"
 services:
   webshot:
     image: flowko1/website-shot
+    container_name: webshot
     volumes:
       - webshot:/usr/src/website-shot/screenshots
     # environment:
@@ -10,15 +11,13 @@ services:
     #   PASSWORD: yourpassword
     networks:
       - caddy
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.webshot.rule: Host(`webshot.marcpartensky.com`)
-        traefik.http.routers.webshot.entrypoints: websecure
-        traefik.http.routers.webshot.tls.certresolver: tls
-        traefik.http.services.webshot.loadbalancer.server.port: 3000
-        # traefik.http.routers.duplicati.middlewares: ldap_auth
-
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.routers.webshot.rule: Host(`webshot.marcpartensky.com`)
+    #   traefik.http.routers.webshot.entrypoints: web
+    #   # traefik.http.routers.webshot.tls.certresolver: tls
+    #   traefik.http.services.webshot.loadbalancer.server.port: 3000
+    #   # traefik.http.routers.duplicati.middlewares: ldap_auth
 
 networks:
   caddy:
