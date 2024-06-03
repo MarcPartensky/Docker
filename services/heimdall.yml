@@ -13,6 +13,8 @@ services:
       - ../data/heimdall:/config
     networks:
       - caddy
+      - postgres
+      - redis
     labels:
       # caddy: heimdall.marcpartensky.com
       # caddy.reverse_proxy: "{{upstreams}}"
@@ -34,5 +36,9 @@ services:
     #     traefik.http.routers.duplicati.middlewares: ldap_auth
 
 networks:
+  redis:
+    external: true
+  postgres:
+    external: true
   caddy:
     external: true
