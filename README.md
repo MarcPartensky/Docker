@@ -6,6 +6,8 @@
 
 Visit my [cloud](https://heimdall.marcpartensky.com)!
 
+All docker compose files are in the services folder with custom yml names.
+
 ## Domains
 - https://adguard.marcpartensky.com
 - https://arch.marcpartensky.com
