@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  webdav:
+    image: ray1ex/asgi-webdav
+    container_name: webdav
+    restart: unless-stopped
+    environment:
+      UID: 1000
+      GID: 1000
+    networks:
+      - caddy
+    volumes:
+        - ../data/webdav:/data
+        - /home/marc:/webdav/marc
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.webdav.loadbalancer.server.port: 8000
+      traefik.http.routers.webdav.rule: >
+        Host(`webdav.marcpartensky.com`)
+      traefik.http.routers.webdav.entrypoints: web
+      # traefik.http.routers.dbdesigner.tls.certresolver: tls
+      # traefik.http.routers.dbdesigner.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
