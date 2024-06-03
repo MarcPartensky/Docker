@@ -5,23 +5,24 @@ services:
     image: hurlenko/filebrowser
     restart: unless-stopped
     # user: "${UID}:${GID}"
+    # volumes:
+    #   - /root/Videos:/data
     volumes:
-      - /root/Videos:/data
+      - /:/data
       - ../data/filebrowser:/config
     # environment:
       # FB_BASEURL: /filebrowser
     networks:
       - caddy
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.filebrowser.rule: >
-          Host(`file.marcpartensky.fr`) ||
-          Host(`file.marcpartensky.com`)
-        traefik.http.routers.filebrowser.entrypoints: websecure
-        traefik.http.routers.filebrowser.tls.certresolver: tls
-        traefik.http.services.filebrowser.loadbalancer.server.port: 8080
-        traefik.http.routers.filebrowser.middlewares: ldap_auth
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.filebrowser.rule: >
+        Host(`file.marcpartensky.com`)
+        # Host(`file.marcpartensky.fr`) ||
+      traefik.http.routers.filebrowser.entrypoints: web
+      # traefik.http.routers.filebrowser.tls.certresolver: tls
+      traefik.http.services.filebrowser.loadbalancer.server.port: 8080
+      traefik.http.routers.filebrowser.middlewares: ldap_auth
 
 networks:
   caddy:
