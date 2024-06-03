@@ -122,6 +122,15 @@ http:
       loadBalancer:
         servers:
           - url: http://qbittorrent:8080
+    dockge:
+      loadBalancer:
+        servers:
+          - url: http://dockge:5001
+    webshot:
+      loadBalancer:
+        servers:
+          - url: http://webshot:3000
+
 
   routers:
     pgadmin:
@@ -269,6 +278,16 @@ http:
       service: qbittorrent
       entryPoints: ["web"]
       middlewares: ["sablier-qbittorrent@file", "ldap_auth@docker"]
+    dockge:
+      rule: "Host(`dockge.marcpartensky.com`)"
+      service: dockge
+      entryPoints: ["web"]
+      middlewares: ["sablier-dockge@file", "ldap_auth@docker"]
+    webshot:
+      rule: "Host(`webshot.marcpartensky.com`)"
+      service: webshot
+      entryPoints: ["web"]
+      middlewares: ["sablier-webshot@file", "ldap_auth@docker"]
 
 
   middlewares:
@@ -582,6 +601,28 @@ http:
           sessionDuration: 2m
           dynamic:
             displayName: Qbittorrent
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-dockge:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: dockge
+          sessionDuration: 2m
+          dynamic:
+            displayName: Dockge
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-webshot:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: webshot
+          sessionDuration: 2m
+          dynamic:
+            displayName: Webshot
             showDetails: true 
             theme: ghost
             refreshFrequency: 5s
