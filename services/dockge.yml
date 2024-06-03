@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  dockge:
+    image: louislam/dockge:1
+    restart: unless-stopped
+    # ports:
+    #   - 5001:5001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../dockge/data:/app/data
+      # Stacks Directory
+      # ⚠️ READ IT CAREFULLY. If you did it wrong, your data could end up writing into a WRONG PATH.
+      # ⚠️ 1. FULL path only. No relative path (MUST)
+      # ⚠️ 2. Left Stacks Path === Right Stacks Path (MUST)
+      - ./:/opt/stacks
+    environment:
+      # Tell Dockge where to find the stacks
+      - DOCKGE_STACKS_DIR=/opt/stacks
+    networks:
+      - caddy
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.services.dockge.loadbalancer.server.port: 5001
+    #   traefik.http.routers.dockge.rule: >
+    #     Host(`dockge.marcpartensky.com`)
+    #   traefik.http.routers.dockge.entrypoints: web
+    #   traefik.http.routers.dockge.middlewares: ldap_auth
+networks:
+  caddy:
+    external: true
