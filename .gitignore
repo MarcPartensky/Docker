@@ -27,6 +27,8 @@ data/gpg
 data/redis
 data/fdroid
 data/grafana
+data/qbittorrent
+data/webdav
 data.tar.gz
 data.7z
 data.7z.gpg
