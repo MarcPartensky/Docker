@@ -3,12 +3,14 @@ version: "3.9"
 services:
   filebrowser:
     image: hurlenko/filebrowser
+    container_name: filebrowser
     restart: unless-stopped
     # user: "${UID}:${GID}"
+    user: "1000:100"
     # volumes:
     #   - /root/Videos:/data
     volumes:
-      - /:/data
+      - /home/marc:/data
       - ../data/filebrowser:/config
     # environment:
       # FB_BASEURL: /filebrowser
@@ -16,9 +18,7 @@ services:
       - caddy
     labels:
       traefik.enable: "true"
-      traefik.http.routers.filebrowser.rule: >
-        Host(`file.marcpartensky.com`)
-        # Host(`file.marcpartensky.fr`) ||
+      traefik.http.routers.filebrowser.rule: Host(`file.marcpartensky.com`)
       traefik.http.routers.filebrowser.entrypoints: web
       # traefik.http.routers.filebrowser.tls.certresolver: tls
       traefik.http.services.filebrowser.loadbalancer.server.port: 8080
