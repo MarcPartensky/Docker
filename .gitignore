@@ -29,6 +29,10 @@ data/fdroid
 data/grafana
 data/qbittorrent
 data/webdav
+data/pufferpanel
+data/dockge
+data/ocis
+data/owncloud
 data.tar.gz
 data.7z
 data.7z.gpg
