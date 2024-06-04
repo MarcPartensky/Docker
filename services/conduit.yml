@@ -1,0 +1,50 @@
+# Conduit - Behind Traefik Reverse Proxy
+version: '3'
+
+services:
+    homeserver:
+        image: matrixconduit/matrix-conduit:latest
+        restart: unless-stopped
+        
+        # labels:
+        #     - "traefik.enable=true"
+        #     - "traefik.docker.network=proxy"  # Change this to the name of your Traefik docker proxy network
+
+        #     - "traefik.http.routers.to-conduit.rule=Host(`sub_domain.domain.com`)"  # Change to the address on which Conduit is hosted
+        #     - "traefik.http.routers.to-conduit.tls=true"
+        #     - "traefik.http.routers.to-conduit.tls.certresolver=letsencrypt"
+        #     - "traefik.http.routers.to-conduit.middlewares=cors-headers@docker"
+
+        #     - "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginList=*"
+        #     - "traefik.http.middlewares.cors-headers.headers.accessControlAllowHeaders=Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        #     - "traefik.http.middlewares.cors-headers.headers.accessControlAllowMethods=GET, POST, PUT, DELETE, OPTIONS"
+        ports:
+            - 8448:6167
+
+        volumes:
+            - db:/srv/conduit/.local/share/conduit
+            ### Uncomment if you want to use conduit.toml to configure Conduit
+            ### Note: Set env vars will override conduit.toml values
+            - ./conduit.toml:/srv/conduit/conduit.toml
+        networks:
+            - proxy
+        environment:
+            CONDUIT_SERVER_NAME: sub_domain.domain.com  # replace with your own name
+            CONDUIT_TRUSTED_SERVERS: '["matrix.org"]'
+            CONDUIT_ALLOW_REGISTRATION : 'true'
+            ### Uncomment and change values as desired
+            # CONDUIT_ADDRESS: 0.0.0.0
+            # CONDUIT_PORT: 6167
+            # CONDUIT_CONFIG: '/srv/conduit/conduit.toml'  # if you want to configure purely by env vars, set this to an empty string ''
+            # Available levels are: error, warn, info, debug, trace - more info at: https://docs.rs/env_logger/*/env_logger/#enabling-logging
+            # CONDUIT_LOG: info  # default is: "warn,_=off,sled=off"
+            CONDUIT_LOG: debug
+            # CONDUIT_ALLOW_JAEGER: 'false'
+            # CONDUIT_ALLOW_ENCRYPTION: 'false'
+            # CONDUIT_ALLOW_FEDERATION: 'false'
+            # CONDUIT_DATABASE_PATH: /srv/conduit/.local/share/conduit
+            # CONDUIT_WORKERS: 10
+            # CONDUIT_MAX_REQUEST_SIZE: 20_000_000  # in bytes, ~20 MB
+
+networks:
+    proxy:
