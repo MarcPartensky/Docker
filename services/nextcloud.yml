@@ -4,12 +4,15 @@ services:
   nextcloud:
     image: nextcloud
     restart: unless-stopped
+    # user: "1000:100"
     volumes:
       # - nextcloud:/var/www/html
       - ../data/nextcloud/config:/var/www/html/config
       - /srv/nextcloud/data:/var/www/html/data
       - /srv/nextcloud/themes:/var/www/html/themes
       - /srv/nextcloud/apps:/var/www/html/custom_apps
+      - ../data/nextcloud/test:/test
+
     env_file:
       - ../data/secrets/nextcloud.env
     networks:
