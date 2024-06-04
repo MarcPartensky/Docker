@@ -110,7 +110,7 @@ volumes:
   # traefik_certs:
   traefik:
     # name: "vps_traefik_letsencrypt"
-    name: traefik
+    # name: traefik
     external: true
 
 networks:
