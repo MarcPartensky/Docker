@@ -52,6 +52,9 @@ services:
     volumes:
       - /srv/pg-backup:/backups
 
+  # https://github.com/prodrigestivill/docker-postgres-backup-local
+  # restore:
+  # docker exec --tty --interactive $CONTAINER /bin/sh -c "zcat $BACKUPFILE | psql --username=$USERNAME --dbname=$DBNAME -W"
   pgbackups:
     image: prodrigestivill/postgres-backup-local
     restart: unless-stopped
