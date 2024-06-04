@@ -60,11 +60,7 @@ services:
       traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
       # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldap://ldap
       # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 389
-      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: "cn=traefik,ou=services,dc=marcpartensky,dc=com"
-      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindPassword: "2tG2eXDaeZVabhX*Ci7S#8sHRi2oc&"
-      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: "cn=marc,ou=admins,dc=marcpartensky,dc=com"
       traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: "cn=traefik,dc=marcpartensky,dc=com"
-      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: "uid=5a5049f38c347a028dc67c975ef66cdc1e953ae57e89154fb074bcc18b1f4581,dc=marcpartensky,dc=com"
       traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindPassword: "2tG2eXDaeZVabhX*Ci7S#8sHRi2oc&"
       traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "dc=marcpartensky,dc=com"
       # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
