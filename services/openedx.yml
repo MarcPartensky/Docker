@@ -1,0 +1,194 @@
+# OpenEdx docker-compose stack used for development/test purpose
+#
+#
+#
+# Nota bene: this docker-compose file requires that you have set the DOCKER_UID
+# and DOCKER_GID variables with relevant values (i.e. matching the current
+# system user ids). If you use the project's Makefile or the bin/compose
+# wrapper, those variable definitions have already been handled on your behalf.
+version: "3.5"
+
+services:
+  # mysql:
+  #   image: mysql:5.6
+  #   ports:
+  #     - "3316:3306"
+  #   env_file: env.d/development
+  #   command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+
+  mongodb:
+    image: mongo:3.2
+    # We use WiredTiger in all environments. In development environments we use small files
+    # to conserve disk space, and disable the journal for a minor performance gain.
+    # See https://docs.mongodb.com/v3.0/reference/program/mongod/#options for complete details.
+    command: mongod --smallfiles --nojournal --storageEngine wiredTiger
+
+  memcached:
+    image: memcached:1.4
+
+      # redis:
+      #     image: redis:4.0.10-alpine
+
+      #   redis-master:
+      #     image: redis:4.0.10-alpine
+      # 
+      # redis-slave:
+      #   image: redis:4.0.10-alpine
+      #   command: redis-server --slaveof redis-master 6379
+      #   depends_on:
+      #     - redis-master
+
+      # redis-sentinel:
+      #   image: s7anley/redis-sentinel-docker
+      #   environment:
+      #     - MASTER_NAME=mymaster
+      #     - QUORUM=1
+      #     - MASTER=redis-master
+      #   depends_on:
+      #       - redis-master
+      #       - redis-slave
+
+  mailcatcher:
+    image: sj26/mailcatcher:latest
+    ports:
+      - "1080:1080"
+
+  lms:
+    build:
+      context: ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}
+      target: production
+      args:
+        EDX_RELEASE_REF: ${EDX_RELEASE_REF:-release-2018-08-29-14.14}
+        EDX_ARCHIVE_URL: ${EDX_ARCHIVE_URL:-https://github.com/edx/edx-platform/archive/release-2018-08-29-14.14.tar.gz}
+    image: "${EDXAPP_IMAGE_NAME:-edxapp}:${EDXAPP_IMAGE_TAG:-master-bare}"
+    env_file:
+      - env.d/development
+      - env.d/${REDIS_SERVICE:-redis}
+    environment:
+      SERVICE_VARIANT: lms
+      DJANGO_SETTINGS_MODULE: lms.envs.fun.docker_run
+    volumes:
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/media:/edx/var/edxapp/media
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/store:/edx/app/edxapp/data
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/export:/edx/var/edxapp/export
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/config:/config
+      - ./docker/files/usr/local/bin/auth_init:/usr/local/bin/auth_init
+      # Add lines here to override source code in a Python module e.g.:
+      #- ./src/edx-ora2/openassessment:/usr/local/lib/python2.7/dist-packages/openassessment
+    user: ${DOCKER_UID}:${DOCKER_GID}
+    stdin_open: true
+    tty: true
+    depends_on:
+      - mailcatcher
+      - mysql
+      - mongodb
+      - memcached
+      - ${REDIS_SERVICE:-redis}
+
+  lms-dev:
+    build:
+      context: ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}
+      target: development
+      args:
+        DOCKER_UID: ${DOCKER_UID}
+        DOCKER_GID: ${DOCKER_GID}
+        EDX_RELEASE_REF: ${EDX_RELEASE_REF:-release-2018-08-29-14.14}
+        EDX_ARCHIVE_URL: ${EDX_ARCHIVE_URL:-https://github.com/edx/edx-platform/archive/release-2018-08-29-14.14.tar.gz}
+    image: "${EDXAPP_IMAGE_NAME:-edxapp}:${EDXAPP_IMAGE_TAG:-master-bare}-dev"
+    env_file:
+      - env.d/development
+      - env.d/${REDIS_SERVICE:-redis}
+    environment:
+      SERVICE_VARIANT: lms
+      DJANGO_SETTINGS_MODULE: lms.envs.fun.docker_run
+    ports:
+      - "8072:8000"
+    volumes:
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/src/edx-platform:/edx/app/edxapp/edx-platform
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/static/development:/edx/app/edxapp/staticfiles
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/media:/edx/var/edxapp/media
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/store:/edx/app/edxapp/data
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/export:/edx/var/edxapp/export
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/config:/config
+      # Add lines here to override source code in a Python module e.g.:
+      #- ./src/edx-ora2/openassessment:/usr/local/lib/python2.7/dist-packages/openassessment
+    command: >
+      python manage.py lms runserver 0.0.0.0:8000 --settings=fun.docker_run_development
+    depends_on:
+      - mailcatcher
+      - mysql
+      - mongodb
+      - memcached
+      - ${REDIS_SERVICE:-redis}
+
+  cms:
+    image: "${EDXAPP_IMAGE_NAME:-edxapp}:${EDXAPP_IMAGE_TAG:-master-bare}"
+    env_file:
+      - env.d/development
+      - env.d/${REDIS_SERVICE:-redis}
+    environment:
+      SERVICE_VARIANT: cms
+      DJANGO_SETTINGS_MODULE: cms.envs.fun.docker_run
+    volumes:
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/media:/edx/var/edxapp/media
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/data/store:/edx/app/edxapp/data
+      - ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}/config:/config
+      # Add lines here to override source code in a Python module e.g.:
+      #- ./src/edx-ora2/openassessment:/usr/local/lib/python2.7/dist-packages/openassessment
+    networks:
+      - default
+      - outside
+    depends_on:
+      - lms
+    user: ${DOCKER_UID}:${DOCKER_GID}
+
+  cms-dev:
+    image: "${EDXAPP_IMAGE_NAME:-edxapp}:${EDXAPP_IMAGE_TAG:-master-bare}-dev"
+    env_file:
+      - env.d/development
+      - env.d/${REDIS_SERVICE:-redis}
+    ports:
+      - "8082:8000"
+    volumes:
+      - /srv/openedx/src/edx-platform:/edx/app/edxapp/edx-platform
+      - /srv/openedx/data/static/development:/edx/app/edxapp/staticfiles
+      - /srv/openedx/data/media:/edx/var/edxapp/media
+      - /srv/openedx/data/store:/edx/app/edxapp/data
+      - /srv/openedx/config:/config
+      # Add lines here to override source code in a Python module e.g.:
+      #- ./src/edx-ora2/openassessment:/usr/local/lib/python2.7/dist-packages/openassessment
+    command: >
+      python manage.py cms runserver 0.0.0.0:8000 --settings=fun.docker_run_development
+    depends_on:
+      - lms-dev
+
+  nginx:
+    build:
+      context: ./${FLAVORED_EDX_RELEASE_PATH:-releases/master/0/bare}
+      target: nginx
+      args:
+        EDX_RELEASE_REF: ${EDX_RELEASE_REF:-release-2018-08-29-14.14}
+        EDX_ARCHIVE_URL: ${EDX_ARCHIVE_URL:-https://github.com/edx/edx-platform/archive/release-2018-08-29-14.14.tar.gz}
+    image: "${EDXAPP_NGINX_IMAGE_NAME:-edxapp-nginx}:${EDXAPP_IMAGE_TAG:-master-bare}"
+    ports:
+      - "8073:8073"
+      - "8083:8083"
+    networks:
+      default:
+        aliases:
+          - nginx
+      outside:
+        aliases:
+          - edx
+    volumes:
+      - ../data/openedx/nginx:/etc/nginx/conf.d:ro
+      - /srv/openedx/data/media:/data/media:ro
+    depends_on:
+      - lms
+      - cms
+
+        # dockerize:
+        #   image: jwilder/dockerize
+
+networks:
+  outside:

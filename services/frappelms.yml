@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: mariadb:10.6
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed # Temporary fix for MariaDB 10.6
+    env_file:
+      - ../data/secrets/frappelms.env
+    volumes:
+      - /srv/mariadb:/var/lib/mysql
+    networks:
+      - mariadb
+    ports:
+      - target: 3306
+        published: 3306
+        mode: host
+
+  frappelms:
+    image: frappe/bench:latest
+    command: bash /workspace/init.sh
+    environment:
+      SHELL: /bin/bash
+    working_dir: /home/frappe
+    volumes:
+      - /srv/frappelms:/workspace
+        # env_file:
+        #   - ../data/secrets/frappelms.env # useless
+    networks:
+      - caddy
+      - mariadb
+      - redis
+        # ports:
+        #   - 8000:8000
+        #   - 9000:9000
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.frappelms.rule: >
+        Host(`lms.marcpartensky.com`)
+      traefik.http.routers.frappelms.entrypoints: web
+      traefik.http.services.frappelms.loadbalancer.server.port: 8000
+
+volumes:
+  mariadb-data:
+
+networks:
+  mariadb:
+  redis:
+    external: true
+  caddy:
+    external: true
