@@ -4,6 +4,7 @@ services:
   matrix:
     image: matrixdotorg/synapse
     restart: unless-stopped
+    user: "1337:1337"
     # environment:
     #   SYNAPSE_REPORT_STATS: "no"
     #   SYNAPSE_SERVER_NAME: matrix.marcpartensky.com
@@ -23,24 +24,101 @@ services:
       retries: 3
       start_period: 5s
     labels:
-      caddy: matrix.marcpartensky.com
-      caddy.reverse_proxy: "{{upstreams 8008}}"
       traefik.enable: "true"
       traefik.http.routers.matrix.rule: Host(`matrix.marcpartensky.com`)
-      traefik.http.routers.matrix.entrypoints: websecure
-      traefik.http.routers.matrix.tls.certresolver: tls
-      traefik.http.services.matrix.loadbalancer.server.port: 8008
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.matrix.rule: >
-          Host(`matrix.marcpartensky.com`) || Host(`matrix.marcpartensky.fr`)
-        traefik.http.routers.matrix.entrypoints: websecure
-        traefik.http.routers.matrix.tls.certresolver: tls
-        traefik.http.services.matrix.loadbalancer.server.port: 8008
+      traefik.http.routers.matrix.entrypoints: web
+      # traefik.http.routers.matrix.tls.certresolver: tls
+      # traefik.http.services.matrix.loadbalancer.server.port: 8008
+      # traefik.http.routers.to-matrix-wellknown.rule: Host(`marcpartensky.com`) && PathPrefix(`/.well-known/matrix`)"
+      # traefik.http.routers.to-matrix-wellknown.tls: true"
+      # traefik.http.routers.to-matrix-wellknown.tls.certresolver: letsencrypt"
+      # traefik.http.routers.to-matrix-wellknown.middlewares: cors-headers@docker"
+    # deploy:
+    #   labels:
+    #     traefik.enable: "true"
+    #     traefik.http.routers.matrix.rule: >
+    #       Host(`matrix.marcpartensky.com`) || Host(`matrix.marcpartensky.fr`)
+    #     traefik.http.routers.matrix.entrypoints: websecure
+    #     traefik.http.routers.matrix.tls.certresolver: tls
+    #     traefik.http.services.matrix.loadbalancer.server.port: 8008
+
+    # well-known:
+    #   image: nginx:latest
+    #   restart: unless-stopped
+    #   volumes:
+    #     - ../data/nginx/matrix.conf:/etc/nginx/conf.d/matrix.conf # the config to serve the .well-known/matrix files
+    #     - ../data/nginx/www:/var/www/ # location of the client and server .well-known-files
+
+  # https://community.traefik.io/t/setting-up-conduit-matrix-server-with-traefik/19394
+  well-known:
+    image: nginx:latest
+    restart: unless-stopped
+    volumes:
+      - ../data/dendrite/well-known/conf:/etc/nginx/conf.d # the config to serve the .well-known/matrix files
+      - ../data/dendrite/well-known/www:/var/www/ # location of the client and server .well-known-files
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.well-known.loadbalancer.server.port: 80
+      traefik.http.routers.well-known.rule: (Host(`marcpartensky.com`) && PathPrefix(`/.well-known`)) || (Host(`marcpartensky.com`) && PathPrefix(`/.well-known`))
+      traefik.http.routers.well-known.entrypoints: web
+      # traefik.http.routers.well-known.rule: Host(`marcpartensky.com`) && PathPrefix(`/.well-known/matrix`)"
+      # traefik.http.routers.to-matrix-wellknown.tls: true"
+      # traefik.http.routers.to-matrix-wellknown.tls.certresolver: letsencrypt"
+
+  whatsapp:
+    container_name: whatsapp
+    image: dock.mau.dev/mautrix/whatsapp
+    restart: unless-stopped
+    # user: "1337:1337"
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/whatsapp:/data
+  meta: # instagram
+    container_name: meta
+    image: dock.mau.dev/mautrix/meta
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/meta:/data
+  facebook: # messenger
+    container_name: facebook
+    image: dock.mau.dev/mautrix/facebook
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/facebook:/data
+  signal:
+    container_name: signal
+    image: dock.mau.dev/mautrix/signal
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/signal:/data
+  discord:
+    container_name: discord
+    image: dock.mau.dev/mautrix/discord
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/discord:/data
+  slack:
+    container_name: slack
+    image: dock.mau.dev/mautrix/slack
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/slack:/data
 
 networks:
-  postgres:
-    external: true
   caddy:
+    external: true
+  postgres:
     external: true
