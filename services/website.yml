@@ -31,7 +31,7 @@ services:
       # caddy.reverse_proxy: "{{upstreams 80}}"
       # caddy.tls: "internal"
       traefik.enable: "true"
-      traefik.http.routers.website.rule: Host(`marcpartensky.com`)
+      traefik.http.routers.website.rule: Host(`marcpartensky.com`) && !PathPrefix(`/.well-known`)
       traefik.http.routers.website.entrypoints: web
       # traefik.http.routers.website.tls.certresolver: tls
       traefik.http.services.website.loadbalancer.server.port: 80
