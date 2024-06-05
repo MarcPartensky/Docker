@@ -71,7 +71,7 @@ services:
       traefik.http.services.wg-easy.loadbalancer.server.port: 80
       traefik.http.routers.wg-easy.rule: Host(`wg.marcpartensky.com`)
       traefik.http.routers.wg-easy.entrypoints: web
-      traefik.http.routers.dbdesigner.middlewares: ldap_auth
+      traefik.http.routers.wg-easy.middlewares: ldap_auth
 
 networks:
   vpn:
