@@ -33,21 +33,6 @@ services:
       # traefik.http.routers.to-matrix-wellknown.tls: true"
       # traefik.http.routers.to-matrix-wellknown.tls.certresolver: letsencrypt"
       # traefik.http.routers.to-matrix-wellknown.middlewares: cors-headers@docker"
-    # deploy:
-    #   labels:
-    #     traefik.enable: "true"
-    #     traefik.http.routers.matrix.rule: >
-    #       Host(`matrix.marcpartensky.com`) || Host(`matrix.marcpartensky.fr`)
-    #     traefik.http.routers.matrix.entrypoints: websecure
-    #     traefik.http.routers.matrix.tls.certresolver: tls
-    #     traefik.http.services.matrix.loadbalancer.server.port: 8008
-
-    # well-known:
-    #   image: nginx:latest
-    #   restart: unless-stopped
-    #   volumes:
-    #     - ../data/nginx/matrix.conf:/etc/nginx/conf.d/matrix.conf # the config to serve the .well-known/matrix files
-    #     - ../data/nginx/www:/var/www/ # location of the client and server .well-known-files
 
   # https://community.traefik.io/t/setting-up-conduit-matrix-server-with-traefik/19394
   well-known:
@@ -84,14 +69,14 @@ services:
       - postgres
     volumes:
       - ../data/matrix/meta:/data
-  facebook: # messenger
-    container_name: facebook
-    image: dock.mau.dev/mautrix/facebook
-    restart: unless-stopped
-    networks:
-      - postgres
-    volumes:
-      - ../data/matrix/facebook:/data
+  # facebook: # messenger
+  #   container_name: facebook
+  #   image: dock.mau.dev/mautrix/facebook
+  #   restart: unless-stopped
+  #   networks:
+  #     - postgres
+  #   volumes:
+  #     - ../data/matrix/facebook:/data
   signal:
     container_name: signal
     image: dock.mau.dev/mautrix/signal
@@ -116,6 +101,30 @@ services:
       - postgres
     volumes:
       - ../data/matrix/slack:/data
+  twitter:
+    container_name: twitter
+    image: dock.mau.dev/mautrix/twitter
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/twitter:/data
+  gmessages:
+    container_name: gmessages
+    image: dock.mau.dev/mautrix/gmessages
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/gmessages:/data
+  messenger:
+    container_name: messenger
+    image: dock.mau.dev/mautrix/meta
+    restart: unless-stopped
+    networks:
+      - postgres
+    volumes:
+      - ../data/matrix/messenger:/data
 
 networks:
   caddy:
