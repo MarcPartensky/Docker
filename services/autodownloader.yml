@@ -1,0 +1,7 @@
+services:
+  autodownloader:
+    image: marcpartensky/autodownloader
+    volumes:
+      - /srv/jellyfin/movies:/movies
+    env_file:
+      - ../data/secrets/autodownloader.env
