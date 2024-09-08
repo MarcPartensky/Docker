@@ -1,5 +1,8 @@
 #!/bin/sh
 
+tool=podman-compose
+# tool="docker compose"
+
 if [ $1 = merge ]
 then
     cat ./env/$2.txt | xargs -I @ echo ./services/@.yml | xargs ./bin/docker-merge.py > ./stacks/docker-compose.yml
@@ -26,7 +29,7 @@ config_files() {
 
 if [ -z $STACK ]
 then
-    cmd="docker compose $(config_files) up -d"
+    cmd="$tool $(config_files) up -d"
 else
     cmd="docker stack deploy $(config_files) $STACK"
 fi
