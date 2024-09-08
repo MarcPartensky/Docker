@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  izitdone-back:
+    image: docker.io/marcpartensky/izitdone-back:v23.ca2e91d09917d423458640113e852cfd60d6916e
+    restart: unless-stopped
+    networks:
+      - caddy
+      - postgres
+    env_file:
+      - ../data/secrets/izitdone.env
+    # volumes:
+    #   - ../data/secrets/izitdone.env:/root/.env
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.izitdone-back.rule: >
+        Host(`izitdone.marcpartensky.com`) && PathPrefix(`/api`)
+      traefik.http.routers.izitdone-back.entrypoints: web
+      # traefik.http.routers.izitdone-back.tls.certresolver: tls
+      traefik.http.services.izitdone-back.loadbalancer.server.port: 8000
+      traefik.http.middlewares.izitdone-back.redirectscheme.scheme: https
+      # traefik.http.routers.izitdone-back.middlewares: ldap_auth
+      traefik.http.middlewares.izitdone-back.stripprefix.prefixes: /api
+
+  izitdone-front:
+    image: docker.io/marcpartensky/izitdone-front:latest
+    restart: unless-stopped
+    networks:
+      - caddy
+      - postgres
+    # volumes:
+    #   - ../data/secrets/izitdone.env:/root/.env
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.izitdone-front.rule: >
+        Host(`izitdone.marcpartensky.com`) && !PathPrefix(`/api`)
+      traefik.http.routers.izitdone-front.entrypoints: web
+      # traefik.http.routers.izitdone-front.tls.certresolver: tls
+      traefik.http.services.izitdone-front.loadbalancer.server.port: 3000
+      traefik.http.middlewares.izitdone-front.redirectscheme.scheme: https
+      # traefik.http.routers.izitdone-front.middlewares: ldap_auth
+
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true
