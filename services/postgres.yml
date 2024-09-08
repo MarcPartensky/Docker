@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   postgres:
-    image: postgres:14
+    image: docker.io/postgres:14
     restart: unless-stopped
     # user: postgres:postgres
     # user: "974:974"
@@ -12,6 +12,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
       - ../data/postgres/initdb.d:/initdb.d
+      - /home/marc/backup:/backup
       - ../data/postgres/certs:/var/lib/postgresql/certs
     env_file:
       - ../data/secrets/postgres.env
@@ -19,9 +20,6 @@ services:
       postgres
       -c log_statement=all
       -c log_destination=stderr
-      -c ssl=on
-      -c ssl_cert_file=/var/lib/postgresql/certs/server.crt
-      -c ssl_key_file=/var/lib/postgresql/certs/server.key
     networks:
       - postgres
     healthcheck:
@@ -31,7 +29,7 @@ services:
       retries: 3
 
   pgagent:
-    image: chiavegatto/postgres-pgagent
+    image: docker.io/chiavegatto/postgres-pgagent
     entrypoint: /bin/sh -c
                 "/tmp/wait-for-it.sh postgres:5432 --timeout=30 &&
                 psql -U postgres -h postgres -p 5432 -d postgres -c 'CREATE EXTENSION IF NOT EXISTS pgagent;' &&
@@ -44,7 +42,7 @@ services:
       - postgres
 
   backup:
-    image: kartoza/pg-backup:14-3.1
+    image: docker.io/kartoza/pg-backup:14-3.1
     env_file:
       - ../data/secrets/pg_backup.env
     networks:
@@ -56,7 +54,7 @@ services:
   # restore:
   # docker exec --tty --interactive $CONTAINER /bin/sh -c "zcat $BACKUPFILE | psql --username=$USERNAME --dbname=$DBNAME -W"
   pgbackups:
-    image: prodrigestivill/postgres-backup-local
+    image: docker.io/prodrigestivill/postgres-backup-local
     restart: unless-stopped
     # user: postgres:postgres
     volumes:

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   nextcloud:
-    image: nextcloud
+    image: docker.io/nextcloud
     restart: unless-stopped
     # user: "1000:100"
     volumes:

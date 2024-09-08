@@ -4,7 +4,7 @@ services:
   portainer:
     restart: unless-stopped
     container_name: portainer
-    image: portainer/portainer-ce:latest
+    image: docker.io/portainer/portainer-ce:latest
     # ports:
     #   - 9443:9443
     volumes:
@@ -22,7 +22,7 @@ services:
     #   traefik.http.services.portainer.loadbalancer.server.port: 9000
 
   portainer-agent:
-    image: portainer/agent:2.18.2
+    image: docker.io/portainer/agent:2.18.2
     container_name: portainer-agent
     hostname: agent
     volumes:

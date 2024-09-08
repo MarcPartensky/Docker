@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   ldap_sync:
-    image: marcpartensky/vaultwarden-ldap
+    image: docker.io/marcpartensky/vaultwarden-ldap
     environment:
       CONFIG_PATH: /config.toml
       RUST_BACKTRACE: 1
@@ -18,7 +18,7 @@ services:
     #   - ldap
 
   vaultwarden:
-    image: vaultwarden/server
+    image: docker.io/vaultwarden/server
     restart: unless-stopped
     env_file:
       - ../data/secrets/vaultwarden.env

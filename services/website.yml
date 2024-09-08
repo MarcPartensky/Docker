@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   website:
-    image: marcpartensky/website:v140.f211658.2023-11-01
+    image: docker.io/marcpartensky/website:v140.f211658.2023-11-01
     restart: unless-stopped
     env_file:
       - ../data/secrets/website.env
@@ -34,7 +34,7 @@ services:
       traefik.http.routers.website.rule: Host(`marcpartensky.com`) && !PathPrefix(`/.well-known`)
       traefik.http.routers.website.entrypoints: web
       # traefik.http.routers.website.tls.certresolver: tls
-      traefik.http.services.website.loadbalancer.server.port: 80
+      traefik.http.services.website.loadbalancer.server.port: 8000
     # deploy:
     #   placement:
     #     constraints:
