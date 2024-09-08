@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   bot:
-    image: docker.io/marcpartensky/discord-bot:v107.be20e90.2022-05-21
+    image: docker.io/marcpartensky/discord-bot:v134.f3731be.2024-09-08
     restart: unless-stopped
     ports:
       - "7010:8000"
