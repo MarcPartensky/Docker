@@ -10,7 +10,7 @@ api:
   debug: false
 providers:
   docker:
-    swarmMode: false
+    # swarmMode: false
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false # traefik enabled containers only
     network: caddy
