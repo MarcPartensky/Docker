@@ -3,6 +3,7 @@ version: "3.9"
 services:
   izitdone-back:
     image: docker.io/marcpartensky/izitdone-back:v23.ca2e91d09917d423458640113e852cfd60d6916e
+    # image: docker.io/traefik/whoami
     restart: unless-stopped
     networks:
       - caddy
@@ -16,11 +17,13 @@ services:
       traefik.http.routers.izitdone-back.rule: >
         Host(`izitdone.marcpartensky.com`) && PathPrefix(`/api`)
       traefik.http.routers.izitdone-back.entrypoints: web
-      # traefik.http.routers.izitdone-back.tls.certresolver: tls
       traefik.http.services.izitdone-back.loadbalancer.server.port: 8000
       traefik.http.middlewares.izitdone-back.redirectscheme.scheme: https
+      traefik.http.middlewares.izitdone-back-strip.stripprefix.prefixes: /api
+      # traefik.http.middlewares.izitdone-back-strip.stripprefix.forceslash: false
+      traefik.http.routers.izitdone-back.middlewares: izitdone-back-strip
+      # traefik.http.routers.izitdone-back.tls.certresolver: tls
       # traefik.http.routers.izitdone-back.middlewares: ldap_auth
-      traefik.http.middlewares.izitdone-back.stripprefix.prefixes: /api
 
   izitdone-front:
     image: docker.io/marcpartensky/izitdone-front:latest
