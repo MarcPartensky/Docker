@@ -30,14 +30,14 @@ http:
       loadBalancer:
         servers:
           - url: http://mongo:8081
-    resume:
-      loadBalancer:
-        servers:
-          - url: http://resume:3000
-    printer:
-      loadBalancer:
-        servers:
-          - url: http://resume:3000
+    # resume:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://resume:3000
+    # printer:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://resume:3000
     mailu:
       loadBalancer:
         servers:
@@ -163,16 +163,16 @@ http:
       service: mongo-express
       entryPoints: ["web"]
       middlewares: ["sablier-mongo@file"]
-    resume:
-      rule: "Host(`cv.marcpartensky.com`)"
-      service: resume
-      entryPoints: ["web"]
-      middlewares: ["sablier-resume@file"]
-    printer:
-      rule: "Host(`printer.marcpartensky.com`)"
-      service: resume
-      entryPoints: ["web"]
-      middlewares: ["sablier-resume@file"]
+    # resume:
+    #   rule: "Host(`cv.marcpartensky.com`)"
+    #   service: resume
+    #   entryPoints: ["web"]
+    #   middlewares: ["sablier-resume@file"]
+    # printer:
+    #   rule: "Host(`printer.marcpartensky.com`)"
+    #   service: resume
+    #   entryPoints: ["web"]
+    #   middlewares: ["sablier-resume@file"]
     mailu:
       rule: "Host(`mail.marcpartensky.com`)"
       service: mailu
@@ -362,17 +362,17 @@ http:
             showDetails: true 
             theme: shuffle
             refreshFrequency: 1s
-    sablier-resume:
-      plugin:
-        sablier:
-          sablierUrl: http://sablier:10000
-          names: resume,printer
-          sessionDuration: 5m
-          dynamic:
-            displayName: Reactive Resume
-            showDetails: true 
-            theme: shuffle
-            refreshFrequency: 1s
+    # sablier-resume:
+    #   plugin:
+    #     sablier:
+    #       sablierUrl: http://sablier:10000
+    #       names: resume,printer
+    #       sessionDuration: 5m
+    #       dynamic:
+    #         displayName: Reactive Resume
+    #         showDetails: true 
+    #         theme: shuffle
+    #         refreshFrequency: 1s
     sablier-mailu:
       plugin:
         sablier:
