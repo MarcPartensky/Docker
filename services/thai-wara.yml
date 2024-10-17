@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  thaiwara:
+    image: marcpartensky/thaiwara:2023-05-28
+    restart: unless-stopped
+    networks:
+      - caddy
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.thaiwara.rule: Host(`thaiwara.marcpartensky.com`)
+        traefik.http.routers.thaiwara.entrypoints: web
+        # traefik.http.routers.thaiwara.tls.certresolver: tls
+        traefik.http.services.thaiwara.loadbalancer.server.port: 80
+
+networks:
+  caddy:
+    external: true
