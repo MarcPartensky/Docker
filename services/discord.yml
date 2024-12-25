@@ -1,4 +1,4 @@
-version: "3.9"
+# version: "3.9"
 
 services:
   bot:
@@ -7,7 +7,7 @@ services:
     # image: docker.io/marcpartensky/discord-bot:v152.04b7e7a.2024-09-15
     restart: unless-stopped
     ports:
-      - "7010:8000"
+      - "7011:8000"
     networks:
       - discord
       - postgres
