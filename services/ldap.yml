@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   ldap:
-    image: osixia/openldap:1.3.0
+    image: docker.io/osixia/openldap:1.3.0
     restart: unless-stopped
     environment:
       LDAP_ORGANISATION: admin
@@ -22,7 +22,7 @@ services:
 
 
   backup:
-    image: osixia/openldap-backup:1.5.0
+    image: docker.io/osixia/openldap-backup:1.5.0
     environment:
       LDAP_BACKUP_CONFIG_CRON_EXP: "0 5 * * *"
       LDAP_BACKUP_DATA_CRON_EXP: "0 5 * * *"

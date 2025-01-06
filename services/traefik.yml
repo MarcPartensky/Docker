@@ -2,7 +2,8 @@ version: "3.9"
 
 services:
   traefik:
-    image: traefik:2.9.1 # https://github.com/wiltonsr/ldapauth/issues/25
+    # image: docker.io/traefik:2.9.1 # https://github.com/wiltonsr/ldapauth/issues/25
+    image: docker.io/traefik:latest
     # image: traefik:latest # https://github.com/wiltonsr/ldapauth/issues/25
     restart: unless-stopped
     env_file:
@@ -42,7 +43,9 @@ services:
       - ../data/traefik:/etc/traefik
         # - traefik_letsencrypt:/letsencrypt
       - traefik:/config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - /run/podman/podman.sock:/run/podman/podman.sock
+      - /run/user/1001/podman/podman.sock:/var/run/docker.sock
+
     labels:
       traefik.enable: "true"
       traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
