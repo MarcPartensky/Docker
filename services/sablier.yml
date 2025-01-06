@@ -8,12 +8,12 @@
 version: "3.9"
 services:
   sablier:
-    image: acouvreur/sablier:1.6.1
+    image: docker.io/acouvreur/sablier:1.6.1
     command:
       - start
       - --provider.name=docker
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /run/user/1001/podman/podman.sock:/var/run/docker.sock
     ports:
       - 10000:10000
     networks:

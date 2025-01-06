@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   bot:
-    image: marcpartensky/discord-bot:v107.be20e90.2022-05-21
+    image: docker.io/marcpartensky/discord-bot:v107.be20e90.2022-05-21
     restart: unless-stopped
     ports:
       - "7010:8000"
@@ -13,22 +13,22 @@ services:
     deploy:
       replicas: 1
 
-  ia:
-    image: marcpartensky/discord-bot
-    restart: unless-stopped
-    ports:
-      - "7011:8000"
-    networks:
-      - discord
-    env_file:
-      - ../data/secrets/ia.env
-    deploy:
-      replicas: 1
+  # ia:
+  #   image: marcpartensky/discord-bot
+  #   restart: unless-stopped
+  #   ports:
+  #     - "7011:8000"
+  #   networks:
+  #     - discord
+  #   env_file:
+  #     - ../data/secrets/ia.env
+  #   deploy:
+  #     replicas: 1
 
-  chatgpt:
-    image: xxxbrian/discord_chatgpt_bot:latest
-    env_file:
-      - ../data/secrets/discord_chatgpt.env
+  # chatgpt:
+  #   image: xxxbrian/discord_chatgpt_bot:latest
+  #   env_file:
+  #     - ../data/secrets/discord_chatgpt.env
 
 networks:
   discord:

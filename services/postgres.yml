@@ -12,6 +12,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
       - ../data/postgres/initdb.d:/initdb.d
+      - /home/marc/backup:/backup
       - ../data/postgres/certs:/var/lib/postgresql/certs
     env_file:
       - ../data/secrets/postgres.env

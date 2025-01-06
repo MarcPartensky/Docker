@@ -21,7 +21,7 @@ services:
     #   - --api.debug=true # <== Enabling additional endpoints for debugging and profiling
     #   ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration ##
     #   - --entrypoints.web.address=:80
-    #   - --entrypoints.websecure.address=:443
+      # - --entrypoints.websecure.address=:443
     #   - --certificatesresolvers.tls.acme.tlschallenge=true # <== Enable TLS-ALPN-01 to generate and renew ACME certs
     #   - --certificatesresolvers.tls.acme.email=marc.partensky@gmail.com
     #   - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json # Log Settings (options: ERROR, DEBUG, PANIC, FATAL, WARN, INFO) - https://docs.traefik.io/observability/logs/ ##
@@ -44,7 +44,8 @@ services:
         # - traefik_letsencrypt:/letsencrypt
       - traefik:/config
       # - /run/podman/podman.sock:/run/podman/podman.sock
-      - /run/user/1001/podman/podman.sock:/var/run/docker.sock
+      # - /run/user/1001/podman/podman.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
 
     labels:
       traefik.enable: "true"

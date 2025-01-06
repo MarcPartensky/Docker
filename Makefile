@@ -18,14 +18,14 @@ sign:
 	gpg --encrypt --sign --recipient 'marc@marcpartensky.com' data.7z
 	# rm data.tgz
 networks:
-	docker network create --driver overlay --attachable caddy || true
-	docker network create --driver overlay --attachable ldap || true
-	docker network create --driver overlay --attachable postgres || true
-	docker network create --driver overlay --attachable mongo || true
-	docker network create --driver overlay --attachable vpn || true
-	docker network create --driver overlay --attachable redis || true
-	docker network create --driver overlay --subnet 172.22.1.0/24 --gateway 172.22.1.1 --attachable mailcow || true
-	docker network create --driver overlay --subnet 10.22.69.0/24 --gateway 10.22.69.1 --attachable pritunl || true
+	docker network create --attachable caddy || true
+	docker network create --attachable ldap || true
+	docker network create --attachable postgres || true
+	docker network create --attachable mongo || true
+	docker network create --attachable vpn || true
+	docker network create --attachable redis || true
+	docker network create --subnet 172.22.1.0/24 --gateway 172.22.1.1 --attachable mailcow || true
+	docker network create --subnet 10.22.69.0/24 --gateway 10.22.69.1 --attachable pritunl || true
 node:
 	docker node update --label-add net=web contabo
 	docker node update --label-add net=none tower
