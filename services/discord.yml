@@ -1,13 +1,16 @@
-version: "3.9"
+# version: "3.9"
 
 services:
   bot:
-    image: docker.io/marcpartensky/discord-bot:v107.be20e90.2022-05-21
+    # image: docker.io/marcpartensky/discord-bot:v141.138ee20.2024-09-08
+    image: docker.io/marcpartensky/discord-bot:latest
+    # image: docker.io/marcpartensky/discord-bot:v152.04b7e7a.2024-09-15
     restart: unless-stopped
     ports:
-      - "7010:8000"
+      - "7011:8000"
     networks:
       - discord
+      - postgres
     env_file:
       - ../data/secrets/discord-bot.env
     deploy:
@@ -15,7 +18,7 @@ services:
 
   # ia:
   #   image: marcpartensky/discord-bot
-  #   restart: unless-stopped
+  #   restart: unless-stkopped
   #   ports:
   #     - "7011:8000"
   #   networks:
@@ -32,3 +35,5 @@ services:
 
 networks:
   discord:
+  postgres:
+    external: true

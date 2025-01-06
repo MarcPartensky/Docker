@@ -1,0 +1,24 @@
+services:
+  alpine:
+    image: docker.io/marcpartensky/alpine:vnc
+    restart: unless-stopped
+    volumes:
+      - /srv/alpine:/home/marc/data
+    env_file:
+      - ../data/secrets/alpine.env
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.alpine.rule: >
+        Host(`alpine.marcpartensky.com`)
+      traefik.http.routers.alpine.entrypoints: web
+      # traefik.http.routers.alpine.tls.certresolver: tls
+      traefik.http.services.alpine.loadbalancer.server.port: 6080
+
+volumes:
+  data:
+
+networks:
+  caddy:
+    external: true

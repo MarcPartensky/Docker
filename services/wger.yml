@@ -32,7 +32,7 @@ services:
       timeout: 5s
       retries: 5
 
-  nginx:
+  wger_nginx:
     image: docker.io/nginx:stable
     container_name: wger-nginx
     restart: unless-stopped
@@ -52,9 +52,9 @@ services:
       retries: 5
     labels:
       traefik.enable: "true"
-      traefik.http.routers.nginx.entrypoints: web
-      traefik.http.services.nginx.loadbalancer.server.port: 80
-      traefik.http.routers.nginx.rule: >
+      traefik.http.routers.wger_nginx.entrypoints: web
+      traefik.http.services.wger_nginx.loadbalancer.server.port: 80
+      traefik.http.routers.wger_nginx.rule: >
         Host(`wger.marcpartensky.com`)
       # traefik.http.routers.ui.tls.certresolver: tls
       # traefik.http.routers.ui.tls.certresolver: cloudflare
@@ -71,7 +71,7 @@ services:
   #     retries: 5
   #   restart: unless-stopped
 
-  celery_worker:
+  wger_celery_worker:
     image: docker.io/wger/server:latest
     container_name: wger-celery
     restart: unless-stopped
@@ -92,7 +92,7 @@ services:
       timeout: 5s
       retries: 5
 
-  celery_beat:
+  wger_celery_beat:
     image: docker.io/wger/server:latest
     container_name: wger-celery-beat
     restart: unless-stopped
