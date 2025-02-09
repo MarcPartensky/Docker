@@ -17,7 +17,7 @@ services:
       traefik.http.routers.terminal.rule: >
         Host(`terminal.marcpartensky.com`)
       traefik.http.routers.terminal.entrypoints: web
-      traefik.http.routers.terminal.tls.certresolver: tls
+      # traefik.http.routers.terminal.tls.certresolver: tls
       traefik.http.routers.terminal.middlewares: ldap_auth
 
 networks:
