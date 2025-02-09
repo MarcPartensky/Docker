@@ -1,0 +1,32 @@
+services:
+  ebook2audiobook:
+    image: athomasson2/ebook2audiobookxtts:huggingface
+    platform: linux/amd64
+    restart: unless-stopped
+    volumes:
+      - /srv/ebook2audiobookxtts:/app/data
+    # ports:
+    #   - "7860:7860" # Exposition du port 7860 pour accéder à l'application
+    networks:
+      - caddy
+    command: python app.py
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ebook2audiobook.rule: >
+        Host(`ebook2audiobook.marcpartensky.com`)
+      traefik.http.routers.ebook2audiobook.entrypoints: web
+      traefik.http.services.ebook2audiobook.loadbalancer.server.port: 7860
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      TZ: Europe/Paris # Définir le fuseau horaire
+      UID: 1000        # UID pour l'utilisateur
+      GID: 1000        # GID pour le groupe
+      PYTHONUNBUFFERED: 1 # Désactiver le tampon de sortie Python pour une meilleure visibilité des logs
+
+networks:
+  caddy:
+    external: true
