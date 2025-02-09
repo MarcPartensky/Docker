@@ -73,7 +73,8 @@ experimental:
   plugins:
     ldapAuth:
       moduleName: github.com/wiltonsr/ldapAuth
-      version: v0.0.19
+      # version: v0.0.19
+      version: v0.1.10
     souin:
       moduleName: github.com/darkweak/souin
       version: v1.6.22
