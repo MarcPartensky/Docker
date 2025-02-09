@@ -1,0 +1,38 @@
+services:
+  audiobookshelf:
+    image: advplyr/audiobookshelf:latest
+    restart: unless-stopped
+    volumes:
+      - /srv/audiobookshelf/config:/config
+      - /srv/audiobookshelf/audiobooks:/audiobooks
+      - /srv/audiobookshelf/podcasts:/podcasts
+      - /srv/audiobookshelf/metadata:/metadata
+    # env_file:
+    #   - ../data/secrets/audiobookshelf.env # Fichier d'environnement optionnel
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.audiobookshelf.rule: >
+        Host(`audiobookshelf.marcpartensky.com`)
+      traefik.http.routers.audiobookshelf.entrypoints: web
+      # traefik.http.services.audiobookshelf.loadbalancer.server.port: 13378
+      traefik.http.services.audiobookshelf.loadbalancer.server.port: 80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      - TZ=Europe/Paris     # Remplace par ton fuseau horaire
+      - AUDIOBOOKSHELF_UID=1000 # UID pour l'utilisateur
+      - AUDIOBOOKSHELF_GID=1000 # GID pour le groupe
+
+# volumes:
+#   config:
+#   audiobooks:
+#   podcasts:
+
+networks:
+  caddy:
+    external: true
