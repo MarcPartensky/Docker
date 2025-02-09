@@ -42,11 +42,9 @@ services:
     volumes:
       - ../data/traefik:/etc/traefik
         # - traefik_letsencrypt:/letsencrypt
-      - traefik:/config
-      # - /run/podman/podman.sock:/run/podman/podman.sock
-      # - /run/user/1001/podman/podman.sock:/var/run/docker.sock
-      - /var/run/docker.sock:/var/run/docker.sock
-
+      # - traefik:/config
+      - /srv/traefik:/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       traefik.enable: "true"
       traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
@@ -64,9 +62,13 @@ services:
       traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: "true"
       # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldap://ldap
       # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 389
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: "cn=traefik,dc=marcpartensky,dc=com"
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindPassword: "2tG2eXDaeZVabhX*Ci7S#8sHRi2oc&"
-      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "dc=marcpartensky,dc=com"
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: "cn=traefik,dc=marcpartensky,dc=com"
+      # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindPassword: "2tG2eXDaeZVabhX*Ci7S#8sHRi2oc&"
+
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: "cn=ldapservice,dc=ldap,dc=goauthentik,dc=io"
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindPassword: "v4EuxSYvjt%a9Ma8q6T65GceC#LFv@"
+
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "dc=ldap,dc=goauthentik,dc=io"
       # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
       traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: cn
       # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.searchFilter: "({{.Attribute}}={{.Username}})" # anonymous didnt work
@@ -105,13 +107,13 @@ services:
         # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: "ou=users,dc=marcpartensky,dc=com"
         # traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: uid
 
-volumes:
+# volumes:
   # traefik_letsencrypt:
   # traefik_certs:
-  traefik:
+  # traefik:
     # name: "vps_traefik_letsencrypt"
     # name: traefik
-    external: true
+    # external: true
 
 networks:
   ldap:
