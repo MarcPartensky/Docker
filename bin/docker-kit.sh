@@ -5,8 +5,8 @@ export COMPOSE_PATH_SEPARATOR=":"
 export COMPOSE_FILE=$(find $PROJECT_PATH/services/*.yml | xargs -I @ echo -n @:)
 export COMPOSE_FILE=${COMPOSE_FILE::-1}
 
-tool=podman-compose
-# tool=docker-compose
+# tool=podman-compose
+tool=docker-compose
 
 
 if [ "$1" = "-f" ]

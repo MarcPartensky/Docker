@@ -29,7 +29,7 @@ config_files() {
 
 if [ -z $STACK ]
 then
-    cmd="$tool $(config_files) up -d"
+    cmd="$tool $(config_files) up -d --force-recreate"
 else
     cmd="docker stack deploy $(config_files) $STACK"
 fi
