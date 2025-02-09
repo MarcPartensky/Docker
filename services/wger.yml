@@ -102,6 +102,8 @@ services:
     networks:
       - postgres
       - redis
+    healthcheck:
+      test: ["CMD", "celery", "status"]
     env_file:
       #   - ./config/.env
       - ../data/secrets/wger.env
