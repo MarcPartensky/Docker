@@ -18,6 +18,12 @@ services:
       traefik.http.services.resume.loadbalancer.server.port: 3000
       traefik.http.routers.resume.rule: Host(`cv.marcpartensky.com`)
       traefik.http.routers.resume.entrypoints: web
+    healthcheck:
+      test: ["CMD-SHELL", "wget", "--spider", "localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   printer:
     image: docker.io/browserless/chrome:1.61.0-puppeteer-21.4.1
