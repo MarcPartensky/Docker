@@ -5,17 +5,17 @@ services:
     image: mozilla/syncserver:latest
     restart: unless-stopped
     env_file:
-      - ../data/secrets/firefox.env
+      - ../data/secrets/ffsync.env
+    volumes:
+      - /srv/ffsync:/data
     networks:
       - caddy
       - postgres
-    volumes:
-      - /srv/firefox:/data
     labels:
       traefik.enable: "true"
-      traefik.http.routers.ffsync.rule: Host(`firefox.marcpartensky.com`)
+      traefik.http.routers.ffsync.rule: Host(`ffsync.marcpartensky.com`)
       traefik.http.routers.ffsync.entrypoints: web
-      traefik.http.services.ffsync.loadbalancer.server.port: 80
+      traefik.http.services.ffsync.loadbalancer.server.port: 5000
     # labels:
     #   - traefik.enable: true
     #   - traefik.backend: ffsync
