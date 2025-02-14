@@ -1,0 +1,45 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - /srv/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+
+  open-webui:
+    # build:
+    #   context: .
+    #   args:
+    #     OLLAMA_BASE_URL: '/ollama'
+    #   dockerfile: Dockerfile
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - /srv/open-webui:/app/backend/data
+    depends_on:
+      - ollama
+    ports:
+      - ${OPEN_WEBUI_PORT-3000}:8080
+    environment:
+      - 'OLLAMA_BASE_URL=http://ollama:11434'
+      - 'WEBUI_SECRET_KEY='
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.open-webui.rule: >
+        Host(`ai.marcpartensky.com`)
+      traefik.http.routers.open-webui.entrypoints: web
+      # traefik.http.routers.open-webui.tls.certresolver: tls
+      traefik.http.services.open-webui.loadbalancer.server.port: 8080
+      # traefik.http.middlewares.open-webui.redirectscheme.scheme: https
+      # traefik.http.routers.open-webui.middlewares: ldap_auth
+
+networks:
+  caddy:
+    external: true
