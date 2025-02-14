@@ -1,0 +1,34 @@
+services:
+  backrest:
+    image: garethgeorge/backrest:latest
+    restart: unless-stopped
+    volumes:
+      - /srv/backrest/data:/data
+      - /srv/backrest/userdata:/userdata # [optional] mount local paths to backup here.
+      - /srv/backrest/repos:/repos # [optional] mount repos if using local storage, not necessary for remotes e.g. B2, S3, etc.
+      - ../data/backrest/config:/config
+      - backrest_cache:/cache
+    environment:
+      - BACKREST_DATA=/data # path for backrest data. restic binary and the database are placed here.
+      - BACKREST_CONFIG=/config/config.json # path for the backrest config file.
+      - XDG_CACHE_HOME=/cache # path for the restic cache which greatly improves performance.
+      - TZ=Europe/Paris # set the timezone for the container, used as the timezone for cron jobs.
+    # ports:
+    #   - 9898:9898
+    networks:
+      - caddy
+    labels:
+      # caddy: vault.marcpartensky.com
+      # caddy.reverse_proxy: "{{upstreams 80}}"
+      traefik.enable: "true"
+      traefik.http.routers.backrest.rule: Host(`backrest.marcpartensky.com`)
+      traefik.http.routers.backrest.entrypoints: web
+      # traefik.http.routers.backrest.tls.certresolver: tls
+      traefik.http.services.backrest.loadbalancer.server.port: 9898
+
+volumes:
+  backrest_cache:
+
+networks:
+  caddy:
+    external: true
