@@ -1,0 +1,32 @@
+services:
+  apprise:
+    image: caronc/apprise
+    # platform: linux/amd64
+    restart: unless-stopped
+    volumes:
+      - /srv/apprise:/apprise
+      - ../config/apprise:/apprise
+    # ports:
+    #   - "7860:7860" # Exposition du port 7860 pour accéder à l'application
+    networks:
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.apprise.rule: >
+        Host(`apprise.marcpartensky.com`)
+      traefik.http.routers.apprise.entrypoints: web
+      traefik.http.services.apprise.loadbalancer.server.port: 8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      TZ: Europe/Paris # Définir le fuseau horaire
+      UID: 1000        # UID pour l'utilisateur
+      GID: 1000        # GID pour le groupe
+      PYTHONUNBUFFERED: 1 # Désactiver le tampon de sortie Python pour une meilleure visibilité des logs
+
+networks:
+  caddy:
+    external: true
