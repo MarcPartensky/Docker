@@ -15,3 +15,4 @@ syncthing
 wger
 redis
 terminal
+ffsync
