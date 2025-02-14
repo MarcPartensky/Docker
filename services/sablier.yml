@@ -20,6 +20,8 @@ services:
       - 10000:10000
     networks:
       - caddy
+    healthcheck:
+      test: ["CMD", "wget" , "--spider", "localhost:10000/health"]
     # labels:
     #   traefik.enable: true
       # Dynamic Middleware
