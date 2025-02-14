@@ -1,0 +1,6 @@
+services:
+  real-esrgan:
+    image: docker.io/kociolek/real-esrgan
+    volumes:
+      - /srv/real-esrgan/input:/app/input
+      - /srv/real-esrgan/output:/app/output
