@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  server:
+  mc_champi:
     image: itzg/minecraft-server
     restart: unless-stopped
     environment:
@@ -29,7 +29,7 @@ services:
     networks:
       - minecraft
 
-  backup:
+  mc_champi_backup:
     image: itzg/mc-backup
     environment:
       BACKUP_INTERVAL: "1d"
