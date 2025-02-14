@@ -43,6 +43,8 @@ services:
       - ../data/dendrite/well-known/www:/var/www/ # location of the client and server .well-known-files
     networks:
       - caddy
+    healthcheck:
+      test: service nginx status || exit 1
     labels:
       traefik.enable: "true"
       traefik.http.services.well-known.loadbalancer.server.port: 80
