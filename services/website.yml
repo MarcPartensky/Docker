@@ -6,9 +6,9 @@ services:
     restart: unless-stopped
     env_file:
       - ../data/secrets/website.env
-    environment:
-      VIRTUAL_HOST: marcpartensky.com
-      VIRTUAL_PORT: 80
+    # environment:
+    #   VIRTUAL_HOST: marcpartensky.com
+    #   VIRTUAL_PORT: 80
       # SECURE_SSL_REDIRECT: false
       # KEY: /app/privkey.pem
       # CERT: /app/fullchain.pem
@@ -61,18 +61,6 @@ services:
     #     #   Host(`marcpartensky.com`) || Host(`marcpartensky.fr`)
     #     traefik.http.routers.website.entrypoints: web
     #     traefik.http.services.website.loadbalancer.server.port: 80
-
-  # redis:
-  #   image: redis:alpine
-  #   restart: unless-stopped
-  #   networks:
-  #     - website
-  #   healthcheck:
-  #      test: ["CMD", "redis-cli","ping"]
-  #   deploy:
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
 
 volumes:
   media:
