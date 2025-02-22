@@ -1,6 +1,7 @@
 services:
   outline:
     image: docker.getoutline.com/outlinewiki/outline:latest
+    restart: unless-stopped
     env_file: ../data/secrets/outline.env
     volumes:
       - /srv/outline:/var/lib/outline/data
