@@ -1,0 +1,28 @@
+services:
+  dokuwiki:
+    image: dokuwiki/dokuwiki:stable # other tags: master, <date> or <codename>
+    restart: unless-stopped
+    environment:
+      PHP_TIMEZONE: Europe/Paris
+      #PHP_MEMORYLIMIT: 256M
+      # PHP_UPLOADLIMIT: 128M
+    volumes:
+      - /srv/docuwiki:/storage
+    networks:
+      - caddy
+      # - postgres
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.docuwiki.rule: >
+        Host(`wiki.marcpartensky.com`)
+      traefik.http.routers.docuwiki.entrypoints: web
+      # traefik.http.routers.docuwiki.tls.certresolver: tls
+      traefik.http.services.docuwiki.loadbalancer.server.port: 8080
+      traefik.http.middlewares.docuwiki.redirectscheme.scheme: https
+      # traefik.http.routers.docuwiki.middlewares: ldap_auth
+
+networks:
+  # postgres:
+  #   external: true
+  caddy:
+    external: true
