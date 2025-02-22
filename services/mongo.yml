@@ -15,7 +15,14 @@ services:
     env_file:
       - ../data/secrets/mongo.env
     # healthcheck:
-    #   test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+    #   test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --quiet | grep 1
+    # healthcheck:
+    #   test: ["CMD", "echo",  "'db.runCommand("ping").ok'", ""| mongo localhost:27017/test --quiet
+    # healthcheck:
+    #   test: ["CMD","mongo", "--eval", "db.adminCommand('ping')"]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 5
 
   express:
     image: mongo-express
@@ -30,6 +37,8 @@ services:
       - caddy
     depends_on:
       - mongo
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "127.0.0.1:8081/status"]
     labels:
       caddy: mongo.marcpartensky.com, mongo.marc.wf, mongo.marc.tf
       caddy.reverse_proxy: "{{upstreams 8081}}"
