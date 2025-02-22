@@ -20,8 +20,8 @@ services:
       # GENERIC_TIMEZONE: ${GENERIC_TIMEZONE}
     env_file:
       - ../data/secrets/n8n.env
-    ports:
-      - '5678:5678'
+    # ports:
+    #   - '5678:5678'
     networks:
       - postgres
       - caddy
@@ -34,6 +34,8 @@ services:
         Host(`n8n.marcpartensky.com`)
       traefik.http.routers.n8n.entrypoints: web
       traefik.http.routers.n8n.middlewares: ldap_auth
+    healthcheck:
+      test: ["CMD", "sh", "-c", "(wget -q -T 5 -O - http://127.0.0.1:5678/healthz 2>/dev/null | grep -qF '{\"status\":\"ok\"}') || exit 1"]
 
 networks:
   caddy:
