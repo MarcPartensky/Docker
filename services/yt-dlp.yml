@@ -1,15 +1,18 @@
 version: "3.9"
 services:
-  # yt-dlp:
-  #   # container_name: ytdlp
-  #   image: marcpartensky/yt-dlp
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ../data/yt-dlp:/root/downloads
-  #     - ~/Videos/Youtube:/srv
-  #   env_file:
-  #     - ../data/secrets/yt-dlp.env
-  #   network_mode: none
+  yt-dlp:
+    # container_name: ytdlp
+    image: marcpartensky/yt-dlp
+    restart: unless-stopped
+    volumes:
+      # - ../data/yt-dlp/list.txt:/root/downloads/list.txt
+      - ../data/yt-dlp:/root/downloads
+      - ~/Videos/Youtube:/srv
+      # env_file:
+      #   - ../data/secrets/yt-dlp.env
+    network_mode: none
+    environment:
+      PLAYLIST_PATH: /root/downloads/list.txt
 
   webui:
     image: ghcr.io/marcopeocchi/yt-dlp-web-ui:latest

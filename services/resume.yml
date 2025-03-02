@@ -93,9 +93,9 @@ services:
         #     # traefik.http.routers.server.tls.certresolver: tls
         #     # traefik.http.routers.client.middlewares: ldap_auth
 networks:
-  postgres:
-    external: true
   caddy:
+    external: true
+  postgres:
     external: true
   redis:
     external: true
