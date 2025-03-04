@@ -20,7 +20,7 @@ services:
         Host(`appflowy.marcpartensky.com`)
       traefik.http.routers.appflowy.entrypoints: web
       # traefik.http.routers.appflowy.tls.certresolver: tls
-      traefik.http.routers.appflowy.middlewares: ldap_auth
+      # traefik.http.routers.appflowy.middlewares: ldap_auth
 
   gotrue:
     image: appflowyinc/gotrue:${GOTRUE_VERSION:-latest}
