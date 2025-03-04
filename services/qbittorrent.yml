@@ -17,11 +17,11 @@ services:
       - caddy
     labels:
       traefik.enable: "true"
-      traefik.http.services.qbittorrent.loadbalancer.server.port: 7681
+      traefik.http.services.qbittorrent.loadbalancer.server.port: 8080
       traefik.http.routers.qbittorrent.rule: >
         Host(`qbittorrent.marcpartensky.com`)
       traefik.http.routers.qbittorrent.entrypoints: web
-      traefik.http.routers.qbittorrent.tls.certresolver: tls
+      # traefik.http.routers.qbittorrent.tls.certresolver: tls
     #   traefik.http.routers.qbittorrent.middlewares: ldap_auth
     # ports:
     #   - 8080:8080
