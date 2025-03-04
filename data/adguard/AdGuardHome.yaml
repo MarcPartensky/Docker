@@ -151,6 +151,7 @@ filtering:
     enabled: false
     bing: true
     duckduckgo: true
+    ecosia: true
     google: true
     pixabay: true
     yandex: true
@@ -163,6 +164,8 @@ filtering:
       answer: 0.0.0.0
     - domain: marc
       answer: marcpartensky.com
+  safe_fs_patterns:
+    - /opt/adguardhome/work/data/userfilters/*
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
   parental_cache_size: 1048576
@@ -182,6 +185,7 @@ clients:
     hosts: true
   persistent: []
 log:
+  enabled: true
   file: ""
   max_backups: 0
   max_size: 100
@@ -193,4 +197,4 @@ os:
   group: ""
   user: ""
   rlimit_nofile: 0
-schema_version: 28
+schema_version: 29
