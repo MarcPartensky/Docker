@@ -4,6 +4,7 @@ services:
     # image: docker.n8n.io/n8nio/n8n
     image: marcpartensky/n8n
     restart: unless-stopped
+    container_name: n8n
     # environment:
     #   DB_TYPE: postgresdb
     #   DB_POSTGRESDB_HOST: postgres
@@ -47,6 +48,7 @@ services:
   n8n-worker:
     image: marcpartensky/n8n
     command: worker
+    container_name: n8n-worker
     user: 0:0
     depends_on:
       - n8n
