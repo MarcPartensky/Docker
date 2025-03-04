@@ -1,7 +1,8 @@
 services:
   n8n:
     # image: n8nio/n8n:latest
-    image: docker.n8n.io/n8nio/n8n
+    # image: docker.n8n.io/n8nio/n8n
+    image: marcpartensky/n8n
     restart: unless-stopped
     # environment:
     #   DB_TYPE: postgresdb
@@ -20,25 +21,56 @@ services:
       # GENERIC_TIMEZONE: ${GENERIC_TIMEZONE}
     env_file:
       - ../data/secrets/n8n.env
-    # ports:
-    #   - '5678:5678'
+    ports:
+      - '5678:5678'
+    # user: 1000:100
+    user: 0:0
     networks:
+      - redis
+      - discord
       - postgres
       - caddy
     volumes:
       - /srv/n8n:/home/node/n8n
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv:/srv
     labels:
       traefik.enable: "true"
       traefik.http.services.n8n.loadbalancer.server.port: 5678
       traefik.http.routers.n8n.rule: >
         Host(`n8n.marcpartensky.com`)
       traefik.http.routers.n8n.entrypoints: web
-      traefik.http.routers.n8n.middlewares: ldap_auth
+      # traefik.http.routers.n8n.middlewares: ldap_auth
     healthcheck:
       test: ["CMD", "sh", "-c", "(wget -q -T 5 -O - http://127.0.0.1:5678/healthz 2>/dev/null | grep -qF '{\"status\":\"ok\"}') || exit 1"]
 
+  n8n-worker:
+    image: marcpartensky/n8n
+    command: worker
+    user: 0:0
+    depends_on:
+      - n8n
+    networks:
+      - redis
+      - discord
+      - postgres
+      - caddy
+    env_file:
+      - ../data/secrets/n8n.env
+    volumes:
+      - /srv/n8n:/home/node/n8n
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv:/srv
+    healthcheck:
+      test: ["CMD", "sh", "-c", "(wget -q -T 5 -O - http://127.0.0.1:5678/healthz 2>/dev/null | grep -qF '{\"status\":\"ok\"}') || exit 1"]
+
+
 networks:
+  discord:
+    external: true
   caddy:
     external: true
   postgres:
+    external: true
+  redis:
     external: true
