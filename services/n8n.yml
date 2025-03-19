@@ -31,6 +31,7 @@ services:
       - discord
       - postgres
       - caddy
+      - mqtt
     volumes:
       - /srv/n8n:/home/node/n8n
       - /var/run/docker.sock:/var/run/docker.sock
@@ -75,4 +76,6 @@ networks:
   postgres:
     external: true
   redis:
+    external: true
+  mqtt:
     external: true
