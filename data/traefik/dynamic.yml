@@ -22,10 +22,10 @@ http:
       loadBalancer:
         servers:
           - url: http://dbdesigner:3000
-    etherpad:
-      loadBalancer:
-        servers:
-          - url: http://etherpad:9001
+    # etherpad:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://etherpad:9001
     mongo:
       loadBalancer:
         servers:
@@ -153,11 +153,11 @@ http:
       service: dbdesigner
       entryPoints: ["web"]
       middlewares: ["sablier-dbdesigner@file"]
-    etherpad:
-      rule: "Host(`pad.marcpartensky.com`)"
-      service: etherpad
-      entryPoints: ["web"]
-      middlewares: ["sablier-etherpad@file"]
+    # etherpad:
+    #   rule: "Host(`pad.marcpartensky.com`)"
+    #   service: etherpad
+    #   entryPoints: ["web"]
+    #   middlewares: ["sablier-etherpad@file"]
     mongo:
       rule: "Host(`mongo.marcpartensky.com`)"
       service: mongo-express
@@ -340,17 +340,17 @@ http:
             showDetails: true
             theme: ghost
             refreshFrequency: 1s
-    sablier-etherpad:
-      plugin:
-        sablier:
-          sablierUrl: http://sablier:10000
-          names: etherpad
-          sessionDuration: 5m
-          dynamic:
-            displayName: Etherpad
-            showDetails: true
-            theme: shuffle
-            refreshFrequency: 1s
+    # sablier-etherpad:
+    #   plugin:
+    #     sablier:
+    #       sablierUrl: http://sablier:10000
+    #       names: etherpad
+    #       sessionDuration: 10m
+    #       dynamic:
+    #         displayName: Etherpad
+    #         showDetails: true
+    #         theme: shuffle
+    #         refreshFrequency: 1s
     sablier-mongo:
       plugin:
         sablier:
