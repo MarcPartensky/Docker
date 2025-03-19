@@ -24,6 +24,7 @@ networks:
 	docker network create --attachable mongo || true
 	docker network create --attachable vpn || true
 	docker network create --attachable redis || true
+	docker network create --attachable mqtt || true
 	docker network create --subnet 172.22.1.0/24 --gateway 172.22.1.1 --attachable mailcow || true
 	docker network create --subnet 10.22.69.0/24 --gateway 10.22.69.1 --attachable pritunl || true
 node:
