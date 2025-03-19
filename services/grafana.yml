@@ -4,17 +4,22 @@ services:
     image: grafana/grafana
     container_name: grafana
     restart: unless-stopped
+    # user: "472:472"  # Explicitly run as UID 472 (Grafana user)
+    # user: 0:0
     env_file:
       - ../data/secrets/grafana.env
     # environment:
       # GF_INSTALL_PLUGINS: grafana-ldap-auth
     volumes:
       - ../data/grafana:/etc/grafana
+      # - /srv/grafana:/var/lib/grafana
       - grafana:/var/lib/grafana
     networks:
       - caddy
       - postgres
+      - redis
       - ldap
+      - mqtt
     # deploy:
     #   labels:
     #     caddy: grafana.marcpartensky.com
@@ -31,9 +36,13 @@ volumes:
   grafana:
 
 networks:
+  mqtt:
+    external: true
   ldap:
     external: true
   postgres:
+    external: true
+  redis:
     external: true
   caddy:
     external: true
