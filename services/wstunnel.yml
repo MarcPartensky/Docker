@@ -21,6 +21,7 @@ services:
     # docker run --rm -d -p 2244:2244 mhzed/wstunnel -t 0.0.0.0:2244:target.ip:22 wss://server.com
   wstunnel:
     image: ghcr.io/erebe/wstunnel:latest
+    restart: unless-stopped
     # image: ghcr.io/erebe/wstunnel:latest
     container_name: wstunnel
     # entrypoint: sh -c "
