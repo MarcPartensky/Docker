@@ -84,6 +84,9 @@ experimental:
     cloudflarewarp:
       modulename: github.com/BetterCorp/cloudflarewarp
       version: v1.3.0
+    rewriteHeaders:
+      modulename: "github.com/XciD/traefik-plugin-rewrite-headers"
+      version: "v0.0.3"
 
 # ldap entreprise  https://doc.traefik.io/traefik-enterprise/operations/static-configuration/
 # authSources:
