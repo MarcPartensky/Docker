@@ -313,7 +313,7 @@ http:
         sablier:
           sablierUrl: http://sablier:10000
           names: jellyfin
-          sessionDuration: 5m
+          sessionDuration: 10m
           dynamic:
             # showDetails: true
             displayName: Jellyfin
