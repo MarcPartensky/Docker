@@ -33,7 +33,20 @@ services:
         Host(`cloud.marcpartensky.com`)
       traefik.http.routers.nextcloud.entrypoints: web
       # traefik.http.routers.nextcloud.tls.certresolver: tls
-      traefik.http.services.nextcloud.loadbalancer.server.port: 80
+      # traefik.http.services.nextcloud.loadbalancer.server.port: 80
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.request[0].header: Location
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.request[0].regex: ^http://localhost(.*)/application/o/authorize/$
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.request[0].replacement: ^https://authentik.marcpartensky.com/application/o/authorize/$
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.response[0].header: Location
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.response[0].regex: ^http://localhost(.+)/application/o/nextcloud/end-session/$
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.response[0].replacement: https://authentik.marcpartensky.com/application/o/nextcloud/end-session/
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.request[1].header: location
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.request[1].regex: ^http://localhost(.*)/application/o/authorize/$
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.request[1].replacement: ^https://authentik.marcpartensky.com/application/o/authorize/$
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.response[1].header: location
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.response[1].regex: ^http://localhost(.+)/application/o/nextcloud/end-session/$
+      # traefik.middlewares.plugin.rewriteHeaders.rewrites.response[1].replacement: https://authentik.marcpartensky.com/application/o/nextcloud/end-session/
+
 
     healthcheck:
         test: curl -sSf 'http://localhost/status.php' | grep '"installed":true' | grep '"maintenance":false' | grep '"needsDbUpgrade":false' || exit 1
