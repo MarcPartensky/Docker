@@ -1,6 +1,7 @@
+data/secrets/*.env
+!data/secrets/*.template.env
 docker-compose.yml
 data/openvpn
-data/secrets
 data/certbot
 data/searx
 data/jenkins
@@ -35,6 +36,7 @@ data/ocis
 data/owncloud
 data/wg-easy
 data/nextcloud
+data/casdoor
 data.tar.gz
 data.7z
 data.7z.gpg
