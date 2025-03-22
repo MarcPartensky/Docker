@@ -1,6 +1,7 @@
 services:
   outline:
     image: docker.getoutline.com/outlinewiki/outline:latest
+    container_name: outline
     restart: unless-stopped
     env_file: ../data/secrets/outline.env
     volumes:
@@ -9,12 +10,12 @@ services:
       - postgres
       - redis
       - caddy
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.outline.loadbalancer.server.port: 3000
-      traefik.http.routers.outline.rule: >
-        Host(`outline.marcpartensky.com`)
-      traefik.http.routers.outline.entrypoints: web
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.services.outline.loadbalancer.server.port: 3000
+    #   traefik.http.routers.outline.rule: >
+    #     Host(`outline.marcpartensky.com`)
+    #   traefik.http.routers.outline.entrypoints: web
       # traefik.http.routers.outline.middlewares: ldap_auth
 
 
