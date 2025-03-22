@@ -15,3 +15,6 @@ syncthing
 wger
 redis
 terminal
+heimdall
+etherpad
+outline
