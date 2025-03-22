@@ -130,7 +130,10 @@ http:
       loadBalancer:
         servers:
           - url: http://webshot:3000
-
+    outline:
+      loadBalancer:
+        servers:
+          - url: http://outline:3000
 
   routers:
     pgadmin:
@@ -288,6 +291,11 @@ http:
       service: webshot
       entryPoints: ["web"]
       middlewares: ["sablier-webshot@file", "ldap_auth@docker"]
+    outline:
+      rule: "Host(`outline.marcpartensky.com`)"
+      service: outline
+      entryPoints: ["web"]
+      middlewares: ["sablier-outline@file"]
 
 
   middlewares:
@@ -623,6 +631,17 @@ http:
           sessionDuration: 2m
           dynamic:
             displayName: Webshot
+            showDetails: true 
+            theme: ghost
+            refreshFrequency: 5s
+    sablier-outline:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: outline
+          sessionDuration: 2m
+          dynamic:
+            displayName: outline
             showDetails: true 
             theme: ghost
             refreshFrequency: 5s
