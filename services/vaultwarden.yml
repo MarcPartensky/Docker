@@ -1,21 +1,21 @@
 version: "3.9"
 services:
-  ldap_sync:
-    image: docker.io/marcpartensky/vaultwarden-ldap
-    environment:
-      CONFIG_PATH: /config.toml
-      RUST_BACKTRACE: 1
-    volumes:
-      - ../data/vaultwarden/config.toml:/config.toml:ro
-      # ./root.cert:/usr/src/vaultwarden_ldap/root.cert:ro
-    networks:
-      - vaultwarden
-      - ldap
-    depends_on:
-      - vaultwarden
-    # networks:
-    #   - vaultwarden
-    #   - ldap
+  # ldap_sync:
+  #   image: docker.io/marcpartensky/vaultwarden-ldap
+  #   environment:
+  #     CONFIG_PATH: /config.toml
+  #     RUST_BACKTRACE: 1
+  #   volumes:
+  #     - ../data/vaultwarden/config.toml:/config.toml:ro
+  #     # ./root.cert:/usr/src/vaultwarden_ldap/root.cert:ro
+  #   networks:
+  #     - vaultwarden
+  #     - ldap
+  #   depends_on:
+  #     - vaultwarden
+  #   # networks:
+  #   #   - vaultwarden
+  #   #   - ldap
 
   vaultwarden:
     image: docker.io/vaultwarden/server
