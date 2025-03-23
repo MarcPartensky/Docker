@@ -39,16 +39,16 @@ services:
       - mongo
     healthcheck:
       test: ["CMD", "wget", "--spider", "127.0.0.1:8081/status"]
-    labels:
-      caddy: mongo.marcpartensky.com, mongo.marc.wf, mongo.marc.tf
-      caddy.reverse_proxy: "{{upstreams 8081}}"
-      traefik.enable: "true"
-      traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
-        # traefik.http.routers.mongo.entrypoints: websecure
-      traefik.http.routers.mongo.entrypoints: web
-        # traefik.http.routers.mongo.tls.certresolver: tls
-      traefik.http.services.mongo.loadbalancer.server.port: 8081
-       # traefik.http.routers.duplicati.middlewares: ldap_auth
+    # labels:
+    #   # caddy: mongo.marcpartensky.com, mongo.marc.wf, mongo.marc.tf
+    #   # caddy.reverse_proxy: "{{upstreams 8081}}"
+    #   traefik.enable: "true"
+    #   traefik.http.routers.mongo.rule: Host(`mongo.marcpartensky.com`)
+    #     # traefik.http.routers.mongo.entrypoints: websecure
+    #   traefik.http.routers.mongo.entrypoints: web
+    #     # traefik.http.routers.mongo.tls.certresolver: tls
+    #   traefik.http.services.mongo.loadbalancer.server.port: 8081
+    #    # traefik.http.routers.duplicati.middlewares: ldap_auth
     # deploy:
     #   labels:
     #     traefik.enable: "true"
