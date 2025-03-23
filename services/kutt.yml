@@ -1,0 +1,30 @@
+services:
+  kutt:
+    image: kutt/kutt
+    restart: unless-stopped
+    volumes:
+      - /srv/kutt:/kutt/custom
+    env_file:
+      - ../data/secrets/kutt.env
+    # ports:
+    #   - 3000:3000
+    networks:
+      - redis
+      - postgres
+      - caddy
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.kutt.loadbalancer.server.port: 3000
+      traefik.http.routers.kutt.rule: >
+        Host(`kutt.marcpartensky.com`)
+      traefik.http.routers.kutt.entrypoints: web
+      # traefik.http.routers.kutt.tls.certresolver: tls
+      traefik.http.routers.kutt.middlewares: cloudflare@file
+
+networks:
+  redis:
+    external: true
+  postgres:
+    external: true
+  caddy:
+    external: true
