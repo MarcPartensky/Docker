@@ -1,310 +1,52 @@
 http:
-  # middlewares:
+  middlewares:
+    cloudflare:
+      plugin:
+        cloudflare-fix:
+          includeDefault: true
+          trustedProxies: []
+
+    remoteaddr:
+      plugin:
+        remoteaddr:
+          headers:
+            # if set, then set header "X-Real-Address" to the RemoteAddr (e.g "192.168.1.2:1234")
+            # address: X-Real-Address
+            # if set, then set header "X-Real-Ip" to the IP of RemoteAddr (e.g "192.168.1.2")
+            ip: X-Real-Ip
+            # if set, then set header "X-Real-Port" to the port of RemoteAddr (e.g "1234")
+            port: X-Real-Port
+            address: RemoteAddr 
+
+    # real-ip:
+    #   plugin:
+    #     real-ip:
+    #       Proxy:
+    #         - proxyHeadername: X-From-Cdn
+    #           proxyHeadervalue: mf-fun
+    #           realIP: X-Forwarded-For
+    #         # - proxyHeadername: X-From-Cdn
+    #         #   proxyHeadervalue: mf-bar
+    #         #   realIP: Client-Ip
+    #         #   OverwriteXFF: true # default: false, v1.0.2 or above
+    #         - proxyHeadername: X-From-Cdn
+    #           proxyHeadervalue: cf-foo
+    #           realIP: Cf-Connecting-Ip
+    #           OverwriteXFF: true # default: false, v1.0.2 or above
+    #         - proxyHeadername: "*"
+    #           realIP: RemoteAddr
   #   basic:
   #     basicAuth:
   #       users:
   #       - test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/
   #       # usersFile: etc/traefik/.htpasswd
-  services:
-    pgadmin:
-      loadBalancer:
-        servers:
-          - url: http://pgadmin:80
-    jellyfin:
-      loadBalancer:
-        servers:
-          - url: http://jellyfin:8096
-    portainer:
-      loadBalancer:
-        servers:
-          - url: http://portainer:9000
-    dbdesigner:
-      loadBalancer:
-        servers:
-          - url: http://dbdesigner:3000
-    # etherpad:
-    #   loadBalancer:
-    #     servers:
-    #       - url: http://etherpad:9001
-    mongo:
-      loadBalancer:
-        servers:
-          - url: http://mongo:8081
-    resume:
-      loadBalancer:
-        servers:
-          - url: http://resume:3000
-    printer:
-      loadBalancer:
-        servers:
-          - url: http://resume:3000
-    mailu:
-      loadBalancer:
-        servers:
-          - url: http://mailu:80
-    yt-dlp-webui:
-      loadBalancer:
-        servers:
-          - url: http://yt-dlp-webui:80
-    wger-nginx:
-      loadBalancer:
-        servers:
-          - url: http://wger:80
-    web-terminal:
-      loadBalancer:
-        servers:
-          - url: http://web-terminal:7681
-    homer:
-      loadBalancer:
-        servers:
-          - url: http://homer:8080
-    pandoc:
-      loadBalancer:
-        servers:
-          - url: http://pandoc:80
-    jupyterlab:
-      loadBalancer:
-        servers:
-          - url: http://jupyterlab:8888
-    gitlab:
-      loadBalancer:
-        servers:
-          - url: http://gitlab:80
-    serge:
-      loadBalancer:
-        servers:
-          - url: http://serge:8008
-    arch:
-      loadBalancer:
-        servers:
-          - url: http://arch:8080
-    gitea:
-      loadBalancer:
-        servers:
-          - url: http://gitea:3000
-    # heimdall:
-    #   loadBalancer:
-    #     servers:
-    #       - url: http://heimdall:80
-    pgweb:
-      loadBalancer:
-        servers:
-          - url: http://pgweb:8081
-    paperless:
-      loadBalancer:
-        servers:
-          - url: http://paperless:8000
-    jenkins:
-      loadBalancer:
-        servers:
-          - url: http://jenkins:8080
-    rancher:
-      loadBalancer:
-        servers:
-          - url: http://rancher:80
-    docuseal:
-      loadBalancer:
-        servers:
-          - url: http://docuseal:3000
-    grafana:
-      loadBalancer:
-        servers:
-          - url: http://grafana:3000
-    peertube:
-      loadBalancer:
-        servers:
-          - url: http://peertube:9000
-    mcmyadmin:
-      loadBalancer:
-        servers:
-          - url: http://mcmyadmin:8080
-    qbittorrent:
-      loadBalancer:
-        servers:
-          - url: http://qbittorrent:8080
-    dockge:
-      loadBalancer:
-        servers:
-          - url: http://dockge:5001
-    webshot:
-      loadBalancer:
-        servers:
-          - url: http://webshot:3000
-    outline:
-      loadBalancer:
-        servers:
-          - url: http://outline:3000
+    # cloudflarewarp:
+    #   plugin:
+    #     cloudflarewarp:
+    #       disableDefault: false
+    #       trustip: # Trust IPS not required if disableDefault is false - we will allocate Cloud Flare IPs automatically
+    #         - "2400:cb00::/32"
 
-  routers:
-    pgadmin:
-      rule: "Host(`pgadmin.marcpartensky.com`)"
-      service: pgadmin
-      entryPoints: ["web"]
-      middlewares: ["sablier-pgadmin@file"]
-    jellyfin:
-      rule: "Host(`jellyfin.marcpartensky.com`)"
-      service: jellyfin
-      entryPoints: ["web"]
-      middlewares: ["sablier-jellyfin@file"]
-    portainer:
-      rule: "Host(`docker.marcpartensky.com`)"
-      service: portainer
-      entryPoints: ["web"]
-      middlewares: ["sablier-portainer@file"]
-    dbdesigner:
-      rule: "Host(`dbdesigner.marcpartensky.com`)"
-      service: dbdesigner
-      entryPoints: ["web"]
-      middlewares: ["sablier-dbdesigner@file"]
-    # etherpad:
-    #   rule: "Host(`pad.marcpartensky.com`)"
-    #   service: etherpad
-    #   entryPoints: ["web"]
-    #   middlewares: ["sablier-etherpad@file"]
-    mongo:
-      rule: "Host(`mongo.marcpartensky.com`)"
-      service: mongo-express
-      entryPoints: ["web"]
-      middlewares: ["sablier-mongo@file"]
-    resume:
-      rule: "Host(`cv.marcpartensky.com`)"
-      service: resume
-      entryPoints: ["web"]
-      middlewares: ["sablier-resume@file"]
-    printer:
-      rule: "Host(`printer.marcpartensky.com`)"
-      service: resume
-      entryPoints: ["web"]
-      middlewares: ["sablier-resume@file"]
-    mailu:
-      rule: "Host(`mail.marcpartensky.com`)"
-      service: mailu
-      entryPoints: ["web"]
-      middlewares: ["sablier-mailu@file"]
-    yt-dlp-webui:
-      rule: "Host(`yt.marcpartensky.com`)"
-      service: yt-dlp-webui
-      entryPoints: ["web"]
-      middlewares: ["sablier-yt-dlp-webui@file"]
-    wger:
-      rule: "Host(`wger.marcpartensky.com`)"
-      service: wger-nginx
-      entryPoints: ["web"]
-      middlewares: ["sablier-wger@file"]
-    web-terminal:
-      rule: "Host(`terminal.marcpartensky.com`)"
-      service: web-terminal
-      entryPoints: ["web"]
-      middlewares: ["sablier-web-terminal@file", "ldap_auth@docker"]
-    homer:
-      rule: "Host(`homer.marcpartensky.com`)"
-      service: homer
-      entryPoints: ["web"]
-      middlewares: ["sablier-homer@file"]
-    pandoc:
-      rule: "Host(`pandoc.marcpartensky.com`)"
-      service: pandoc
-      entryPoints: ["web"]
-      middlewares: ["sablier-pandoc@file"]
-    jupyterlab:
-      rule: "Host(`jupyterlab.marcpartensky.com`)"
-      service: jupyterlab
-      entryPoints: ["web"]
-      middlewares: ["sablier-jupyterlab@file"]
-    gitlab:
-      rule: "Host(`gitlab.marcpartensky.com`)"
-      service: gitlab
-      entryPoints: ["web"]
-      middlewares: ["sablier-gitlab@file"]
-    serge:
-      rule: "Host(`serge.marcpartensky.com`)"
-      service: serge
-      entryPoints: ["web"]
-      middlewares: ["sablier-serge@file"]
-    arch:
-      rule: "Host(`arch.marcpartensky.com`)"
-      service: arch
-      entryPoints: ["web"]
-      middlewares: ["sablier-arch@file"]
-    gitea:
-      rule: "Host(`git.marcpartensky.com`)"
-      service: gitea
-      entryPoints: ["web"]
-      middlewares: ["sablier-gitea@file"]
-    # heimdall:
-    #   rule: "Host(`heimdall.marcpartensky.com`)"
-    #   service: heimdall
-    #   entryPoints: ["web"]
-      # middlewares: ["sablier-heimdall@file"]
-    pgweb:
-      rule: "Host(`pgweb.marcpartensky.com`)"
-      service: pgweb
-      entryPoints: ["web"]
-      middlewares: ["sablier-pgweb@file", "ldap_auth@docker"]
-    paperless:
-      rule: "Host(`paperless.marcpartensky.com`)"
-      service: paperless
-      entryPoints: ["web"]
-      middlewares: ["sablier-paperless@file"]
-    jenkins:
-      rule: "Host(`jenkins.marcpartensky.com`)"
-      service: jenkins
-      entryPoints: ["web"]
-      middlewares: ["sablier-jenkins@file"]
-    rancher:
-      rule: "Host(`rancher.marcpartensky.com`)"
-      service: rancher
-      entryPoints: ["web"]
-      middlewares: ["sablier-rancher@file"]
-    docuseal:
-      rule: "Host(`docuseal.marcpartensky.com`)"
-      service: docuseal
-      entryPoints: ["web"]
-      middlewares: ["sablier-docuseal@file"]
-    grafana:
-      rule: "Host(`grafana.marcpartensky.com`)"
-      service: grafana
-      entryPoints: ["web"]
-      middlewares: ["sablier-grafana@file"]
-    peertube:
-      rule: "Host(`peertube.marcpartensky.com`)"
-      service: peertube
-      entryPoints: ["web"]
-      middlewares: ["sablier-peertube@file"]
-    mcmyadmin:
-      rule: "Host(`mcmyadmin.marcpartensky.com`)"
-      service: mcmyadmin
-      entryPoints: ["web"]
-      middlewares: ["sablier-mcmyadmin@file"]
-    qbittorrent:
-      rule: "Host(`torrent.marcpartensky.com`)"
-      service: qbittorrent
-      entryPoints: ["web"]
-      middlewares: ["sablier-qbittorrent@file", "ldap_auth@docker"]
-    dockge:
-      rule: "Host(`dockge.marcpartensky.com`)"
-      service: dockge
-      entryPoints: ["web"]
-      middlewares: ["sablier-dockge@file", "ldap_auth@docker"]
-    webshot:
-      rule: "Host(`webshot.marcpartensky.com`)"
-      service: webshot
-      entryPoints: ["web"]
-      middlewares: ["sablier-webshot@file", "ldap_auth@docker"]
-    outline:
-      rule: "Host(`outline.marcpartensky.com`)"
-      service: outline
-      entryPoints: ["web"]
-      middlewares: ["sablier-outline@file"]
-
-
-  middlewares:
-    cloudflarewarp:
-      plugin:
-        cloudflarewarp:
-          disableDefault: false
-          trustip: # Trust IPS not required if disableDefault is false - we will allocate Cloud Flare IPs automatically
-            - "2400:cb00::/32"
     sablier-pgadmin:
       plugin:
         sablier:
@@ -359,7 +101,7 @@ http:
     #         showDetails: true
     #         theme: shuffle
     #         refreshFrequency: 1s
-    sablier-mongo:
+    sablier-mongo-express:
       plugin:
         sablier:
           sablierUrl: http://sablier:10000
@@ -410,7 +152,7 @@ http:
           names: wger,wger-nginx,wger-celery,wger-celery-beat
           sessionDuration: 5m
           dynamic:
-            displayName: yt-dlp WebUI
+            displayName: Wger
             showDetails: true 
             theme: shuffle
             refreshFrequency: 1s
@@ -645,3 +387,306 @@ http:
             showDetails: true 
             theme: ghost
             refreshFrequency: 5s
+
+
+  services:
+    whoami:
+      loadBalancer:
+        servers:
+          - url: http://whoami:80
+    pgadmin:
+      loadBalancer:
+        servers:
+          - url: http://pgadmin:80
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: http://jellyfin:8096
+    portainer:
+      loadBalancer:
+        servers:
+          - url: http://portainer:9000
+    dbdesigner:
+      loadBalancer:
+        servers:
+          - url: http://dbdesigner:3000
+    # etherpad:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://etherpad:9001
+    mongo-express:
+      loadBalancer:
+        servers:
+          - url: http://mongo-express:8081
+    resume:
+      loadBalancer:
+        servers:
+          - url: http://resume:3000
+    printer:
+      loadBalancer:
+        servers:
+          - url: http://resume:3000
+    mailu:
+      loadBalancer:
+        servers:
+          - url: http://mailu:80
+    yt-dlp-webui:
+      loadBalancer:
+        servers:
+          - url: http://yt-dlp-webui:80
+    wger-nginx:
+      loadBalancer:
+        servers:
+          - url: http://wger:80
+    web-terminal:
+      loadBalancer:
+        servers:
+          - url: http://web-terminal:7681
+    homer:
+      loadBalancer:
+        servers:
+          - url: http://homer:8080
+    pandoc:
+      loadBalancer:
+        servers:
+          - url: http://pandoc:80
+    jupyterlab:
+      loadBalancer:
+        servers:
+          - url: http://jupyterlab:8888
+    gitlab:
+      loadBalancer:
+        servers:
+          - url: http://gitlab:80
+    serge:
+      loadBalancer:
+        servers:
+          - url: http://serge:8008
+    arch:
+      loadBalancer:
+        servers:
+          - url: http://arch:8080
+    gitea:
+      loadBalancer:
+        servers:
+          - url: http://gitea:3000
+    # heimdall:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://heimdall:80
+    pgweb:
+      loadBalancer:
+        servers:
+          - url: http://pgweb:8081
+    paperless:
+      loadBalancer:
+        servers:
+          - url: http://paperless:8000
+    jenkins:
+      loadBalancer:
+        servers:
+          - url: http://jenkins:8080
+    rancher:
+      loadBalancer:
+        servers:
+          - url: http://rancher:80
+    docuseal:
+      loadBalancer:
+        servers:
+          - url: http://docuseal:3000
+    grafana:
+      loadBalancer:
+        servers:
+          - url: http://grafana:3000
+    peertube:
+      loadBalancer:
+        servers:
+          - url: http://peertube:9000
+    mcmyadmin:
+      loadBalancer:
+        servers:
+          - url: http://mcmyadmin:8080
+    qbittorrent:
+      loadBalancer:
+        servers:
+          - url: http://qbittorrent:8080
+    dockge:
+      loadBalancer:
+        servers:
+          - url: http://dockge:5001
+    webshot:
+      loadBalancer:
+        servers:
+          - url: http://webshot:3000
+    outline:
+      loadBalancer:
+        servers:
+          - url: http://outline:3000
+
+  routers:
+    whoami:
+      rule: host(`whoami.marcpartensky.com`)
+      service: whoami
+      entryPoints: ["web"]
+      middlewares: ["cloudflare@file"]
+      # middlewares: ["cloudflare@file", "remoteaddr@file"]
+    pgadmin:
+      rule: "Host(`pgadmin.marcpartensky.com`)"
+      service: pgadmin
+      entryPoints: ["web"]
+      middlewares: ["sablier-pgadmin@file"]
+    jellyfin:
+      rule: "Host(`jellyfin.marcpartensky.com`)"
+      service: jellyfin
+      entryPoints: ["web"]
+      middlewares: ["sablier-jellyfin@file"]
+    portainer:
+      rule: "Host(`docker.marcpartensky.com`)"
+      service: portainer
+      entryPoints: ["web"]
+      middlewares: ["sablier-portainer@file"]
+    dbdesigner:
+      rule: "Host(`dbdesigner.marcpartensky.com`)"
+      service: dbdesigner
+      entryPoints: ["web"]
+      middlewares: ["sablier-dbdesigner@file"]
+    # etherpad:
+    #   rule: "Host(`pad.marcpartensky.com`)"
+    #   service: etherpad
+    #   entryPoints: ["web"]
+    #   middlewares: ["sablier-etherpad@file"]
+    mongo-express:
+      rule: "Host(`mongo.marcpartensky.com`)"
+      service: mongo-express
+      entryPoints: ["web"]
+      middlewares: ["sablier-mongo-express@file"]
+    resume:
+      rule: "Host(`cv.marcpartensky.com`)"
+      service: resume
+      entryPoints: ["web"]
+      middlewares: ["sablier-resume@file"]
+    printer:
+      rule: "Host(`printer.marcpartensky.com`)"
+      service: resume
+      entryPoints: ["web"]
+      middlewares: ["sablier-resume@file"]
+    # mailu:
+    #   rule: "Host(`mail.marcpartensky.com`)"
+    #   service: mailu
+    #   entryPoints: ["web"]
+    #   middlewares: ["sablier-mailu@file"]
+    yt-dlp-webui:
+      rule: "Host(`yt.marcpartensky.com`)"
+      service: yt-dlp-webui
+      entryPoints: ["web"]
+      middlewares: ["sablier-yt-dlp-webui@file"]
+    wger:
+      rule: "Host(`wger.marcpartensky.com`)"
+      service: wger-nginx
+      entryPoints: ["web"]
+      middlewares: ["sablier-wger@file"]
+    web-terminal:
+      rule: "Host(`terminal.marcpartensky.com`)"
+      service: web-terminal
+      entryPoints: ["web"]
+      middlewares: ["sablier-web-terminal@file", "ldap_auth@docker"]
+    homer:
+      rule: "Host(`homer.marcpartensky.com`)"
+      service: homer
+      entryPoints: ["web"]
+      middlewares: ["sablier-homer@file"]
+    pandoc:
+      rule: "Host(`pandoc.marcpartensky.com`)"
+      service: pandoc
+      entryPoints: ["web"]
+      middlewares: ["sablier-pandoc@file"]
+    jupyterlab:
+      rule: "Host(`jupyterlab.marcpartensky.com`)"
+      service: jupyterlab
+      entryPoints: ["web"]
+      middlewares: ["sablier-jupyterlab@file"]
+    gitlab:
+      rule: "Host(`gitlab.marcpartensky.com`)"
+      service: gitlab
+      entryPoints: ["web"]
+      middlewares: ["sablier-gitlab@file"]
+    serge:
+      rule: "Host(`serge.marcpartensky.com`)"
+      service: serge
+      entryPoints: ["web"]
+      middlewares: ["sablier-serge@file"]
+    arch:
+      rule: "Host(`arch.marcpartensky.com`)"
+      service: arch
+      entryPoints: ["web"]
+      middlewares: ["sablier-arch@file"]
+    gitea:
+      rule: "Host(`git.marcpartensky.com`)"
+      service: gitea
+      entryPoints: ["web"]
+      middlewares: ["sablier-gitea@file"]
+    # heimdall:
+    #   rule: "Host(`heimdall.marcpartensky.com`)"
+    #   service: heimdall
+    #   entryPoints: ["web"]
+      # middlewares: ["sablier-heimdall@file"]
+    pgweb:
+      rule: "Host(`pgweb.marcpartensky.com`)"
+      service: pgweb
+      entryPoints: ["web"]
+      middlewares: ["sablier-pgweb@file", "ldap_auth@docker"]
+    paperless:
+      rule: "Host(`paperless.marcpartensky.com`)"
+      service: paperless
+      entryPoints: ["web"]
+      middlewares: ["sablier-paperless@file"]
+    jenkins:
+      rule: "Host(`jenkins.marcpartensky.com`)"
+      service: jenkins
+      entryPoints: ["web"]
+      middlewares: ["sablier-jenkins@file"]
+    rancher:
+      rule: "Host(`rancher.marcpartensky.com`)"
+      service: rancher
+      entryPoints: ["web"]
+      middlewares: ["sablier-rancher@file"]
+    docuseal:
+      rule: "Host(`docuseal.marcpartensky.com`)"
+      service: docuseal
+      entryPoints: ["web"]
+      middlewares: ["sablier-docuseal@file"]
+    grafana:
+      rule: "Host(`grafana.marcpartensky.com`)"
+      service: grafana
+      entryPoints: ["web"]
+      middlewares: ["sablier-grafana@file"]
+    peertube:
+      rule: "Host(`peertube.marcpartensky.com`)"
+      service: peertube
+      entryPoints: ["web"]
+      middlewares: ["sablier-peertube@file"]
+    mcmyadmin:
+      rule: "Host(`mcmyadmin.marcpartensky.com`)"
+      service: mcmyadmin
+      entryPoints: ["web"]
+      middlewares: ["sablier-mcmyadmin@file"]
+    qbittorrent:
+      rule: "Host(`torrent.marcpartensky.com`)"
+      service: qbittorrent
+      entryPoints: ["web"]
+      middlewares: ["sablier-qbittorrent@file", "ldap_auth@docker"]
+    dockge:
+      rule: "Host(`dockge.marcpartensky.com`)"
+      service: dockge
+      entryPoints: ["web"]
+      middlewares: ["sablier-dockge@file", "ldap_auth@docker"]
+    webshot:
+      rule: "Host(`webshot.marcpartensky.com`)"
+      service: webshot
+      entryPoints: ["web"]
+      middlewares: ["sablier-webshot@file", "ldap_auth@docker"]
+    outline:
+      rule: "Host(`outline.marcpartensky.com`)"
+      service: outline
+      entryPoints: ["web"]
+      middlewares: ["sablier-outline@file"]

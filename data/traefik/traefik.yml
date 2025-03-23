@@ -57,10 +57,19 @@ entryPoints:
     address: ':80'
     forwardedHeaders:
       insecure: true
+      trustedIPs:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - fc00::/7
     # forwardedHeaders:
     #   trustedIPs:
     #     - "127.0.0.1/32"
     #     - "192.168.1.7"
+    #
+   # forwardedHeaders:
+   #    trustedIPs:
+   #      - 172.18.0.0/16
     http:
       redirections:
         entryPoint:
@@ -81,12 +90,18 @@ experimental:
     sablier:
       moduleName: github.com/acouvreur/sablier
       version: v1.0.0
-    cloudflarewarp:
-      modulename: github.com/BetterCorp/cloudflarewarp
-      version: v1.3.0
+    cloudflare-fix:
+      moduleName: github.com/neggles/middleflare
+      version: v0.0.2
     rewriteHeaders:
-      modulename: "github.com/XciD/traefik-plugin-rewrite-headers"
-      version: "v0.0.3"
+      modulename: github.com/XciD/traefik-plugin-rewrite-headers
+      version: v0.0.3
+    remoteaddr:
+      moduleName: github.com/RiskIdent/traefik-remoteaddr-plugin
+      version: v0.1.0
+    traefik-oidc-auth:
+      moduleName: github.com/sevensolutions/traefik-oidc-auth
+      version: v0.9.0
 
 # ldap entreprise  https://doc.traefik.io/traefik-enterprise/operations/static-configuration/
 # authSources:
