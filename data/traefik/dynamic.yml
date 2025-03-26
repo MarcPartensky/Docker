@@ -394,9 +394,19 @@ http:
           names: thaiwara
           sessionDuration: 2m
           dynamic:
-            # theme: shuffle
             theme: ghost
             displayName: Thai Wara
+            showDetails: true 
+            refreshFrequency: 5s
+    sablier-valentin:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: valentin
+          sessionDuration: 2m
+          dynamic:
+            # theme: shuffle
+            displayName: Website of Valentin Colin
             showDetails: true 
             refreshFrequency: 5s
 
@@ -537,6 +547,10 @@ http:
       loadBalancer:
         servers:
           - url: http://thaiwara:80
+    valentin:
+      loadBalancer:
+        servers:
+          - url: http://valentin:80
 
   routers:
     whoami:
@@ -706,7 +720,12 @@ http:
       entryPoints: ["web"]
       middlewares: ["sablier-outline@file"]
     thaiwara:
-      rule: host(`thaiwara.marcpartensky.com`)
+      rule: Host(`thaiwara.marcpartensky.com`)
       service: thaiwara
       entryPoints: ["web"]
       middlewares: ["sablier-thaiwara@file"]
+    valentin:
+      rule: Host(`valentin.marcpartensky.com`)
+      service: valentin
+      entryPoints: ["web"]
+      middlewares: ["sablier-valentin@file"]
