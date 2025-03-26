@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - /srv/apprise:/apprise
-      - ../config/apprise:/config
+      - ../data/apprise:/config
     # ports:
     #   - "7860:7860" # Exposition du port 7860 pour accéder à l'application
     networks:
