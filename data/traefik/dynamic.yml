@@ -387,7 +387,18 @@ http:
             showDetails: true 
             theme: ghost
             refreshFrequency: 5s
-
+    sablier-thaiwara:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: thaiwara
+          sessionDuration: 2m
+          dynamic:
+            # theme: shuffle
+            theme: ghost
+            displayName: Thai Wara
+            showDetails: true 
+            refreshFrequency: 5s
 
   services:
     whoami:
@@ -522,6 +533,10 @@ http:
       loadBalancer:
         servers:
           - url: http://outline:3000
+    thaiwara:
+      loadBalancer:
+        servers:
+          - url: http://thaiwara:80
 
   routers:
     whoami:
@@ -690,3 +705,8 @@ http:
       service: outline
       entryPoints: ["web"]
       middlewares: ["sablier-outline@file"]
+    thaiwara:
+      rule: host(`thaiwara.marcpartensky.com`)
+      service: thaiwara
+      entryPoints: ["web"]
+      middlewares: ["sablier-thaiwara@file"]
