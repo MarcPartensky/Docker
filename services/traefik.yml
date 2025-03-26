@@ -51,6 +51,8 @@ services:
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entrypoints: web
       traefik.http.services.traefik.loadbalancer.server.port: 8080
+      # traefik.http.middlewares.cf-real-ip.headers.customrequestheaders.X-Real-Ip: $CF-Connecting-Ip
+      # traefik.http.middlewares.traefik-real-ip.plugin.traefik-real-ip.excludednets: "1.1.1.1/24"
       # traefik.http.routers.traefik.tls.certresolver: tls
       traefik.docker.network: caddy
       # ldapAuth Options=================================================================
