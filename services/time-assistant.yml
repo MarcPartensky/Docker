@@ -1,6 +1,7 @@
 services:
   time-assistant:
-    image: docker.io/marcpartensky/time-assistant
+    # image: docker.io/marcpartensky/time-assistant
+    image: docker.io/marcpartensky/time-assistant:v13.0e90e4c.2025-03-18
     env_file:
       - ../data/secrets/time-assistant.env
     # volumes:
