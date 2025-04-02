@@ -1,6 +1,7 @@
 services:
   mosquitto:
     image: eclipse-mosquitto
+    restart: unless-stopped
     volumes:
       - /srv/mosquitto:/mosquitto
       # - /srv/mosquitto/data:/mosquitto/data
