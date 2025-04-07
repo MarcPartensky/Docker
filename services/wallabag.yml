@@ -8,9 +8,11 @@ version: "3.9"
 services:
   wallabag:
     image: wallabag/wallabag
+    container_name: wallabag
+    restart: unless-stopped
     volumes:
       # Volumes for data-related folders
-      - /srv/wallabag/data/entrypoint.sh:/entrypoint.sh
+      # - /srv/wallabag/data/entrypoint.sh:/entrypoint.sh
       - /srv/wallabag/data:/var/www/wallabag/data
       - /srv/wallabag/assets:/var/www/wallabag/web/assets
       - wallabag_cache:/var/www/wallabag/var/
@@ -51,17 +53,17 @@ services:
         #   sh -c "su -c 'php bin/console wallabag:install --env=prod -n' &&
         #   ./entrypoint.sh"
     command: wallabag
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.wallabag.loadbalancer.server.port: 80
-      traefik.http.routers.wallabag.rule: Host(`wallabag.marcpartensky.com`)
-        # traefik.http.routers.wallabag.rule: >
-        #   Host(`wallabag.marcpartensky.com`) ||
-        #   Host(`wallabag.marcpartensky.fr`)
-      traefik.http.routers.wallabag.entrypoints: web
-      # traefik.http.routers.wallabag.tls.certresolver: tls
-      # traefik.http.routers.wallabag.tls.certresolver: cloudflare
-      # traefik.http.routers.wallabag.middlewares: ldap_auth
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.services.wallabag.loadbalancer.server.port: 80
+    #   traefik.http.routers.wallabag.rule: Host(`wallabag.marcpartensky.com`)
+    #     # traefik.http.routers.wallabag.rule: >
+    #     #   Host(`wallabag.marcpartensky.com`) ||
+    #     #   Host(`wallabag.marcpartensky.fr`)
+    #   traefik.http.routers.wallabag.entrypoints: web
+    #   # traefik.http.routers.wallabag.tls.certresolver: tls
+    #   # traefik.http.routers.wallabag.tls.certresolver: cloudflare
+    #   # traefik.http.routers.wallabag.middlewares: ldap_auth
 
     # postgres:
     #     image: postgres:11-alpine

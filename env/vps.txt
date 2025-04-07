@@ -18,3 +18,5 @@ terminal
 heimdall
 etherpad
 outline
+portainer
+gotify

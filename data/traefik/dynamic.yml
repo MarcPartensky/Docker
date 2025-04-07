@@ -47,6 +47,17 @@ http:
     #       trustip: # Trust IPS not required if disableDefault is false - we will allocate Cloud Flare IPs automatically
     #         - "2400:cb00::/32"
 
+    sablier-wallabag:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: wallabag
+          dynamic:
+            displayName: Wallabag
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
     sablier-pgadmin:
       plugin:
         sablier:
@@ -348,9 +359,9 @@ http:
         sablier:
           sablierUrl: http://sablier:10000
           names: qbittorrent
-          sessionDuration: 2m
+          sessionDuration: 10m
           dynamic:
-            displayName: Qbittorrent
+            displayName: qBittorrent
             showDetails: true 
             theme: ghost
             refreshFrequency: 5s
@@ -411,10 +422,18 @@ http:
             refreshFrequency: 5s
 
   services:
+    qbittorrent:
+      loadBalancer:
+        servers:
+          - url: http://qbittorrent:8080
     whoami:
       loadBalancer:
         servers:
           - url: http://whoami:80
+    wallabag:
+      loadBalancer:
+        servers:
+          - url: http://wallabag:80
     pgadmin:
       loadBalancer:
         servers:
@@ -527,10 +546,6 @@ http:
       loadBalancer:
         servers:
           - url: http://mcmyadmin:8080
-    qbittorrent:
-      loadBalancer:
-        servers:
-          - url: http://qbittorrent:8080
     dockge:
       loadBalancer:
         servers:
@@ -559,6 +574,11 @@ http:
       entryPoints: ["web"]
       middlewares: ["cloudflare@file"]
       # middlewares: ["cloudflare@file", "remoteaddr@file"]
+    wallabag:
+      rule: "Host(`wallabag.marcpartensky.com`)"
+      service: wallabag
+      entryPoints: ["web"]
+      middlewares: ["sablier-wallabag@file"]
     pgadmin:
       rule: "Host(`pgadmin.marcpartensky.com`)"
       service: pgadmin
@@ -703,7 +723,7 @@ http:
       rule: "Host(`torrent.marcpartensky.com`)"
       service: qbittorrent
       entryPoints: ["web"]
-      middlewares: ["sablier-qbittorrent@file", "ldap_auth@docker"]
+      middlewares: ["sablier-qbittorrent@file"]
     dockge:
       rule: "Host(`dockge.marcpartensky.com`)"
       service: dockge
