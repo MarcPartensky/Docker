@@ -37,6 +37,9 @@ data/owncloud
 data/wg-easy
 data/nextcloud
 data/casdoor
+data/stash
+data/code-server
+data/gotify
 data.tar.gz
 data.7z
 data.7z.gpg
