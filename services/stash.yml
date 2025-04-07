@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  stash:
+    image: stashapp/stash:latest
+    container_name: stash
+    restart: unless-stopped
+    networks:
+      - caddy
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+      - STASH_PORT=9999
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ../data/stash:/root/.stash
+      - /srv/stash/data:/data
+      - /srv/stash/metadata:/metadata
+      - /srv/stash/cache:/cache
+      - /srv/stash/blobs:/blobs
+      - /srv/stash/generated:/generated
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.stash.loadbalancer.server.port: 9999
+      traefik.http.routers.stash.rule: Host(`stash.marcpartensky.com`) # Adaptez le domaine
+      traefik.http.routers.stash.entrypoints: web
+      # traefik.http.routers.stash.tls.certresolver: tls
+      # traefik.http.routers.stash.middlewares: "ldap_auth,cloudflare@file"
+
+networks:
+  caddy:
+    external: true
