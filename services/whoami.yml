@@ -4,19 +4,19 @@ services:
     image: traefik/whoami
     networks:
       - caddy
-  whoami2:
-    image: traefik/whoami
-    networks:
-      - caddy
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.whoami2.rule: >
-        Host(`whoami2.marcpartensky.com`)
-      traefik.http.routers.whoami2.entrypoints: web
-      # traefik.http.routers.whoami.tls.certresolver: tls
-      traefik.http.services.whoami2.loadbalancer.server.port: 80
-      traefik.http.routers.whoami2.middlewares: cloudflare@file,remoteaddr@file
-        # traefik.docker.lbswarm: "true"
+  # whoami2:
+  #   image: traefik/whoami
+  #   networks:
+  #     - caddy
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.whoami2.rule: >
+  #       Host(`whoami2.marcpartensky.com`)
+  #     traefik.http.routers.whoami2.entrypoints: web
+  #     # traefik.http.routers.whoami.tls.certresolver: tls
+  #     traefik.http.services.whoami2.loadbalancer.server.port: 80
+  #     traefik.http.routers.whoami2.middlewares: cloudflare@file,remoteaddr@file
+  #       # traefik.docker.lbswarm: "true"
 
 networks:
   caddy:
