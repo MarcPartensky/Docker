@@ -20,3 +20,5 @@ etherpad
 outline
 portainer
 gotify
+paperless
+time-assistant
