@@ -1,0 +1,30 @@
+services:
+  gotify:
+    image: gotify/server
+    restart: unless-stopped
+    networks:
+      - caddy
+      - postgres
+    volumes:
+      - /srv/gotify:/app/data
+      - ../data/gotify:/etc/gotify
+      # /etc/gotify/config.yml
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gotify.rule: Host(`gotify.marcpartensky.com`)
+      traefik.http.routers.gotify.entrypoints: web
+      traefik.http.services.gotify.loadbalancer.server.port: 80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      TZ: Europe/Paris
+    # user: "1234:1234"  # Utilisateur recommandé par la doc Gotify
+
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true
