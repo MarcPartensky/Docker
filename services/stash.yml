@@ -24,10 +24,10 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.services.stash.loadbalancer.server.port: 9999
-      traefik.http.routers.stash.rule: Host(`stash.marcpartensky.com`) # Adaptez le domaine
+      traefik.http.routers.stash.rule: Host(`stash.marcpartensky.com`)
       traefik.http.routers.stash.entrypoints: web
       # traefik.http.routers.stash.tls.certresolver: tls
-      # traefik.http.routers.stash.middlewares: "ldap_auth,cloudflare@file"
+      traefik.http.routers.stash.middlewares: "ldap_auth,cloudflare@file"
 
 networks:
   caddy:
