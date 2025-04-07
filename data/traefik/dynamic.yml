@@ -132,7 +132,7 @@ http:
           dynamic:
             displayName: Reactive Resume
             showDetails: true 
-            theme: shuffle
+            theme: ghost
             refreshFrequency: 1s
     sablier-mailu:
       plugin:
