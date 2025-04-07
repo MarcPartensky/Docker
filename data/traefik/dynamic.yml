@@ -405,7 +405,7 @@ http:
           names: valentin
           sessionDuration: 2m
           dynamic:
-            # theme: shuffle
+            theme: ghost
             displayName: Website of Valentin Colin
             showDetails: true 
             refreshFrequency: 5s
