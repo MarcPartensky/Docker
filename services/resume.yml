@@ -7,8 +7,6 @@ services:
     restart: unless-stopped
     env_file:
       - ../data/secrets/resume.env
-        # environment:
-        #   PUBLIC_URL: https://cv.marcpartensky.com
     networks:
       - caddy
       - postgres
@@ -18,11 +16,11 @@ services:
       traefik.http.services.resume.loadbalancer.server.port: 3000
       traefik.http.routers.resume.rule: Host(`cv.marcpartensky.com`)
       traefik.http.routers.resume.entrypoints: web
-    healthcheck:
-      test: ["CMD-SHELL", "wget", "--spider", "localhost:3000"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "wget", "--spider", "localhost:3000"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
 
   printer:
