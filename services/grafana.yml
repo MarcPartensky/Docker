@@ -14,6 +14,8 @@ services:
       - ../data/grafana:/etc/grafana
       # - /srv/grafana:/var/lib/grafana
       - grafana:/var/lib/grafana
+    healthcheck:
+      test: ["CMD", "curl", "-fSs", "http://localhost:3000/api/health"]
     networks:
       - caddy
       - postgres
