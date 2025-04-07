@@ -1,0 +1,28 @@
+services:
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    restart: unless-stopped
+    container_name: linkwarden
+    env_file: ../data/secrets/linkwarden.env
+    # environment:
+    #   - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@linkwarden-postgres:5432/postgres
+    networks:
+      - caddy
+      - postgres
+    volumes:
+      - /srv/linkwarden:/data/data
+    # depends_on:
+    #   - linkwarden-postgres
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.linkwarden.loadbalancer.server.port: 3000
+      traefik.http.routers.linkwarden.rule: Host(`linkwarden.marcpartensky.com`)
+      traefik.http.routers.linkwarden.entrypoints: web
+      # traefik.http.routers.linkwarden.tls.certresolver: tls
+      # traefik.http.routers.linkwarden.middlewares: "ldap_auth,cloudflare@file"
+
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true
