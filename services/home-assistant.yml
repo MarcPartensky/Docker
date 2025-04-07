@@ -12,6 +12,8 @@ services:
       TZ: Europe/Paris
     ports:
       - 8123:8123 #optional
+    healthcheck:
+        test: ["CMD", "curl", "-sf", "localhost:8123"]
     privileged: true
     network_mode: host
     cap_add:
