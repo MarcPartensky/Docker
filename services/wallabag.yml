@@ -65,40 +65,6 @@ services:
     #   # traefik.http.routers.wallabag.tls.certresolver: cloudflare
     #   # traefik.http.routers.wallabag.middlewares: ldap_auth
 
-    # postgres:
-    #     image: postgres:11-alpine
-    #     volumes:
-    #         - db-data:/var/lib/postgresql/data
-    #     env_file:
-    #         - ./docker/postgres/env
-    #     healthcheck:
-    #         test: ["CMD-SHELL", "pg_isready -q || exit 1"]
-    #         interval: 10s
-    #         timeout: 3s
-    #         retries: 3
-
-    # mariadb:
-    #    image: mariadb:10
-    #    ports:
-    #        - "3306:3306"
-    #    volumes:
-    #        - db-data:/var/lib/mysql
-    #    env_file:
-    #        - ./docker/mariadb/env
-
-    # rabbitmq:
-    #     image: rabbitmq:3-management-alpine
-    #     ports:
-    #         - "15672:15672"
-
-  # redis:
-  #   image: redis:6-alpine
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 10s
-  #     timeout: 3s
-  #     retries: 3
-
 volumes:
   wallabag_cache:
 networks:
