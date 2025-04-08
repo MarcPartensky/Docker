@@ -13,11 +13,11 @@ services:
       - /srv/linkwarden:/data/data
     # depends_on:
     #   - linkwarden-postgres
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.linkwarden.loadbalancer.server.port: 3000
-      traefik.http.routers.linkwarden.rule: Host(`linkwarden.marcpartensky.com`)
-      traefik.http.routers.linkwarden.entrypoints: web
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.services.linkwarden.loadbalancer.server.port: 3000
+    #   traefik.http.routers.linkwarden.rule: Host(`linkwarden.marcpartensky.com`)
+    #   traefik.http.routers.linkwarden.entrypoints: web
       # traefik.http.routers.linkwarden.tls.certresolver: tls
       # traefik.http.routers.linkwarden.middlewares: "ldap_auth,cloudflare@file"
 
