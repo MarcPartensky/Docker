@@ -21,13 +21,13 @@ services:
       - /srv/stash/cache:/cache
       - /srv/stash/blobs:/blobs
       - /srv/stash/generated:/generated
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.stash.loadbalancer.server.port: 9999
-      traefik.http.routers.stash.rule: Host(`stash.marcpartensky.com`)
-      traefik.http.routers.stash.entrypoints: web
-      # traefik.http.routers.stash.tls.certresolver: tls
-      traefik.http.routers.stash.middlewares: "ldap_auth,cloudflare@file"
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.services.stash.loadbalancer.server.port: 9999
+    #   traefik.http.routers.stash.rule: Host(`stash.marcpartensky.com`)
+    #   traefik.http.routers.stash.entrypoints: web
+    #   # traefik.http.routers.stash.tls.certresolver: tls
+    #   traefik.http.routers.stash.middlewares: "ldap_auth,cloudflare@file"
 
 networks:
   caddy:
