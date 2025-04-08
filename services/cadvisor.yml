@@ -26,27 +26,25 @@ services:
     #   - '-docker_label_enable'
     networks:
       - caddy
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      resources:
-        limits:
-          memory: 1g
-        reservations:
-          memory: 512m
-      restart_policy:
-        condition: on-failure
-      mode: global
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.cadvisor.rule: Host(`cadvisor.marcpartensky.fr`)
-        # traefik.http.routers.cadvisor.rule: >
-        #   Host(`cadvisor.marcpartensky.com`) || Host(`cadvisor.marcpartensky.fr`)
-        traefik.http.routers.cadvisor.entrypoints: websecure
-        traefik.http.routers.cadvisor.tls.certresolver: tls
-        traefik.http.services.cadvisor.loadbalancer.server.port: 8080
-        traefik.http.routers.cadvisor.middlewares: ldap_auth
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       - node.role == manager
+    #   resources:
+    #     limits:
+    #       memory: 1g
+    #     reservations:
+    #       memory: 512m
+    #   restart_policy:
+    #     condition: on-failure
+    #   mode: global
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.cadvisor.rule: Host(`cadvisor.marcpartensky.com`)
+      traefik.http.routers.cadvisor.entrypoints: web
+      # traefik.http.routers.cadvisor.tls.certresolver: tls
+      traefik.http.services.cadvisor.loadbalancer.server.port: 8080
+      traefik.http.routers.cadvisor.middlewares: ldap_auth
 
       
 networks:
