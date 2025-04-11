@@ -4,14 +4,16 @@ services:
     container_name: wud
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - caddy
     labels:
       traefik.enable: "true"
       traefik.http.routers.whatsupdocker.rule: >
-        Host(`whatsupdocker.marcpartensky.com`)
+        Host(`wud.marcpartensky.com`)
       traefik.http.routers.whatsupdocker.entrypoints: web
       traefik.http.services.whatsupdocker.loadbalancer.server.port: 3000
       # traefik.http.middlewares.whatsupdocker.redirectscheme.scheme: https
-      traefik.http.routers.whatsupdocker.middlewares: ldap_auth
+      # traefik.http.routers.whatsupdocker.middlewares: ldap_auth
 networks:
   caddy:
     external: true
