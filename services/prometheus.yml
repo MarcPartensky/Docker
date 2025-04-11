@@ -10,14 +10,14 @@ services:
     networks:
       - prometheus
       - caddy
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.prometheus.rule: >
-          Host(`prometheus.marcpartensky.com`) || Host(`prometheus.marcpartensky.fr`)
-        traefik.http.routers.prometheus.entrypoints: websecure
-        traefik.http.routers.prometheus.tls.certresolver: tls
-        traefik.http.services.prometheus.loadbalancer.server.port: 9090
+    # deploy:
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.prometheus.rule: >
+        Host(`prometheus.marcpartensky.com`)
+      traefik.http.routers.prometheus.entrypoints: web
+      # traefik.http.routers.prometheus.tls.certresolver: tls
+      traefik.http.services.prometheus.loadbalancer.server.port: 9090
 
   node-exporter:
     image: prom/node-exporter
