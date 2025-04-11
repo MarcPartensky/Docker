@@ -47,6 +47,72 @@ http:
     #       trustip: # Trust IPS not required if disableDefault is false - we will allocate Cloud Flare IPs automatically
     #         - "2400:cb00::/32"
 
+    sablier-calibre:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: calibre
+          dynamic:
+            displayName: Calibre Web
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
+    sablier-yourls:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: yourls
+          dynamic:
+            displayName: Yourls
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
+    sablier-invidious:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: invidious,inv-sig-helper
+          dynamic:
+            displayName: Invidious
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
+    sablier-stash:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: stash
+          dynamic:
+            displayName: Stash
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
+    sablier-linkwarden:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: linkwarden
+          dynamic:
+            displayName: Linkwarden
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
+    sablier-code-server:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: code-server
+          dynamic:
+            displayName: VSCode
+            refreshFrequency: 5s
+            showDetails: true
+            theme: matrix
     sablier-wallabag:
       plugin:
         sablier:
@@ -242,7 +308,7 @@ http:
           dynamic:
             displayName: Arch Linux VNC
             showDetails: true 
-            theme: ghost
+            theme: matrix
             refreshFrequency: 5s
     sablier-gitea:
       plugin:
@@ -370,7 +436,7 @@ http:
         sablier:
           sablierUrl: http://sablier:10000
           names: dockge
-          sessionDuration: 2m
+          sessionDuration: 5m
           dynamic:
             displayName: Dockge
             showDetails: true 
@@ -430,6 +496,30 @@ http:
       loadBalancer:
         servers:
           - url: http://whoami:80
+    yourls:
+      loadBalancer:
+        servers:
+          - url: http://yourls:80
+    calibre:
+      loadBalancer:
+        servers:
+          - url: http://calibre:8083
+    invidious:
+      loadBalancer:
+        servers:
+          - url: http://invidious:3000
+    stash:
+      loadBalancer:
+        servers:
+          - url: http://stash:9999
+    linkwarden:
+      loadBalancer:
+        servers:
+          - url: http://linkwarden:3000
+    code-server:
+      loadBalancer:
+        servers:
+          - url: http://code-server:8443
     wallabag:
       loadBalancer:
         servers:
@@ -574,10 +664,40 @@ http:
       entryPoints: ["web"]
       middlewares: ["cloudflare@file"]
       # middlewares: ["cloudflare@file", "remoteaddr@file"]
+    yourls:
+      rule: "Host(`yourls.marcpartensky.com`)"
+      service: yourls
+      entryPoints: ["web"]
+      middlewares: ["sablier-yourls@file", "oidc@file"]
+    calibre:
+      rule: "Host(`calibre.marcpartensky.com`)"
+      service: calibre
+      entryPoints: ["web"]
+      middlewares: ["sablier-calibre@file", "oidc@file"]
+    invidious:
+      rule: "Host(`invidious.marcpartensky.com`)"
+      service: invidious
+      entryPoints: ["web"]
+      middlewares: ["sablier-invidious@file", "oidc@file"]
+    stash:
+      rule: "Host(`stash.marcpartensky.com`)"
+      service: stash
+      entryPoints: ["web"]
+      middlewares: ["sablier-stash@file", "oidc@file"]
+    linkwarden:
+      rule: "Host(`linkwarden.marcpartensky.com`)"
+      service: linkwarden
+      entryPoints: ["web"]
+      middlewares: ["sablier-linkwarden@file"]
+    code-server:
+      rule: "Host(`code.marcpartensky.com`)"
+      service: code-server
+      entrypoints: ["web"]
+      middlewares: ["sablier-code-server@file", "oidc@file"]
     wallabag:
       rule: "Host(`wallabag.marcpartensky.com`)"
       service: wallabag
-      entryPoints: ["web"]
+      entrypoints: ["web"]
       middlewares: ["sablier-wallabag@file"]
     pgadmin:
       rule: "Host(`pgadmin.marcpartensky.com`)"
@@ -598,7 +718,7 @@ http:
       rule: "Host(`dbdesigner.marcpartensky.com`)"
       service: dbdesigner
       entryPoints: ["web"]
-      middlewares: ["sablier-dbdesigner@file"]
+      middlewares: ["sablier-dbdesigner@file", "oidc@file"]
     # etherpad:
     #   rule: "Host(`pad.marcpartensky.com`)"
     #   service: etherpad
@@ -628,7 +748,7 @@ http:
       rule: "Host(`yt.marcpartensky.com`)"
       service: yt-dlp-webui
       entryPoints: ["web"]
-      middlewares: ["sablier-yt-dlp-webui@file"]
+      middlewares: ["sablier-yt-dlp-webui@file", "oidc@file"]
     wger:
       rule: "Host(`wger.marcpartensky.com`)"
       service: wger-nginx
@@ -638,7 +758,7 @@ http:
       rule: "Host(`terminal.marcpartensky.com`)"
       service: web-terminal
       entryPoints: ["web"]
-      middlewares: ["sablier-web-terminal@file", "ldap_auth@docker"]
+      middlewares: ["sablier-web-terminal@file", "oidc@file"]
     homer:
       rule: "Host(`homer.marcpartensky.com`)"
       service: homer
@@ -663,12 +783,12 @@ http:
       rule: "Host(`serge.marcpartensky.com`)"
       service: serge
       entryPoints: ["web"]
-      middlewares: ["sablier-serge@file"]
+      middlewares: ["sablier-serge@file", "oidc@file"]
     arch:
       rule: "Host(`arch.marcpartensky.com`)"
       service: arch
       entryPoints: ["web"]
-      middlewares: ["sablier-arch@file"]
+      middlewares: ["sablier-arch@file", "oidc@file"]
     gitea:
       rule: "Host(`git.marcpartensky.com`)"
       service: gitea
@@ -683,7 +803,7 @@ http:
       rule: "Host(`pgweb.marcpartensky.com`)"
       service: pgweb
       entryPoints: ["web"]
-      middlewares: ["sablier-pgweb@file", "ldap_auth@docker"]
+      middlewares: ["sablier-pgweb@file", "oidc@file"]
     paperless:
       rule: "Host(`paperless.marcpartensky.com`)"
       service: paperless
@@ -728,12 +848,12 @@ http:
       rule: "Host(`dockge.marcpartensky.com`)"
       service: dockge
       entryPoints: ["web"]
-      middlewares: ["sablier-dockge@file", "ldap_auth@docker"]
+      middlewares: ["sablier-dockge@file", "oidc@file"]
     webshot:
       rule: "Host(`webshot.marcpartensky.com`)"
       service: webshot
       entryPoints: ["web"]
-      middlewares: ["sablier-webshot@file", "ldap_auth@docker"]
+      middlewares: ["sablier-webshot@file", "oidc@file"]
     outline:
       rule: "Host(`outline.marcpartensky.com`)"
       service: outline

@@ -15,8 +15,22 @@ providers:
     exposedByDefault: false # traefik enabled containers only
     network: caddy
   file:
-    filename: /etc/traefik/dynamic.yml
+    # filename: /etc/traefik/dynamic.yml
+    directory: /etc/traefik/dynamic
     watch: true
+metrics:
+  prometheus:
+    entryPoint: metrics
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0
+    # Ajout des métriques sur les points d'entrée
+    addEntryPointsLabels: true
+    # Ajout des services
+    addServicesLabels: true
+
 serversTransport: # enable ssl backend
   insecureSkipVerify: true
 certificatesResolvers:
@@ -40,6 +54,8 @@ log:
   level: debug
   # level: error
 entryPoints:
+  metrics:
+    address: ":3000"
   websecure:
     address: ':443'
     forwardedHeaders:
