@@ -22,3 +22,9 @@ portainer
 gotify
 paperless
 time-assistant
+dbdesigner
+invidious
+zitadel
+n8n
+dbdesigner
+serge
