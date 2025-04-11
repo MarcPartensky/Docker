@@ -47,6 +47,17 @@ http:
     #       trustip: # Trust IPS not required if disableDefault is false - we will allocate Cloud Flare IPs automatically
     #         - "2400:cb00::/32"
 
+    sablier-uptime:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: uptime
+          dynamic:
+            displayName: Uptime Kuma
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
     sablier-calibre:
       plugin:
         sablier:
@@ -500,6 +511,10 @@ http:
       loadBalancer:
         servers:
           - url: http://yourls:80
+    uptime:
+      loadBalancer:
+        servers:
+          - url: http://uptime:3001
     calibre:
       loadBalancer:
         servers:
@@ -669,6 +684,11 @@ http:
       service: yourls
       entryPoints: ["web"]
       middlewares: ["sablier-yourls@file", "oidc@file"]
+    uptime:
+      rule: "Host(`uptime.marcpartensky.com`)"
+      service: uptime
+      entryPoints: ["web"]
+      middlewares: ["sablier-uptime@file", "oidc@file"]
     calibre:
       rule: "Host(`calibre.marcpartensky.com`)"
       service: calibre
