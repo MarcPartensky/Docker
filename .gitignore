@@ -44,3 +44,4 @@ data.tar.gz
 data.7z
 data.7z.gpg
 services/template.yml
+data/traefik/dynamic/oidc.yml
