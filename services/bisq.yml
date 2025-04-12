@@ -6,25 +6,27 @@ services:
     restart: unless-stopped
     # image: ghcr.io/linuxserver/bisq:latest
     image: fflo/bisq-on-docker
+    # image: ghcr.io/linuxserver/bisq
     networks:
       - caddy
     environment:
-      PUID: 1000
-      PGID: 1000
+      # PUID: 1000
+      # PGID: 1000
       TZ: Europe/Paris
       # PASSWORD: #optional
-      CLI_ARGS: #optional
+      # CLI_ARGS: #optional
     volumes:
-      - /srv/bisq/data:/config
-    # ports:
-    #   - "8080:8080"
+      - ../data/bisq:/config
+      - /srv/bisq:/bisq
+    ports:
+      - "3389:3389"
     #   - "8081:8081"
     env_file: ../data/secrets/bisq.env
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.bisq.loadbalancer.server.port: 3389
-      traefik.http.routers.bisq.rule: Host(`bisq.marcpartensky.com`)
-      traefik.http.routers.bisq.entrypoints: web
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.services.bisq.loadbalancer.server.port: 3389
+    #   traefik.http.routers.bisq.rule: Host(`bisq.marcpartensky.com`)
+      # traefik.http.routers.bisq.entrypoints: web
 
 networks:
   caddy:
