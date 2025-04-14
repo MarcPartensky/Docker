@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  pandoc:
+    image: marcpartensky/pandoc-api
+    container_name: pandoc
+    restart: unless-stopped
+    working_dir: /app
+    env_file: .env
+    volumes:
+    - pandoc:/app/files
+    networks:
+    - caddy
+volumes:
+  pandoc: null
+networks:
+  caddy:
+    external: true

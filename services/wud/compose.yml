@@ -1,0 +1,12 @@
+services:
+  whatsupdocker:
+    image: getwud/wud
+    container_name: wud
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    env_file: .env
+    networks:
+    - caddy
+networks:
+  caddy:
+    external: true

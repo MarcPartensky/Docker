@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+    - ../data/grafana:/etc/grafana
+    - grafana:/var/lib/grafana
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fSs
+      - http://localhost:3000/api/health
+    networks:
+    - caddy
+    - postgres
+    - redis
+    - ldap
+    - mqtt
+volumes:
+  grafana: null
+networks:
+  mqtt:
+    external: true
+  ldap:
+    external: true
+  postgres:
+    external: true
+  redis:
+    external: true
+  caddy:
+    external: true

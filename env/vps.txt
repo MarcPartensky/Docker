@@ -28,3 +28,5 @@ zitadel
 n8n
 dbdesigner
 serge
+qbittorrent
+wud

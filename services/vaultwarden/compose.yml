@@ -1,0 +1,27 @@
+version: '3.9'
+services:
+  vaultwarden:
+    image: docker.io/vaultwarden/server
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+    - data:/data
+    networks:
+    - caddy
+    - vaultwarden
+    - postgres
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.vaultwarden.rule: Host(`vault.marcpartensky.com`)
+      traefik.http.routers.vaultwarden.entrypoints: web
+      traefik.http.services.vaultwarden.loadbalancer.server.port: 80
+volumes:
+  data: null
+networks:
+  vaultwarden: null
+  postgres:
+    external: true
+  ldap:
+    external: true
+  caddy:
+    external: true

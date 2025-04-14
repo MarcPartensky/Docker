@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  etherpad:
+    image: marcpartensky/etherpad
+    container_name: etherpad
+    restart: unless-stopped
+    env_file: .env
+    networks:
+    - caddy
+    - postgres
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true

@@ -1,0 +1,418 @@
+version: '3.9'
+x-common:
+  dns:
+    dns: &id001
+    - 10.22.1.254
+  redis:
+    ipv4_address: 10.22.1.249
+  sogo:
+    ipv4_address: 10.22.1.248
+  nginx:
+    ipv4_address: 10.22.1.252
+  postfix:
+    ipv4_address: 10.22.1.253
+  unbound:
+    ipv4_address: 10.22.1.254
+services:
+  unbound:
+    image: mailcow/unbound:1.15
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+    volumes:
+    - ../data/mailcow/hooks/unbound:/hooks:Z
+    - ../data/mailcow/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
+    tty: true
+    networks:
+      mailcow:
+        ipv4_address: 10.22.1.254
+        aliases:
+        - unbound
+  mysql:
+    image: mariadb:10.5
+    restart: unless-stopped
+    depends_on:
+    - unbound
+    stop_grace_period: 45s
+    volumes:
+    - mysql-vol-1:/var/lib/mysql/:Z
+    - mysql-socket-vol-1:/var/run/mysqld/:z
+    - ../data/mailcow/conf/mysql/:/etc/mysql/conf.d/:ro,Z
+    env_file: .env
+    networks:
+      mailcow:
+        aliases:
+        - mysql
+  redis:
+    image: redis:6-alpine
+    restart: unless-stopped
+    volumes:
+    - redis-vol-1:/data/:Z
+    env_file: .env
+    sysctls:
+    - net.core.somaxconn=4096
+    networks:
+      mailcow:
+        ipv4_address: 10.22.1.249
+        aliases:
+        - redis
+  clamd:
+    dns: *id001
+    image: mailcow/clamd:1.43
+    restart: unless-stopped
+    volumes:
+    - ../data/mailcow/conf/clamav/:/etc/clamav/:Z
+    networks:
+      mailcow:
+        aliases:
+        - clamd
+  rspamd:
+    dns: *id001
+    image: mailcow/rspamd:1.79
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+    - dovecot
+    env_file: .env
+    volumes:
+    - ../data/mailcow/hooks/rspamd:/hooks:Z
+    - ../data/mailcow/conf/rspamd/custom/:/etc/rspamd/custom:z
+    - ../data/mailcow/conf/rspamd/override.d/:/etc/rspamd/override.d:Z
+    - ../data/mailcow/conf/rspamd/local.d/:/etc/rspamd/local.d:Z
+    - ../data/mailcow/conf/rspamd/plugins.d/:/etc/rspamd/plugins.d:Z
+    - ../data/mailcow/conf/rspamd/lua/:/etc/rspamd/lua/:ro,Z
+    - ../data/mailcow/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local:Z
+    - ../data/mailcow/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
+    - rspamd-vol-1:/var/lib/rspamd:z
+    hostname: rspamd
+    networks:
+      mailcow:
+        aliases:
+        - rspamd
+  php-fpm:
+    dns: *id001
+    image: mailcow/phpfpm:1.78
+    restart: unless-stopped
+    command: php-fpm -d date.timezone=${TZ} -d expose_php=0
+    depends_on:
+    - redis
+    volumes:
+    - rspamd-vol-1:/var/lib/rspamd:z
+    - mysql-socket-vol-1:/var/run/mysqld/:z
+    - ../data/mailcow/hooks/phpfpm:/hooks:Z
+    - ../data/mailcow/web:/web:z
+    - ../data/mailcow/conf/rspamd/dynmaps:/dynmaps:ro,z
+    - ../data/mailcow/conf/rspamd/custom/:/rspamd_custom_maps:z
+    - ../data/mailcow/conf/sogo/:/etc/sogo/:z
+    - ../data/mailcow/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+    - ../data/mailcow/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
+    - ../data/mailcow/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
+    - ../data/mailcow/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
+    - ../data/mailcow/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
+    - ../data/mailcow/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
+    - ../data/mailcow/conf/dovecot/global_sieve_before:/global_sieve/before:z
+    - ../data/mailcow/conf/dovecot/global_sieve_after:/global_sieve/after:z
+    - ../data/mailcow/assets/templates:/tpls:z
+    - ../data/mailcow/conf/nginx/:/etc/nginx/conf.d/:z
+    env_file: .env
+    networks:
+      mailcow:
+        aliases:
+        - phpfpm
+  sogo:
+    dns: *id001
+    image: mailcow/sogo:1.106
+    restart: unless-stopped
+    volumes:
+    - ../data/mailcow/hooks/sogo:/hooks:Z
+    - ../data/mailcow/conf/sogo/:/etc/sogo/:z
+    - ../data/mailcow/web/inc/init_db.inc.php:/init_db.inc.php:Z
+    - ../data/mailcow/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
+    - ../data/mailcow/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
+    - ../data/mailcow/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
+    - mysql-socket-vol-1:/var/run/mysqld/:z
+    - sogo-web-vol-1:/sogo_web:z
+    - sogo-userdata-backup-vol-1:/sogo_backup:Z
+    env_file: .env
+    labels:
+      ofelia.enabled: 'true'
+      ofelia.job-exec.sogo_sessions.schedule: '@every 1m'
+      ofelia.job-exec.sogo_sessions.command: /bin/bash -c "[[ $${MASTER} == y ]] &&
+        /usr/local/bin/gosu sogo /usr/sbin/sogo-tool expire-sessions $${SOGO_EXPIRE_SESSION}
+        || exit 0"
+      ofelia.job-exec.sogo_ealarms.schedule: '@every 1m'
+      ofelia.job-exec.sogo_ealarms.command: /bin/bash -c "[[ $${MASTER} == y ]] &&
+        /usr/local/bin/gosu sogo /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds
+        || exit 0"
+      ofelia.job-exec.sogo_eautoreply.schedule: '@every 5m'
+      ofelia.job-exec.sogo_eautoreply.command: /bin/bash -c "[[ $${MASTER} == y ]]
+        && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds
+        || exit 0"
+      ofelia.job-exec.sogo_backup.schedule: '@every 24h'
+      ofelia.job-exec.sogo_backup.command: /bin/bash -c "[[ $${MASTER} == y ]] &&
+        /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit
+        0"
+    networks:
+      mailcow:
+        ipv4_address: 10.22.1.248
+        aliases:
+        - sogo
+  dovecot:
+    dns: *id001
+    image: mailcow/dovecot:1.159
+    restart: unless-stopped
+    depends_on:
+    - mysql
+    cap_add:
+    - NET_BIND_SERVICE
+    volumes:
+    - ../data/mailcow/hooks/dovecot:/hooks:Z
+    - ../data/mailcow/conf/dovecot:/etc/dovecot:z
+    - ../data/mailcow/assets/ssl:/etc/ssl/mail/:ro,z
+    - ../data/mailcow/conf/sogo/:/etc/sogo/:z
+    - ../data/mailcow/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
+    - ../data/mailcow/conf/rspamd/custom/:/etc/rspamd/custom:z
+    - ../data/mailcow/assets/templates:/templates:z
+    - vmail-vol-1:/var/vmail:Z
+    - vmail-index-vol-1:/var/vmail_index:Z
+    - crypt-vol-1:/mail_crypt/:z
+    - rspamd-vol-1:/var/lib/rspamd:z
+    - mysql-socket-vol-1:/var/run/mysqld/:z
+    env_file: .env
+    ports:
+    - ${DOVEADM_PORT:-127.0.0.1:19991}:12345
+    - ${IMAP_PORT:-143}:143
+    - ${IMAPS_PORT:-993}:993
+    - ${POP_PORT:-110}:110
+    - ${POPS_PORT:-995}:995
+    - ${SIEVE_PORT:-4190}:4190
+    tty: true
+    labels:
+      ofelia.enabled: 'true'
+      ofelia.job-exec.dovecot_imapsync_runner.schedule: '@every 1m'
+      ofelia.job-exec.dovecot_imapsync_runner.no-overlap: 'true'
+      ofelia.job-exec.dovecot_imapsync_runner.command: /bin/bash -c "[[ $${MASTER}
+        == y ]] && /usr/local/bin/gosu nobody /usr/local/bin/imapsync_runner.pl ||
+        exit 0"
+      ofelia.job-exec.dovecot_trim_logs.schedule: '@every 1m'
+      ofelia.job-exec.dovecot_trim_logs.command: /bin/bash -c "[[ $${MASTER} == y
+        ]] && /usr/local/bin/gosu vmail /usr/local/bin/trim_logs.sh || exit 0"
+      ofelia.job-exec.dovecot_quarantine.schedule: '@every 20m'
+      ofelia.job-exec.dovecot_quarantine.command: /bin/bash -c "[[ $${MASTER} == y
+        ]] && /usr/local/bin/gosu vmail /usr/local/bin/quarantine_notify.py || exit
+        0"
+      ofelia.job-exec.dovecot_clean_q_aged.schedule: '@every 24h'
+      ofelia.job-exec.dovecot_clean_q_aged.command: /bin/bash -c "[[ $${MASTER} ==
+        y ]] && /usr/local/bin/gosu vmail /usr/local/bin/clean_q_aged.sh || exit 0"
+      ofelia.job-exec.dovecot_maildir_gc.schedule: '@every 30m'
+      ofelia.job-exec.dovecot_maildir_gc.command: /bin/bash -c "source /source_env.sh
+        ; /usr/local/bin/gosu vmail /usr/local/bin/maildir_gc.sh"
+      ofelia.job-exec.dovecot_sarules.schedule: '@every 24h'
+      ofelia.job-exec.dovecot_sarules.command: /bin/bash -c "/usr/local/bin/sa-rules.sh"
+      ofelia.job-exec.dovecot_fts.schedule: '@every 24h'
+      ofelia.job-exec.dovecot_fts.command: /usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true
+      ofelia.job-exec.dovecot_repl_health.schedule: '@every 5m'
+      ofelia.job-exec.dovecot_repl_health.command: /bin/bash -c "/usr/local/bin/gosu
+        vmail /usr/local/bin/repl_health.sh"
+  postfix:
+    dns: *id001
+    image: mailcow/postfix:1.66
+    restart: unless-stopped
+    depends_on:
+    - mysql
+    volumes:
+    - ../data/mailcow/hooks/postfix:/hooks:Z
+    - ../data/mailcow/conf/postfix:/opt/postfix/conf:z
+    - ../data/mailcow/assets/ssl:/etc/ssl/mail/:ro,z
+    - postfix-vol-1:/var/spool/postfix:z
+    - crypt-vol-1:/var/lib/zeyple:z
+    - rspamd-vol-1:/var/lib/rspamd:z
+    - mysql-socket-vol-1:/var/run/mysqld/:z
+    env_file: .env
+    cap_add:
+    - NET_BIND_SERVICE
+    ports:
+    - ${SMTP_PORT:-25}:25
+    - ${SMTPS_PORT:-465}:465
+    - ${SUBMISSION_PORT:-587}:587
+    networks:
+      mailcow:
+        ipv4_address: 10.22.1.253
+        aliases:
+        - postfix
+  memcached:
+    image: memcached:alpine
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      mailcow:
+        aliases:
+        - memcached
+  nginx:
+    dns: *id001
+    image: nginx:mainline-alpine
+    restart: unless-stopped
+    depends_on:
+    - sogo
+    - php-fpm
+    - redis
+    command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template
+      > /etc/nginx/conf.d/listen_plain.active && envsubst < /etc/nginx/conf.d/templates/listen_ssl.template
+      > /etc/nginx/conf.d/listen_ssl.active && envsubst < /etc/nginx/conf.d/templates/sogo.template
+      > /etc/nginx/conf.d/sogo.active && . /etc/nginx/conf.d/templates/server_name.template.sh
+      > /etc/nginx/conf.d/server_name.active && . /etc/nginx/conf.d/templates/sites.template.sh
+      > /etc/nginx/conf.d/sites.active && . /etc/nginx/conf.d/templates/sogo_eas.template.sh
+      > /etc/nginx/conf.d/sogo_eas.active && nginx -qt && until ping phpfpm -c1 >
+      /dev/null; do sleep 1; done && until ping sogo -c1 > /dev/null; do sleep 1;
+      done && until ping redis -c1 > /dev/null; do sleep 1; done && until ping rspamd
+      -c1 > /dev/null; do sleep 1; done && exec nginx -g 'daemon off;'"
+    env_file: .env
+    volumes:
+    - ../data/mailcow/web:/web:ro,z
+    - ../data/mailcow/conf/rspamd/dynmaps:/dynmaps:ro,z
+    - ../data/mailcow/assets/ssl/:/etc/ssl/mail/:ro,z
+    - ../data/mailcow/conf/nginx/:/etc/nginx/conf.d/:z
+    - ../data/mailcow/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+    - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/:z
+    labels:
+      caddy: mail.marcpartensky.com, mail.marc.wf, mail.marc.tf, m.marc.wf, m.marc.tf
+      caddy.reverse_proxy: '{{upstreams 80}}'
+      traefik.enable: 'true'
+      traefik.http.routers.nginx.rule: Host(`mail.marcpartensky.com`)
+      traefik.http.routers.nginx.entrypoints: websecure
+      traefik.http.routers.nginx.tls.certresolver: tls
+      traefik.http.services.nginx.loadbalancer.server.port: 80
+    deploy:
+      labels:
+        traefik.enable: 'true'
+        traefik.http.routers.nginx.rule: Host(`mail.marcpartensky.com`)
+        traefik.http.routers.nginx.entrypoints: websecure
+        traefik.http.routers.nginx.tls.certresolver: tls
+        traefik.http.services.nginx.loadbalancer.server.port: 80
+    networks:
+      caddy: null
+      mailcow:
+        ipv4_address: 10.22.1.252
+        aliases:
+        - nginx
+  acme:
+    dns: *id001
+    image: mailcow/acme:1.81
+    restart: unless-stopped
+    depends_on:
+    - nginx
+    env_file: .env
+    volumes:
+    - ../data/mailcow/web/.well-known/acme-challenge:/var/www/acme:z
+    - ../data/mailcow/assets/ssl:/var/lib/acme/:z
+    - ../data/mailcow/assets/ssl-example:/var/lib/ssl-example/:ro,Z
+    - mysql-socket-vol-1:/var/run/mysqld/:z
+    networks:
+      mailcow:
+        aliases:
+        - acme
+  netfilter:
+    image: mailcow/netfilter:1.46
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+    - dovecot
+    - postfix
+    - sogo
+    - php-fpm
+    - redis
+    privileged: true
+    env_file: .env
+    network_mode: host
+    volumes:
+    - /lib/modules:/lib/modules:ro
+  watchdog:
+    dns: *id001
+    image: mailcow/watchdog:1.96
+    restart: unless-stopped
+    tmpfs:
+    - /tmp
+    volumes:
+    - rspamd-vol-1:/var/lib/rspamd:z
+    - mysql-socket-vol-1:/var/run/mysqld/:z
+    - postfix-vol-1:/var/spool/postfix:z
+    - ../data/mailcow/assets/ssl:/etc/ssl/mail/:ro,z
+    env_file: .env
+    networks:
+      mailcow:
+        aliases:
+        - watchdog
+  dockerapi:
+    dns: *id001
+    image: mailcow/dockerapi:1.41
+    restart: unless-stopped
+    security_opt:
+    - label=disable
+    env_file: .env
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      mailcow:
+        aliases:
+        - dockerapi
+  solr:
+    image: mailcow/solr:1.8.1
+    restart: unless-stopped
+    volumes:
+    - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data:Z
+    ports:
+    - ${SOLR_PORT:-127.0.0.1:18983}:8983
+    env_file: .env
+    networks:
+      mailcow:
+        aliases:
+        - solr
+  olefy:
+    image: mailcow/olefy:1.8.1
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      mailcow:
+        aliases:
+        - olefy
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    command: daemon --docker
+    env_file: .env
+    depends_on:
+    - sogo
+    - dovecot
+    labels:
+      ofelia.enabled: 'true'
+    security_opt:
+    - label=disable
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      mailcow:
+        aliases:
+        - ofelia
+networks:
+  caddy:
+    external: true
+  mailcow:
+    driver: overlay
+    attachable: true
+    ipam:
+      config:
+      - subnet: 10.22.1.1/24
+    driver_opts:
+      com.docker.network.bridge.name: br-mailcow
+volumes:
+  vmail-vol-1: null
+  vmail-index-vol-1: null
+  mysql-vol-1: null
+  mysql-socket-vol-1: null
+  redis-vol-1: null
+  rspamd-vol-1: null
+  solr-vol-1: null
+  postfix-vol-1: null
+  crypt-vol-1: null
+  sogo-web-vol-1: null
+  sogo-userdata-backup-vol-1: null

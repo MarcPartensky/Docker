@@ -1,0 +1,16 @@
+services:
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    restart: unless-stopped
+    container_name: linkwarden
+    env_file: .env
+    networks:
+    - caddy
+    - postgres
+    volumes:
+    - /srv/linkwarden:/data/data
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true

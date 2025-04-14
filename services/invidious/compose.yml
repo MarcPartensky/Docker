@@ -1,0 +1,80 @@
+version: "3.9"
+
+services:
+  invidious:
+    image: quay.io/invidious/invidious:latest
+    container_name: invidious
+    restart: unless-stopped
+    networks:
+      - postgres
+      - caddy
+      - invidious
+    environment:
+      TZ: Europe/Paris
+      INVIDIOUS_CONFIG: |
+        db:
+          dbname: invidious
+          user: invidious
+          password: MDYzODFhNWFiMmFiYzdlMWI0MDAxM2Yw
+          host: postgres
+          port: 5432
+        check_tables: true
+        external_port: 443
+        domain: invidious.marcpartensky.com
+        https_only: true
+        hmac_key: "fR/1EuoLt3nVO/dZ11m/w8wAy4183t7FA7+eKqhPsQA="
+        signature_server: inv-sig-helper:12999
+        visitor_data: "CgtaUG1rcEVSV1RVcyii28-_BjInCgJGUhIhEh0SGwsMDg8QERITFBUWFxgZGhscHR4fICEiIyQlJiAP"
+        po_token: "MpQBhgoPr_vpht6GMkokO0AB4J-wnCjzse1vjRyDM6_6C_eqoB054sJQ9H6gJ9BGV2-zZyFKTdklG0iSIET83Z73OGuis8J0RzoUNaZGjWcegDq0uFElqVmmBJc52Z8Bx73zLmYXjxlX5d334TZWU2_BJrcC-ZNf3KNkgf3TFpkkZ3KRpS9hvEabHD_XqzRtBA2-C70Fuw=="
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.services.invidious.loadbalancer.server.port: 3000
+    #   traefik.http.routers.invidious.rule: Host(`invidious.marcpartensky.com`)
+    #   traefik.http.routers.invidious.entrypoints: web
+      # traefik.http.routers.invidious.tls.certresolver: tls
+      # traefik.http.routers.invidious.middlewares: "ldap_auth,cloudflare@file"
+    healthcheck:
+      test: wget -nv --tries=1 --spider http://127.0.0.1:3000/api/v1/trending || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 2
+      
+  inv_sig_helper:
+    image: quay.io/invidious/inv-sig-helper:latest
+    restart: unless-stopped
+    container_name: inv-sig-helper
+    init: true
+    command: ["--tcp", "0.0.0.0:12999"]
+    networks:
+      - invidious
+    environment:
+      - RUST_LOG=info
+    cap_drop:
+      - ALL
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+
+
+  # invidious-db:
+  #   image: postgres:14
+  #   restart: unless-stopped
+  #   networks:
+  #     - caddy
+  #   volumes:
+  #     - /srv/invidious/postgres:/var/lib/postgresql/data
+  #     - /srv/data/invidious/config/sql:/config/sql
+  #     - /srv/data/invidious/docker/init-invidious-db.sh:/docker-entrypoint-initdb.d/init-invidious-db.sh
+  #   environment:
+  #     POSTGRES_DB: invidious
+  #     POSTGRES_USER: kemal
+  #     POSTGRES_PASSWORD: kemal
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+
+networks:
+  invidious:
+  caddy:
+    external: true
+  postgres:
+    external: true

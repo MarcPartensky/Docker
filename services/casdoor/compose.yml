@@ -1,0 +1,26 @@
+services:
+  casdoor:
+    restart: unless-stopped
+    image: casbin/casdoor
+    entrypoint: /bin/sh -c './server --createDatabase=true'
+    environment:
+      RUNNING_IN_DOCKER: 'true'
+    volumes:
+    - /srv/casdoor:/conf/
+    - /srv/casdoor/init_data.json:/init_data.json
+    networks:
+    - postgres
+    - caddy
+    env_file: .env
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.casdoor.entrypoints: web
+      traefik.http.services.casdoor.loadbalancer.server.port: 8000
+      traefik.http.routers.casdoor.rule: 'Host(`casdoor.marcpartensky.com`)
+
+        '
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true

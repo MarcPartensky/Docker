@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+  master:
+    image: efaviere/mobydock-master:lastest
+    env_file: .env
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+    - caddy
+    - postgres
+    deploy:
+      labels:
+        traefik.enable: 'true'
+        traefik.http.services.svc_mobydock.loadbalancer.server.port: 8080
+        traefik.http.routers.mobydock.service: svc_mobydock
+        traefik.http.routers.mobydock.rule: 'Host(`mobydock.marcpartensky.com`) ||
+          Host(`mobydock.marcpartensky.fr`)
+
+          '
+        traefik.http.routers.mobydock.entrypoints: websecure
+        traefik.http.services.svc_mobydockwss.loadbalancer.server.port: 8000
+        traefik.http.routers.mobydockwss.service: svc_mobydockwss
+        traefik.http.routers.mobydockwss.rule: 'Host(`wss.mobydock.marcpartensky.com`)
+          || Host(`wss.mobydock.marcpartensky.fr`)
+
+          '
+        traefik.http.routers.mobydockwss.entrypoints: websecure
+  worker:
+    image: efaviere/mobidock-worker:latest
+    environment:
+      MASTER_HOST: https://wss.mobydock.marcpartensky.com
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+networks:
+  discord: null
+  postgres:
+    external: true
+  caddy:
+    external: true

@@ -1,0 +1,10 @@
+services:
+  time-assistant:
+    image: docker.io/marcpartensky/time-assistant:v13.0e90e4c.2025-03-18
+    restart: unless-stopped
+    env_file: .env
+    networks:
+    - postgres
+networks:
+  postgres:
+    external: true

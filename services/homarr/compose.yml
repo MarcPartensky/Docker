@@ -1,0 +1,25 @@
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr
+    restart: unless-stopped
+    networks:
+    - caddy
+    - redis
+    - postgres
+    volumes:
+    - /srv/homarr:/appdata
+    - /var/run/docker.sock:/var/run/docker.sock
+    env_file: .env
+    labels:
+      traefik.enable: 'true'
+      traefik.http.services.homarr.loadbalancer.server.port: 7575
+      traefik.http.routers.homarr.rule: Host(`homarr.marcpartensky.com`)
+      traefik.http.routers.homarr.entrypoints: web
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true
+  redis:
+    external: true

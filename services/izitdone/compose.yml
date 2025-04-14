@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  izitdone-back:
+    image: docker.io/marcpartensky/izitdone-back:v23.ca2e91d09917d423458640113e852cfd60d6916e
+    restart: unless-stopped
+    networks:
+    - caddy
+    - postgres
+    env_file: .env
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.izitdone-back.rule: 'Host(`izitdone.marcpartensky.com`)
+        && PathPrefix(`/api`)
+
+        '
+      traefik.http.routers.izitdone-back.entrypoints: web
+      traefik.http.services.izitdone-back.loadbalancer.server.port: 8000
+      traefik.http.middlewares.izitdone-back.redirectscheme.scheme: https
+      traefik.http.middlewares.izitdone-back-strip.stripprefix.prefixes: /api
+      traefik.http.routers.izitdone-back.middlewares: izitdone-back-strip
+  izitdone-front:
+    image: docker.io/marcpartensky/izitdone-front:latest
+    restart: unless-stopped
+    networks:
+    - caddy
+    - postgres
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.izitdone-front.rule: 'Host(`izitdone.marcpartensky.com`)
+        && !PathPrefix(`/api`)
+
+        '
+      traefik.http.routers.izitdone-front.entrypoints: web
+      traefik.http.services.izitdone-front.loadbalancer.server.port: 3000
+      traefik.http.middlewares.izitdone-front.redirectscheme.scheme: https
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true

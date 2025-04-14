@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  authelia:
+    image: authelia/authelia
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TZ: France/Paris
+    volumes:
+    - ../data/authelia:/config
+    networks:
+    - caddy
+    - redis
+    - ldap
+    labels:
+      traefik.enable: true
+      traefik.http.routers.authelia.rule: Host(`authelia.marcpartensky.com`)
+      traefik.http.routers.authelia.entrypoints: web
+      traefik.http.middlewares.authelia.forwardauth.address: http://authelia:9091/api/verify?rd=https://authelia.marcpartensky.com
+      traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: true
+      traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: Remote-User,Remote-Groups,Remote-Name,Remote-Email
+networks:
+  authelia: null
+  caddy:
+    external: true
+  redis:
+    external: true
+  ldap:
+    external: true

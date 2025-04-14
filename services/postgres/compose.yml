@@ -1,0 +1,61 @@
+version: '3.9'
+services:
+  postgres:
+    image: docker.io/postgres:14
+    restart: unless-stopped
+    ports:
+    - target: 5432
+      published: 5432
+      mode: host
+    volumes:
+    - postgres:/var/lib/postgresql/data
+    - ../data/postgres/initdb.d:/initdb.d
+    - /home/marc/backup:/backup
+    - ../data/postgres/certs:/var/lib/postgresql/certs
+    env_file: .env
+    command: 'postgres
+
+      -c log_statement=all
+
+      -c log_destination=stderr
+
+      '
+    networks:
+    - postgres
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -q || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 3
+  pgagent:
+    image: docker.io/chiavegatto/postgres-pgagent
+    entrypoint: /bin/sh -c "/tmp/wait-for-it.sh postgres:5432 --timeout=30 && psql
+      -U postgres -h postgres -p 5432 -d postgres -c 'CREATE EXTENSION IF NOT EXISTS
+      pgagent;' && pgagent -f hostaddr=postgres dbname=postgres user=postgres port=5432"
+    environment:
+      TIMEZONE: Europe/Paris
+    env_file: .env
+    networks:
+    - postgres
+  backup:
+    image: docker.io/kartoza/pg-backup:14-3.1
+    env_file: ../data/secrets/pg_backup.env
+    networks:
+    - postgres
+    volumes:
+    - /srv/pg-backup:/backups
+  pgbackups:
+    image: docker.io/prodrigestivill/postgres-backup-local
+    restart: unless-stopped
+    volumes:
+    - /srv/pgbackups:/backups
+    networks:
+    - postgres
+    env_file: ../data/secrets/pgbackups.env
+volumes:
+  postgres: null
+networks:
+  postgres:
+    external: true

@@ -1,0 +1,19 @@
+services:
+  wikijs:
+    container_name: wikijs
+    restart: unless-stopped
+    image: ghcr.io/requarks/wiki:2
+    networks:
+    - caddy
+    - postgres
+    env_file: .env
+    labels:
+      traefik.enable: 'true'
+      traefik.http.services.wikijs.loadbalancer.server.port: 3000
+      traefik.http.routers.wikijs.rule: Host(`wiki.marcpartensky.com`)
+      traefik.http.routers.wikijs.entrypoints: web
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true

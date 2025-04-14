@@ -1,0 +1,26 @@
+services:
+  clipshare:
+    image: rastislavkish/clipshare:latest
+    container_name: clipshare
+    restart: unless-stopped
+    environment:
+      # - CERT_DIR=/etc/letsencrypt/live/votre-domain.com
+      - REDIS_HOST=redis://redis
+    networks:
+      - caddy
+      - redis
+    # volumes:
+    #   - "/etc/letsencrypt:/etc/letsencrypt:ro"  # Montage direct des certificats
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.clipshare.loadbalancer.server.port: 3127
+      traefik.http.routers.clipshare.rule: Host(`clipshare.marcpartensky.com`) # Adaptez le domaine
+      traefik.http.routers.clipshare.entrypoints: web
+      # traefik.http.routers.clipshare.tls.certresolver: tls
+      traefik.http.routers.clipshare.middlewares: "ldap_auth,cloudflare@file"
+
+networks:
+  redis:
+    external: true
+  caddy:
+    external: true

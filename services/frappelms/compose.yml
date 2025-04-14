@@ -1,0 +1,45 @@
+version: '3.9'
+services:
+  mariadb:
+    image: mariadb:10.6
+    command:
+    - --character-set-server=utf8mb4
+    - --collation-server=utf8mb4_unicode_ci
+    - --skip-character-set-client-handshake
+    - --skip-innodb-read-only-compressed
+    env_file: .env
+    volumes:
+    - /srv/mariadb:/var/lib/mysql
+    networks:
+    - mariadb
+    ports:
+    - target: 3306
+      published: 3306
+      mode: host
+  frappelms:
+    image: frappe/bench:latest
+    command: bash /workspace/init.sh
+    environment:
+      SHELL: /bin/bash
+    working_dir: /home/frappe
+    volumes:
+    - /srv/frappelms:/workspace
+    networks:
+    - caddy
+    - mariadb
+    - redis
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.frappelms.rule: 'Host(`lms.marcpartensky.com`)
+
+        '
+      traefik.http.routers.frappelms.entrypoints: web
+      traefik.http.services.frappelms.loadbalancer.server.port: 8000
+volumes:
+  mariadb-data: null
+networks:
+  mariadb: null
+  redis:
+    external: true
+  caddy:
+    external: true

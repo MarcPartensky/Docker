@@ -1,0 +1,17 @@
+services:
+  udemy:
+    image: docker.io/marcpartensky/udemy
+    env_file: .env
+    networks:
+    - postgres
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.udemy.rule: 'Host(`course.marcpartensky.com`)
+
+        '
+      traefik.http.routers.udemy.entrypoints: web
+      traefik.http.services.udemy.loadbalancer.server.port: 8000
+      traefik.http.middlewares.udemy.redirectscheme.scheme: https
+networks:
+  postgres:
+    external: true

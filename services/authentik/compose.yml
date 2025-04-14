@@ -1,0 +1,73 @@
+version: '3.9'
+services:
+  authentik:
+    image: ghcr.io/goauthentik/server:2024.4.2
+    restart: unless-stopped
+    command: server
+    environment:
+      AUTHENTIK_DEBUG: 'true'
+      AUTHENTIK_ERROR_REPORTING__ENABLED: 'false'
+      AUTHENTIK_DEFAULT_USER_CHANGE_USERNAME: admin
+    env_file: .env
+    volumes:
+    - authentik_media:/media
+    - templates:/templates
+    - geoip:/geoip
+    networks:
+    - authentik
+    - caddy
+    - postgres
+    - redis
+    - ldap
+    labels:
+      caddy: authentik.marcpartensky.com
+      caddy.reverse_proxy: '{{upstreams 9000}}'
+      traefik.enable: 'true'
+      traefik.http.routers.authentik.rule: Host(`authentik.marcpartensky.com`)
+      traefik.http.routers.authentik.entrypoints: web
+      traefik.http.services.authentik.loadbalancer.server.port: 80
+  worker:
+    image: ghcr.io/goauthentik/server:2024.4.2
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_ERROR_REPORTING__ENABLED: 'false'
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /srv/authentik:/backups
+    - authentik_media:/media
+    - certs:/certs
+    - templates:/templates
+    - geoip:/geoip
+    env_file: .env
+    networks:
+    - authentik
+    - postgres
+    - redis
+  ldap:
+    image: ghcr.io/goauthentik/ldap
+    restart: unless-stopped
+    ports:
+    - 0.0.0.0:636:636/tcp
+    networks:
+    - authentik
+    - ldap
+    env_file: .env
+volumes:
+  postgres: null
+  authentik_media: null
+  certs: null
+  templates: null
+  geoip: null
+networks:
+  authentik: null
+  ldap:
+    external: true
+  redis:
+    external: true
+  postgres:
+    external: true
+  caddy:
+    external: true

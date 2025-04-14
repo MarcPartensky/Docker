@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  minio:
+    image: docker.io/minio/minio
+    restart: unless-stopped
+    networks:
+    - caddy
+    volumes:
+    - /srv/minio:/data
+    env_file: .env
+    command: server /data --console-address ":9001"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.minio.rule: Host(`storage.marcpartensky.com`)
+      traefik.http.routers.minio.entrypoints: web
+      traefik.http.services.minio.loadbalancer.server.port: 9001
+networks:
+  caddy:
+    external: true

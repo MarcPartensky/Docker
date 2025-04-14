@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'True'
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 10
+    networks:
+    - postgres
+    - caddy
+    volumes:
+    - /srv/pgadmin:/usr/local/
+volumes:
+  postgres: null
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true

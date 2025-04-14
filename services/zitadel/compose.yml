@@ -1,0 +1,24 @@
+services:
+  zitadel:
+    image: ghcr.io/zitadel/zitadel:latest
+    restart: unless-stopped
+    command: start-from-init --config /config/config.yml --steps /config/steps.yml
+      --masterkeyFromEnv --tlsMode external
+    networks:
+    - postgres
+    - caddy
+    volumes:
+    - ../data/zitadel:/config
+    env_file: .env
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.zitadel.entrypoints: web
+      traefik.http.services.zitadel.loadbalancer.server.port: 8080
+      traefik.http.routers.zitadel.rule: 'Host(`auth.marcpartensky.com`)
+
+        '
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true

@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  nextcloud:
+    image: docker.io/nextcloud:stable
+    restart: unless-stopped
+    volumes:
+    - /srv/nextcloud:/var/www/html
+    env_file: .env
+    networks:
+    - caddy
+    - postgres
+    - redis
+    - ldap
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.nextcloud.rule: 'Host(`cloud.marcpartensky.com`)
+
+        '
+      traefik.http.routers.nextcloud.entrypoints: web
+    healthcheck:
+      test: curl -sSf 'http://localhost/status.php' | grep '"installed":true' | grep
+        '"maintenance":false' | grep '"needsDbUpgrade":false' || exit 1
+volumes:
+  data: null
+  config: null
+  themes: null
+  apps: null
+networks:
+  ldap:
+    external: true
+  caddy:
+    external: true
+  postgres:
+    external: true
+  redis:
+    external: true

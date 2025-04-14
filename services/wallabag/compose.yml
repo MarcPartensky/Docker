@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  wallabag:
+    image: wallabag/wallabag
+    container_name: wallabag
+    restart: unless-stopped
+    volumes:
+    - /srv/wallabag/data:/var/www/wallabag/data
+    - /srv/wallabag/assets:/var/www/wallabag/web/assets
+    - wallabag_cache:/var/www/wallabag/var/
+    env_file: .env
+    networks:
+    - caddy
+    - postgres
+    - redis
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --no-verbose
+      - --tries=1
+      - --spider
+      - http://localhost/api/info
+      interval: 1m
+      timeout: 3s
+    command: wallabag
+volumes:
+  wallabag_cache: null
+networks:
+  wallabag: null
+  caddy:
+    external: true
+  postgres:
+    external: true
+  redis:
+    external: true

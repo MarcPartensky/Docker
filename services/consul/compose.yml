@@ -1,0 +1,35 @@
+services:
+  consul-server:
+    image: hashicorp/consul:1.10.0
+    container_name: consul-server
+    restart: unless-stopped
+    volumes:
+     - ../data/consul:/consul/config
+    networks:
+      # - consul
+      - caddy
+    ports:
+      - "0.0.0.0:8600:8600/tcp"
+      - "0.0.0.0:8600:8600/udp"
+      # - "8500:8500"
+    command: "agent"
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.consul.loadbalancer.server.port: 8500
+      traefik.http.routers.consul.rule: Host(`consul.marcpartensky.com`)
+      traefik.http.routers.consul.entrypoints: web
+
+  consul-client:
+    image: hashicorp/consul:1.10.0
+    container_name: consul-client
+    restart: always
+    volumes:
+     - ../data/consul:/consul/config
+    networks:
+      - caddy
+    command: "agent"
+
+networks:
+  # consul:
+  caddy:
+    external: true

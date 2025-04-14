@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  hydra:
+    image: marcpartensky/hydra:latest
+    network_mode: host
+    env_file: .env
+    volumes:
+    - ../data/hydra/rockyou.txt:/rockyou.txt
+    - ../data/hydra/usernames.txt:/usernames.txt
+    - hydra:/root
+volumes:
+  hydra: null

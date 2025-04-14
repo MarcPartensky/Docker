@@ -1,3 +1,4 @@
+*.env
 data/secrets/*.env
 !data/secrets/*.template.env
 docker-compose.yml
@@ -40,6 +41,11 @@ data/casdoor
 data/stash
 data/code-server
 data/gotify
+data/apprise
+data/calibre
+data/codeserver
+data/consul
+data/zitadel
 data.tar.gz
 data.7z
 data.7z.gpg

@@ -1,0 +1,18 @@
+services:
+  lrclib-rs:
+    image: lrclib-rs:latest
+    container_name: lrclib-rs
+    restart: unless-stopped
+    networks:
+    - caddy
+    volumes:
+    - /srv/lrclib-rs:/data
+    env_file: .env
+    labels:
+      traefik.enable: 'true'
+      traefik.http.services.lrclib.loadbalancer.server.port: 3300
+      traefik.http.routers.lrclib.rule: Host(`lrclib.marcpartensky.com`)
+      traefik.http.routers.lrclib.entrypoints: web
+networks:
+  caddy:
+    external: true

@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
+    restart: unless-stopped
+    volumes:
+    - data:/usr/src/paperless/data
+    - media:/usr/src/paperless/media
+    - /srv/paperless/export:/usr/src/paperless/export
+    - /srv/paperless/consume:/usr/src/paperless/consume
+    env_file: .env
+    networks:
+    - redis
+    - caddy
+    - postgres
+volumes:
+  data: null
+  media: null
+networks:
+  redis:
+    external: true
+  postgres:
+    external: true
+  caddy:
+    external: true

@@ -1,0 +1,16 @@
+services:
+  bot:
+    image: docker.io/marcpartensky/discord-bot:latest
+    restart: unless-stopped
+    ports:
+    - 7010:8000
+    networks:
+    - discord
+    - postgres
+    env_file: .env
+    deploy:
+      replicas: 1
+networks:
+  discord: null
+  postgres:
+    external: true

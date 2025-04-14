@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  suitecrm:
+    image: docker.io/bitnami/suitecrm:8
+    env_file: .env
+    volumes:
+    - /srv/suitecrm:/bitnami/suitecrm
+    networks:
+    - postgres
+    - caddy
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.suitecrm.rule: 'Host(`crm.marcpartensky.com`)
+
+        '
+      traefik.http.routers.suitecrm.entrypoints: web
+      traefik.http.services.suitecrm.loadbalancer.server.port: 8080
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true

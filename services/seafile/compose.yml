@@ -1,0 +1,77 @@
+version: '3.9'
+services:
+  db:
+    image: mariadb:10.5
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+    - mariadb:/var/lib/mysql
+    networks:
+      seafile:
+        aliases:
+        - seafile-mysql
+  memcached:
+    image: memcached:1.6
+    restart: unless-stopped
+    entrypoint: memcached -m 256
+    networks:
+      seafile:
+        aliases:
+        - seafile-memcached
+  elasticsearch:
+    image: elasticsearch:7.16.2
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      bootstrap.memory_lock: 'true'
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+    - elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      seafile:
+        aliases:
+        - seafile-elasticsearch
+  seafile:
+    image: docker.seadrive.org/seafileltd/seafile-pro-mc:latest
+    restart: unless-stopped
+    volumes:
+    - /srv/seafile:/shared/seafile
+    env_file: .env
+    depends_on:
+    - db
+    - memcached
+    - elasticsearch
+    networks:
+    - seafile
+    - caddy
+    healthcheck:
+      test: curl localhost/api2/ping/
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.seafile.rule: Host(`seafile.marcpartensky.com`)
+      traefik.http.routers.seafile.entrypoints: web
+      traefik.http.services.seafile.loadbalancer.server.port: 80
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager
+      labels:
+        traefik.enable: 'true'
+        traefik.http.routers.seafile.rule: 'Host(`seafile.marcpartensky.com`) || Host(`seafile.marcpartensky.fr`)
+
+          '
+        traefik.http.routers.seafile.entrypoints: websecure
+        traefik.http.services.seafile.loadbalancer.server.port: 80
+volumes:
+  seafile: null
+  seahub: null
+  mariadb: null
+  elasticsearch: null
+networks:
+  seafile: null
+  caddy:
+    external: true

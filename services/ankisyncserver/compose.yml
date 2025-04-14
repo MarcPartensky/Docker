@@ -1,0 +1,12 @@
+services:
+   ankisync:
+      image: cryptkiddie2/ankisyncserver:latest
+      environment:
+         - SYNC_USER1=USERNAME:HASHED_PASSWORD
+       volumes:
+          - /srv/anki_data:/data
+
+volumes:
+  anki_data:
+    driver: local
+

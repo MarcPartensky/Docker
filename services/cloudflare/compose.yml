@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  cloudflare:
+    image: docker.io/cloudflare/cloudflared:latest
+    restart: unless-stopped
+    env_file: .env
+    command: tunnel --no-autoupdate run
+    networks:
+    - caddy
+    environment:
+    - TUNNEL_METRICS=0.0.0.0:60123
+    healthcheck:
+      test:
+      - CMD
+      - cloudflared
+      - tunnel
+      - --metrics
+      - localhost:60123
+      - ready
+      interval: 30s
+      timeout: 30s
+      retries: 3
+  traefik-cloudflare-tunnel:
+    image: docker.io/justmiles/traefik-cloudflare-tunnel:latest
+    container_name: traefik-cloudflare-tunnel
+    restart: unless-stopped
+    env_file: .env
+    networks:
+    - caddy
+networks:
+  caddy:
+    external: true

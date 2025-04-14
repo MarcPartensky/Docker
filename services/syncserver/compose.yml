@@ -1,0 +1,15 @@
+services:
+  syncserver:
+    image: mozilla/syncstorage-rs:latest
+    restart: unless-stopped
+    env_file: .env
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.syncserver.rule: Host(`syncserver.marcpartensky.com`)
+      traefik.http.routers.syncserver.entrypoints: web
+      traefik.http.services.syncserver.loadbalancer.server.port: 8000
+networks:
+  postgres:
+    external: true
+  caddy:
+    external: true

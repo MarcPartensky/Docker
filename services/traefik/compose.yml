@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  traefik:
+    image: docker.io/traefik:latest
+    restart: unless-stopped
+    env_file: .env
+    networks:
+    - caddy
+    - ldap
+    volumes:
+    - ../data/traefik:/etc/traefik
+    - /srv/traefik:/config
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.traefik.rule: Host(`traefik.marcpartensky.com`)
+      traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.entrypoints: web
+      traefik.http.services.traefik.loadbalancer.server.port: 8080
+      traefik.docker.network: caddy
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.enabled: 'true'
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.logLevel: DEBUG
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.url: ldaps://ldap
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.port: 636
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.useTLS: 'true'
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.insecureSkipVerify: 'true'
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindDN: cn=ldapservice,dc=ldap,dc=goauthentik,dc=io
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.bindPassword: v4EuxSYvjt%a9Ma8q6T65GceC#LFv@
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.baseDN: dc=ldap,dc=goauthentik,dc=io
+      traefik.http.middlewares.ldap_auth.plugin.ldapAuth.attribute: cn
+    healthcheck:
+      test: traefik healthcheck --ping
+networks:
+  ldap:
+    external: true
+  caddy:
+    external: true

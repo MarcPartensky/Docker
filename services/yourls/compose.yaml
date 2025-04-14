@@ -1,0 +1,18 @@
+services:
+  yourls:
+    image: bios/docker-yourls
+    container_name: yourls
+    volumes:
+      - /srv/yourls:/data
+    env_file: .env
+    networks:
+      - caddy
+      - postgres
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true
+x-dockge:
+  urls:
+    - https://yourls.marcpartensky.com

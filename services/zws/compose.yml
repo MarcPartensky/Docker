@@ -1,0 +1,78 @@
+# https://github.com/zws-im/deploy/blob/main/docker-compose.yml
+services:
+  api:
+    image: zwsim/zws:2.20.1
+    restart: unless-stopped
+    init: true
+    expose:
+      - "3000"
+    links:
+      - db
+    depends_on:
+      - migration
+    env_file: ./.env
+    environment:
+      SHORT_LENGTH: "7"
+      SHORT_CHARS: '["\u200c","\u200d","\udb40\udc61","\udb40\udc62","\udb40\udc63","\udb40\udc64","\udb40\udc65","\udb40\udc66","\udb40\udc67","\udb40\udc68","\udb40\udc69","\udb40\udc6a","\udb40\udc6b","\udb40\udc6c","\udb40\udc6d","\udb40\udc6e","\udb40\udc6f","\udb40\udc70","\udb40\udc71","\udb40\udc72","\udb40\udc73","\udb40\udc74","\udb40\udc75","\udb40\udc76","\udb40\udc77","\udb40\udc78","\udb40\udc79","\udb40\udc7a","\udb40\udc7f"]'
+      SHORT_REWRITES: '{"\u180e": "\u200c", "\u200b": "\u200d"}'
+
+      PORT: "3000"
+      HOSTNAME: zws.im
+      SHORTENED_BASE_URL: https://zws.im
+
+      BLOCKED_HOSTNAMES: '["api.zws.im", "zws.im", "webapps-customserve.cloudns.cl", "aliyuncs.com", "6000c.xyz", "82083b.onelink.me", "m1937.com", "subcon.py6.pw", "sub.xeton.dev", "doisnet.com", "iplogger.org", "moneyonlineinvestment.com", "findyourlovemate.com", "golead7.co.uk", "myqcloud.com", "eprofitsmaster.com", "storageapi.fleek.co", "geetikamanucha.com", "com-o.cz", "axomiumdemo.com", "jourumbuffon.com", "kinaseseed.com", "bre.is"]'
+
+      GOOGLE_PROJECT_ID: zero-width-shortener
+      GOOGLE_APPLICATION_CREDENTIALS: /etc/google-service-account.json
+    volumes:
+      - ./google-service-account.json:/etc/google-service-account.json:ro
+
+  migration:
+    image: zwsim/zws:2.20.1
+    init: true
+    links:
+      - db
+    env_file: ./.env
+    command: ["yarn", "run", "migrations"]
+
+  backup:
+    restart: unless-stopped
+    build: ./backup
+    init: true
+    env_file:
+      - ./backup.env
+      - ./.env
+    links:
+      - db
+
+  monitoror:
+    image: monitoror/monitoror:4
+    env_file: ./monitoror.env
+    restart: unless-stopped
+    volumes:
+      - ./monitoror.json:/bin/config.json:ro
+    expose:
+      - "8080"
+    links:
+      - api
+    environment:
+      MO_CONFIG: ./config.json
+
+  metabase:
+    image: metabase/metabase
+    env_file: ./metabase.env
+    restart: unless-stopped
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: "5432"
+      MB_DB_HOST: db
+    links:
+      - db
+    expose:
+      - "3000"
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db:

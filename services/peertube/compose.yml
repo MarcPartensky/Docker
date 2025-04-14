@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  peertube:
+    image: chocobozzz/peertube:production-bullseye
+    container_name: peertube
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+    - /srv/peertube/assets:/app/client/dist
+    - /srv/peertube/data:/data
+    - ../data/peertube:/config
+    networks:
+    - caddy
+    - postgres
+    - redis
+networks:
+  peertube: null
+  postgres:
+    external: true
+  redis:
+    external: true
+  caddy:
+    external: true
+volumes:
+  data: null
+  assets: null
+  postgres: null
+  postfix: null

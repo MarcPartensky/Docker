@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  fdroid:
+    image: nginx
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+    - /srv/fdroid:/usr/share/nginx/html:ro
+    - ../data/fdroid/config.py:/apk/config.py
+    - ../data/fdroid/fdroid.keystore:/tmp/my.keystore
+    networks:
+    - caddy
+    - postgres
+    labels:
+      traefik.enable: 'true'
+      traefik.http.services.fdroid.loadbalancer.server.port: 80
+      traefik.http.routers.fdroid.rule: Host(`fdroid.marcpartensky.com`)
+      traefik.http.routers.fdroid.entrypoints: web
+networks:
+  caddy:
+    external: true
+  postgres:
+    external: true

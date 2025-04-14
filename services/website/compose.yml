@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  website:
+    image: docker.io/marcpartensky/website:v140.f211658.2023-11-01
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+    - media:/app/media
+    networks:
+    - website
+    - caddy
+    - postgres
+    - redis
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.website.rule: Host(`marcpartensky.com`) && !PathPrefix(`/.well-known`)
+      traefik.http.routers.website.entrypoints: web
+      traefik.http.services.website.loadbalancer.server.port: 8000
+volumes:
+  media: null
+networks:
+  website: null
+  redis:
+    external: true
+  postgres:
+    external: true
+  caddy:
+    external: true

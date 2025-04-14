@@ -47,6 +47,17 @@ http:
     #       trustip: # Trust IPS not required if disableDefault is false - we will allocate Cloud Flare IPs automatically
     #         - "2400:cb00::/32"
 
+    sablier-wud:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          names: wud
+          dynamic:
+            displayName: What's up Docker
+            refreshFrequency: 5s
+            showDetails: true
+            theme: ghost
     sablier-uptime:
       plugin:
         sablier:
@@ -178,17 +189,17 @@ http:
             showDetails: true
             theme: ghost
             refreshFrequency: 1s
-    # sablier-etherpad:
-    #   plugin:
-    #     sablier:
-    #       sablierUrl: http://sablier:10000
-    #       names: etherpad
-    #       sessionDuration: 10m
-    #       dynamic:
-    #         displayName: Etherpad
-    #         showDetails: true
-    #         theme: shuffle
-    #         refreshFrequency: 1s
+    sablier-etherpad:
+      plugin:
+        sablier:
+          sablierUrl: http://sablier:10000
+          names: etherpad
+          sessionDuration: 30m
+          dynamic:
+            displayName: Etherpad
+            showDetails: true
+            theme: shuffle
+            refreshFrequency: 1s
     sablier-mongo-express:
       plugin:
         sablier:
@@ -511,6 +522,10 @@ http:
       loadBalancer:
         servers:
           - url: http://yourls:80
+    wud:
+      loadBalancer:
+        servers:
+          - url: http://wud:3000
     uptime:
       loadBalancer:
         servers:
@@ -555,10 +570,10 @@ http:
       loadBalancer:
         servers:
           - url: http://dbdesigner:3000
-    # etherpad:
-    #   loadBalancer:
-    #     servers:
-    #       - url: http://etherpad:9001
+    etherpad:
+      loadBalancer:
+        servers:
+          - url: http://etherpad:9001
     mongo-express:
       loadBalancer:
         servers:
@@ -684,6 +699,11 @@ http:
       service: yourls
       entryPoints: ["web"]
       middlewares: ["sablier-yourls@file", "oidc@file"]
+    wud:
+      rule: "Host(`wud.marcpartensky.com`)"
+      service: wud
+      entryPoints: ["web"]
+      middlewares: ["sablier-wud@file"]
     uptime:
       rule: "Host(`uptime.marcpartensky.com`)"
       service: uptime
@@ -739,11 +759,11 @@ http:
       service: dbdesigner
       entryPoints: ["web"]
       middlewares: ["sablier-dbdesigner@file", "oidc@file"]
-    # etherpad:
-    #   rule: "Host(`pad.marcpartensky.com`)"
-    #   service: etherpad
-    #   entryPoints: ["web"]
-    #   middlewares: ["sablier-etherpad@file"]
+    etherpad:
+      rule: "Host(`pad.marcpartensky.com`)"
+      service: etherpad
+      entryPoints: ["web"]
+      middlewares: ["sablier-etherpad@file"]
     mongo-express:
       rule: "Host(`mongo.marcpartensky.com`)"
       service: mongo-express

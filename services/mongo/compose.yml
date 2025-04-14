@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    volumes:
+    - ../data/mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    - ../data/mongo/config:/etc/mongo
+    - /srv/mongo:/data/db
+    networks:
+    - mongo
+    ports:
+    - 27017:27017
+    env_file: .env
+  express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
+    env_file: .env
+    networks:
+    - mongo
+    - caddy
+    depends_on:
+    - mongo
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --spider
+      - 127.0.0.1:8081/status
+volumes:
+  mongo: null
+networks:
+  mongo:
+    external: true
+  caddy:
+    external: true
+    attachable: true
+    driver: overlay

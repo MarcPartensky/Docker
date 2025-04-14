@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  bisq:
+    container_name: bisq
+    restart: unless-stopped
+    image: fflo/bisq-on-docker
+    networks:
+    - caddy
+    environment:
+      TZ: Europe/Paris
+    volumes:
+    - ../data/bisq:/config
+    - /srv/bisq:/bisq
+    ports:
+    - 3389:3389
+    env_file: .env
+networks:
+  caddy:
+    external: true
