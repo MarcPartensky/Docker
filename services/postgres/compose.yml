@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   postgres:
     image: docker.io/postgres:14
@@ -8,10 +7,10 @@ services:
       published: 5432
       mode: host
     volumes:
-    - postgres:/var/lib/postgresql/data
-    - ../data/postgres/initdb.d:/initdb.d
-    - /home/marc/backup:/backup
-    - ../data/postgres/certs:/var/lib/postgresql/certs
+    # - /home/marc/backup:/backup
+    - /srv/postgres:/var/lib/postgresql/data
+    - ../../data/postgres/initdb.d:/initdb.d
+    - ../../data/postgres/certs:/var/lib/postgresql/certs
     env_file: .env
     command: 'postgres
 
@@ -29,6 +28,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+
   pgagent:
     image: docker.io/chiavegatto/postgres-pgagent
     entrypoint: /bin/sh -c "/tmp/wait-for-it.sh postgres:5432 --timeout=30 && psql
@@ -39,13 +39,15 @@ services:
     env_file: .env
     networks:
     - postgres
+
   backup:
     image: docker.io/kartoza/pg-backup:14-3.1
-    env_file: ../data/secrets/pg_backup.env
+    env_file: .env
     networks:
     - postgres
     volumes:
     - /srv/pg-backup:/backups
+
   pgbackups:
     image: docker.io/prodrigestivill/postgres-backup-local
     restart: unless-stopped
@@ -53,7 +55,8 @@ services:
     - /srv/pgbackups:/backups
     networks:
     - postgres
-    env_file: ../data/secrets/pgbackups.env
+    env_file: .env
+
 volumes:
   postgres: null
 networks:
