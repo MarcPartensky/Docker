@@ -458,7 +458,7 @@ http:
         sablier:
           sablierUrl: http://sablier:10000
           names: dockge
-          sessionDuration: 5m
+          sessionDuration: 30m
           dynamic:
             displayName: Dockge
             showDetails: true 
