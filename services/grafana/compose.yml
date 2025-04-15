@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     env_file: .env
     volumes:
-    - ../data/grafana:/etc/grafana
+    - ../../data/grafana:/etc/grafana
     - grafana:/var/lib/grafana
     healthcheck:
       test:
