@@ -20,6 +20,15 @@ def update_env_paths(compose_path, original_base):
     
     if 'services' in compose_data:
         for srv_name, srv_config in compose_data['services'].items():
+            if 'volumes' in srv_config:
+                volumes = srv_config['volumes']
+
+                for i,volume in enumerate(volumes):
+                    if 'data' in volume:
+                        volumes[i] = "../" + volume
+                        print("volume:", srv_name, volume, "->", volumes[i])
+
+
             if 'env_file' in srv_config:
                 new_env_files = []
                 env_files = srv_config['env_file']
