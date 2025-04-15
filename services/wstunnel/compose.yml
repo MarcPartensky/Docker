@@ -35,7 +35,7 @@ services:
     networks:
       - postgres
       - caddy
-      - vpn
+      # - vpn
     # network_mode: host
     labels:
       traefik.enable: "true"
