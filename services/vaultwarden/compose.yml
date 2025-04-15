@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     env_file: .env
     volumes:
-    - data:/data
+    - ../../data/vaultwarden:/data
     networks:
     - caddy
     - vaultwarden
