@@ -8,7 +8,7 @@ services:
     # ports:
     #   - 9443:9443
     volumes:
-      - data:/data
+      - /srv/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - caddy
