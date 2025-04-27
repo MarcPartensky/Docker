@@ -11,22 +11,10 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - ../data/qbittorrent:/config
-      - /srv/jellyfin/Videos:/downloads
+      - ../../data/qbittorrent:/config
+      - /srv:/downloads
     networks:
       - caddy
-    # labels:
-    #   traefik.enable: "true"
-    #   traefik.http.services.qbittorrent.loadbalancer.server.port: 8080
-    #   traefik.http.routers.qbittorrent.rule: >
-    #     Host(`qbittorrent.marcpartensky.com`)
-    #   traefik.http.routers.qbittorrent.entrypoints: web
-      # traefik.http.routers.qbittorrent.tls.certresolver: tls
-    #   traefik.http.routers.qbittorrent.middlewares: ldap_auth
-    # ports:
-    #   - 8080:8080
-    #   - 6881:6881
-    #   - 6881:6881/udp
 networks:
   caddy:
     external: true
