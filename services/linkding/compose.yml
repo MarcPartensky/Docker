@@ -1,0 +1,19 @@
+services:
+  linkding:
+    container_name: linkding
+    image: sissbruecker/linkding:latest
+    restart: unless-stopped
+    networks:
+      - caddy
+    volumes:
+      - /srv/linkding:/etc/linkding/data
+    env_file: .env
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.linkding.loadbalancer.server.port: 9090
+      traefik.http.routers.linkding.rule: Host(`linkding.marcpartensky.com`)
+      traefik.http.routers.linkding.entrypoints: web
+
+networks:
+  caddy:
+    external: true
