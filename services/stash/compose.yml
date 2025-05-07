@@ -15,7 +15,7 @@ services:
       - STASH_PORT=9999
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ../data/stash:/root/.stash
+      - ../../data/stash:/root/.stash
       - /srv/stash/data:/data
       - /srv/stash/metadata:/metadata
       - /srv/stash/cache:/cache
