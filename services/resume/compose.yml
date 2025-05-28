@@ -9,11 +9,12 @@ services:
     - caddy
     - postgres
     - redis
-    labels:
-      traefik.enable: 'true'
-      traefik.http.services.resume.loadbalancer.server.port: 3000
-      traefik.http.routers.resume.rule: Host(`cv.marcpartensky.com`)
-      traefik.http.routers.resume.entrypoints: web
+    # labels:
+    #   traefik.enable: 'true'
+    #   traefik.http.services.resume.loadbalancer.server.port: 3000
+    #   traefik.http.routers.resume.rule: Host(`cv.marcpartensky.com`)
+    #   traefik.http.routers.resume.entrypoints: web
+
   printer:
     image: docker.io/browserless/chrome:1.61.0-puppeteer-21.4.1
     container_name: printer
@@ -21,14 +22,14 @@ services:
     env_file: .env
     networks:
     - caddy
-    environment:
-      EXIT_ON_HEALTH_FAILURE: true
-      PRE_REQUEST_HEALTH_CHECK: true
-    labels:
-      traefik.enable: 'true'
-      traefik.http.services.printer.loadbalancer.server.port: 3000
-      traefik.http.routers.printer.rule: Host(`printer.marcpartensky.com`)
-      traefik.http.routers.printer.entrypoints: web
+    # environment:
+    #   EXIT_ON_HEALTH_FAILURE: true
+    #   PRE_REQUEST_HEALTH_CHECK: true
+    # labels:
+    #   traefik.enable: 'true'
+    #   traefik.http.services.printer.loadbalancer.server.port: 3000
+    #   traefik.http.routers.printer.rule: Host(`printer.marcpartensky.com`)
+    #   traefik.http.routers.printer.entrypoints: web
 networks:
   caddy:
     external: true

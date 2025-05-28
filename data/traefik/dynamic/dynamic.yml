@@ -585,7 +585,7 @@ http:
     printer:
       loadBalancer:
         servers:
-          - url: http://resume:3000
+          - url: http://printer:3000
     mailu:
       loadBalancer:
         servers:
@@ -776,7 +776,7 @@ http:
       middlewares: ["sablier-resume@file"]
     printer:
       rule: "Host(`printer.marcpartensky.com`)"
-      service: resume
+      service: printer
       entryPoints: ["web"]
       middlewares: ["sablier-resume@file"]
     # mailu:
