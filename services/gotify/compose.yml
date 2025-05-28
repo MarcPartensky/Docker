@@ -7,7 +7,7 @@ services:
       - postgres
     volumes:
       - /srv/gotify:/app/data
-      - ../data/gotify:/etc/gotify
+      - ../../data/gotify:/etc/gotify
       # /etc/gotify/config.yml
     labels:
       traefik.enable: "true"
