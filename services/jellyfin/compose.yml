@@ -13,11 +13,8 @@ services:
     volumes:
       - config:/config
       - cache:/cache
-      - /srv/jellyfin/media:/media
-      - /srv/jellyfin/movies:/movies
-      - /srv/jellyfin/musics:/musics
-      - /srv/jellyfin/photos:/photos
-      - ~/Videos/Youtube:/videos
+      - /srv/jellyfin:/media
+      - ~/Videos/Youtube:/youtube
     # ports:
     #   - 8096:8096 #http
       # - 8920:8920 #optional https self signed
