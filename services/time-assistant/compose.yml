@@ -1,6 +1,9 @@
 services:
   time-assistant:
-    image: docker.io/marcpartensky/time-assistant:v13.0e90e4c.2025-03-18
+    image: docker.io/marcpartensky/time-assistant:latest
+    # image: docker.io/marcpartensky/time-assistant:v12.f5b4f08.2025-03-18
+    # image: docker.io/marcpartensky/time-assistant:v13.0e90e4c.2025-03-18
+    # image: docker.io/marcpartensky/time-assistant:v15.7976d07.2025-04-02
     restart: unless-stopped
     env_file: .env
     networks:
