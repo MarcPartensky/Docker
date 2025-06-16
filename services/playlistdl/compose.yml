@@ -1,0 +1,9 @@
+services:
+  playlistdl:
+    image: tanner23456/playlistdl:v2
+    container_name: playlistdl
+    # ports:
+    #   - "4827:5000"
+    env_file: .env
+    volumes:
+      - /srv/nextcloud/data/marc/files/Music:/audio
