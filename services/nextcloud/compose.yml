@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     volumes:
     - /srv/nextcloud:/var/www/html
+    - /etc/localtime:/etc/localtime:ro
     env_file: .env
     networks:
     - caddy
@@ -18,11 +19,6 @@ services:
     healthcheck:
       test: curl -sSf 'http://localhost/status.php' | grep '"installed":true' | grep
         '"maintenance":false' | grep '"needsDbUpgrade":false' || exit 1
-volumes:
-  data: null
-  config: null
-  themes: null
-  apps: null
 networks:
   ldap:
     external: true
