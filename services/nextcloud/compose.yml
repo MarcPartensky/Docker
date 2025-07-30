@@ -13,9 +13,7 @@ services:
     - ldap
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.nextcloud.rule: 'Host(`cloud.marcpartensky.com`)
-
-        '
+      traefik.http.routers.nextcloud.rule: 'Host(`cloud.marcpartensky.com`)'
       traefik.http.routers.nextcloud.entrypoints: web
     healthcheck:
       test: curl -sSf 'http://localhost/status.php' | grep '"installed":true' | grep
