@@ -20,7 +20,7 @@ All services are in the `services/` folder as individual Compose files, ready to
  
 | Service | Description |
  
-|---|---|
+| --- | --- |
  
 | [adguard](services/adguard/compose.yml) | Network-wide DNS ad blocker |
  
